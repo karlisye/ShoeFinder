@@ -3,7 +3,12 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/i18n'],
+  modules: ['@nuxtjs/i18n', '@nuxt/eslint'],
+  eslint: {
+    config: {
+      autoInit: false
+    }
+  },
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     backendHealthUrl: process.env.NUXT_BACKEND_HEALTH_URL || 'http://backend-web/up',

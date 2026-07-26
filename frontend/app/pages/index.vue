@@ -7,9 +7,13 @@ const localeCookie = useCookie('shoe_finder_locale', {
   sameSite: 'lax'
 })
 
-const { data: health, error, status, refresh } = await useAsyncData(
-  'stack-health',
-  () => $fetch(runtimeConfig.backendHealthUrl, { timeout: 5000 })
+const {
+  data: health,
+  error,
+  status,
+  refresh
+} = await useAsyncData('stack-health', () =>
+  $fetch(runtimeConfig.backendHealthUrl, { timeout: 5000 })
 )
 
 const backendReady = computed(
@@ -41,9 +45,7 @@ useHead({
     >
       <div class="border-b border-secondary-light/15 bg-surface px-6 py-5 sm:px-10">
         <div class="flex flex-wrap items-center justify-between gap-4">
-          <p class="text-sm font-semibold tracking-[0.18em] text-secondary uppercase">
-            ShoeFinder
-          </p>
+          <p class="text-sm font-semibold tracking-[0.18em] text-secondary uppercase">ShoeFinder</p>
 
           <nav :aria-label="t('language.label')" class="flex rounded-xl bg-page p-1">
             <NuxtLink
@@ -52,9 +54,7 @@ useHead({
               :to="switchLocalePath(code)"
               class="rounded-lg px-3 py-2 text-sm font-semibold transition-colors"
               :class="
-                locale === code
-                  ? 'bg-primary text-elevated'
-                  : 'text-secondary hover:bg-surface'
+                locale === code ? 'bg-primary text-elevated' : 'text-secondary hover:bg-surface'
               "
               :lang="code"
               @click="rememberLocale(code)"

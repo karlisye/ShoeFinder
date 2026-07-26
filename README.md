@@ -1,6 +1,6 @@
 # ShoeFinder
 
-Stage 0 provides a Dockerized Nuxt, Laravel, Filament, and PostgreSQL foundation. Product comparison features are intentionally not implemented yet.
+Stage 1 provides the Dockerized application foundation, catalogue schema, and reference data. Product models, services, admin resources, APIs, and public catalogue screens are intentionally not implemented yet.
 
 ## Requirements
 
@@ -17,7 +17,7 @@ docker compose build
 docker compose run --rm backend-php php artisan key:generate
 docker compose run --rm backend-php php artisan storage:link
 docker compose up -d
-docker compose run --rm backend-php php artisan migrate
+docker compose run --rm backend-php php artisan migrate --seed
 ```
 
 Open:
@@ -38,11 +38,39 @@ Useful commands:
 ```sh
 docker compose ps
 docker compose logs -f
+docker compose exec -T backend-php php artisan test
+./docker/test-postgres.sh
 docker compose down
 docker compose up -d
 ```
 
+The default test suite uses in-memory SQLite. `./docker/test-postgres.sh` creates a temporary PostgreSQL database, runs the Stage 1 integration tests, and removes that database.
+
 `docker compose down` keeps the database, dependency, and media volumes. Do not use `docker compose down -v` unless intentionally deleting all local project data.
+
+## Code quality
+
+Check PHP formatting:
+
+```sh
+docker compose exec -T backend-php composer format:check
+```
+
+Check frontend linting and formatting:
+
+```sh
+docker compose exec -T frontend npm run quality
+```
+
+Apply automatic fixes:
+
+```sh
+docker compose exec -T backend-php composer format
+docker compose exec -T frontend npm run lint:fix
+docker compose exec -T frontend npm run format
+```
+
+Pint formats PHP. ESLint checks Vue, JavaScript, and TypeScript. Prettier formats frontend source and sorts Tailwind classes.
 
 ## Production build and migrations
 
@@ -51,6 +79,7 @@ Copy `.env.example` to a secure deployment environment file, replace all develop
 ```sh
 docker compose -f compose.production.yaml build
 docker compose -f compose.production.yaml run --rm backend-php php artisan migrate --force
+docker compose -f compose.production.yaml run --rm backend-php php artisan db:seed --force
 docker compose -f compose.production.yaml run --rm backend-php php artisan make:filament-user
 docker compose -f compose.production.yaml up -d
 ```

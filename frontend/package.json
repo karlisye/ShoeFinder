@@ -5,9 +5,14 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "generate": "nuxt generate",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "quality": "npm run lint && npm run format:check"
   },
   "dependencies": {
     "@nuxtjs/i18n": "^10.5.0",
@@ -16,7 +21,12 @@
     "vue-router": "^5.2.0"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^1.16.0",
     "@tailwindcss/vite": "^4.3.3",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3"
   }
 }
