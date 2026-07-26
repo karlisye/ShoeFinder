@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "title": "ShoeFinder — projekta pamats",
+    "description": "ShoeFinder prototipa tehniskā vide ir gatava turpmākai izstrādei."
+  },
+  "language": {
+    "label": "Valodas izvēle"
+  },
+  "eyebrow": "0. posms",
+  "title": "Projekta pamats darbojas",
+  "description": "Nuxt, Laravel, Filament un PostgreSQL ir savienoti Docker vidē. Apavu salīdzināšanas funkcijas tiks veidotas nākamajos posmos.",
+  "status": {
+    "frontend": "Nuxt saskarne",
+    "locale": "Aktīvā valoda",
+    "backend": "Laravel un datubāze",
+    "ready": "Darbojas",
+    "connected": "Savienots",
+    "checking": "Pārbauda…",
+    "unavailable": "Nav pieejams",
+    "retry": "Pārbaudīt vēlreiz",
+    "backendHint": "Pārbaudi Docker servisu stāvokli un Laravel žurnālu."
+  }
+}

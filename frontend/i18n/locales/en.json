@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "title": "ShoeFinder — project foundation",
+    "description": "The ShoeFinder prototype foundation is ready for staged development."
+  },
+  "language": {
+    "label": "Language selection"
+  },
+  "eyebrow": "Stage 0",
+  "title": "The project foundation is running",
+  "description": "Nuxt, Laravel, Filament, and PostgreSQL are connected through Docker. Shoe comparison features will be added in later stages.",
+  "status": {
+    "frontend": "Nuxt frontend",
+    "locale": "Active language",
+    "backend": "Laravel and database",
+    "ready": "Running",
+    "connected": "Connected",
+    "checking": "Checking…",
+    "unavailable": "Unavailable",
+    "retry": "Check again",
+    "backendHint": "Check the Docker service status and Laravel log."
+  }
+}

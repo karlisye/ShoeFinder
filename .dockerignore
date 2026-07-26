@@ -1,0 +1,13 @@
+.git
+.env
+.DS_Store
+backend/.env
+backend/database/*.sqlite
+backend/storage/logs/*
+backend/vendor
+frontend/.env
+frontend/.nuxt
+frontend/.output
+frontend/node_modules
+notes
+*.log
