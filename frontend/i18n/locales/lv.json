@@ -22,8 +22,8 @@
     "eyebrow": "Apavi Latvijas veikalos",
     "titleFirst": "Atrodi apavus.",
     "titleSecond": "Salīdzini veikalus.",
-    "description": "Meklē pēc modeļa, zīmola vai artikula. Redzēsi cenu un pieejamību Latvijas interneta veikalos.",
-    "searchLabel": "Meklēt pēc modeļa, zīmola vai artikula",
+    "description": "Meklē pēc modeļa, zīmola vai preces koda. Redzēsi cenu un pieejamību Latvijas interneta veikalos.",
+    "searchLabel": "Meklēt pēc modeļa, zīmola vai preces koda",
     "searchPlaceholder": "Piemēram, Nike Air Max 1",
     "searchAction": "Meklēt",
     "popular": "Populāri:"
