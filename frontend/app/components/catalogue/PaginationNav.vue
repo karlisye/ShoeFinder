@@ -21,11 +21,7 @@ const pages = computed(() => {
 </script>
 
 <template>
-  <nav
-    v-if="lastPage > 1"
-    :aria-label="$t('pagination.label')"
-    class="mt-10 flex items-center justify-center gap-1.5"
-  >
+  <nav v-if="lastPage > 1" :aria-label="$t('pagination.label')" class="pagination">
     <button
       type="button"
       class="pagination-button"
@@ -33,7 +29,7 @@ const pages = computed(() => {
       :aria-label="$t('pagination.previous')"
       @click="emit('change', currentPage - 1)"
     >
-      <svg viewBox="0 0 20 20" class="h-4 w-4 fill-none" stroke="currentColor" stroke-width="2">
+      <svg viewBox="0 0 20 20" class="pagination-icon" stroke="currentColor" stroke-width="2">
         <path d="m12.5 4.5-5 5.5 5 5.5" />
       </svg>
     </button>
@@ -58,7 +54,7 @@ const pages = computed(() => {
       :aria-label="$t('pagination.next')"
       @click="emit('change', currentPage + 1)"
     >
-      <svg viewBox="0 0 20 20" class="h-4 w-4 fill-none" stroke="currentColor" stroke-width="2">
+      <svg viewBox="0 0 20 20" class="pagination-icon" stroke="currentColor" stroke-width="2">
         <path d="m7.5 4.5 5 5.5-5 5.5" />
       </svg>
     </button>

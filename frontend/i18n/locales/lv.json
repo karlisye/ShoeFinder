@@ -19,37 +19,14 @@
     "admin": "Administrācija"
   },
   "home": {
-    "eyebrow": "Cenas Latvijas veikalos",
-    "title": "Salīdzini apavu cenas pirms pirkuma",
-    "description": "Atrodi modeli, pārbaudi pieejamos izmērus un salīdzini veikalu cenas vienuviet.",
-    "searchLabel": "Meklēt apavus vai zīmolu",
-    "searchPlaceholder": "Modelis vai zīmols",
+    "eyebrow": "Apavi Latvijas veikalos",
+    "titleFirst": "Atrodi apavus.",
+    "titleSecond": "Salīdzini veikalus.",
+    "description": "Meklē pēc modeļa, zīmola vai artikula. Redzēsi cenu un pieejamību Latvijas interneta veikalos.",
+    "searchLabel": "Meklēt pēc modeļa, zīmola vai artikula",
+    "searchPlaceholder": "Piemēram, Nike Air Max 1",
     "searchAction": "Meklēt",
-    "priceExample": "Piemēra cena",
-    "howEyebrow": "Kā tas darbojas",
-    "howTitle": "No modeļa līdz cenas salīdzinājumam",
-    "steps": {
-      "search": {
-        "title": "Atrodi apavus",
-        "description": "Meklē pēc modeļa vai zīmola."
-      },
-      "filter": {
-        "title": "Atlasi vajadzīgo",
-        "description": "Izvēlies kategoriju, izmēru, krāsu un cenu."
-      },
-      "compare": {
-        "title": "Salīdzini cenas",
-        "description": "Pārbaudi pieejamību un cenas vairākos veikalos."
-      }
-    },
-    "latestEyebrow": "Jaunākie katalogā",
-    "latestTitle": "Nesen pievienotie apavi",
-    "viewCatalogue": "Skatīt visu katalogu",
-    "latestEmpty": "Katalogā vēl nav apavu",
-    "latestEmptyHint": "Pēc datu pievienošanas šeit būs redzami jaunākie modeļi.",
-    "latestError": "Neizdevās ielādēt jaunākos apavus",
-    "latestErrorHint": "Atver katalogu vai mēģini vēlreiz vēlāk.",
-    "openCatalogue": "Atvērt katalogu"
+    "popular": "Populāri:"
   },
   "catalogue": {
     "eyebrow": "Apavu katalogs",

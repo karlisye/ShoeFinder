@@ -9,10 +9,10 @@ useHead({
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col">
+  <div class="app-shell">
     <NuxtRouteAnnouncer />
     <AppHeader />
-    <NuxtPage class="flex-1" />
+    <NuxtPage class="app-main" />
     <AppFooter />
   </div>
 </template>

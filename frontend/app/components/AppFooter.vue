@@ -4,20 +4,18 @@ const localePath = useLocalePath()
 </script>
 
 <template>
-  <footer class="mt-18 border-t border-secondary-light/15 bg-surface">
-    <div
-      class="site-container flex flex-col gap-5 py-8 text-sm text-secondary sm:flex-row sm:items-center sm:justify-between"
-    >
+  <footer class="site-footer">
+    <div class="footer-inner container">
       <div>
-        <p class="font-bold text-primary-dark">ShoeFinder</p>
-        <p class="mt-1">{{ t('footer.description') }}</p>
+        <p class="footer-brand">ShoeFinder</p>
+        <p class="footer-description">{{ t('footer.description') }}</p>
       </div>
 
-      <div class="flex items-center gap-5">
-        <NuxtLink :to="localePath('/catalogue')" class="font-semibold hover:text-primary-dark">
+      <div class="footer-links">
+        <NuxtLink :to="localePath('/catalogue')" class="footer-link">
           {{ t('nav.catalogue') }}
         </NuxtLink>
-        <a href="/admin" class="font-semibold hover:text-primary-dark">
+        <a href="/admin" class="footer-link">
           {{ t('footer.admin') }}
         </a>
       </div>

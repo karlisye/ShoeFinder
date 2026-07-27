@@ -19,37 +19,14 @@
     "admin": "Admin"
   },
   "home": {
-    "eyebrow": "Prices from Latvian retailers",
-    "title": "Compare shoe prices before you buy",
-    "description": "Find a model, check available sizes, and compare retailer prices in one place.",
-    "searchLabel": "Search for shoes or a brand",
-    "searchPlaceholder": "Model or brand",
+    "eyebrow": "Shoes from Latvian retailers",
+    "titleFirst": "Find shoes.",
+    "titleSecond": "Compare retailers.",
+    "description": "Search by model, brand, or product code. See prices and availability from Latvian online retailers.",
+    "searchLabel": "Search by model, brand, or product code",
+    "searchPlaceholder": "For example, Nike Air Max 1",
     "searchAction": "Search",
-    "priceExample": "Example price",
-    "howEyebrow": "How it works",
-    "howTitle": "From model search to price comparison",
-    "steps": {
-      "search": {
-        "title": "Find shoes",
-        "description": "Search by model or brand."
-      },
-      "filter": {
-        "title": "Narrow the results",
-        "description": "Choose a category, size, colour, and price."
-      },
-      "compare": {
-        "title": "Compare prices",
-        "description": "Check availability and prices across retailers."
-      }
-    },
-    "latestEyebrow": "New in the catalogue",
-    "latestTitle": "Recently added shoes",
-    "viewCatalogue": "View full catalogue",
-    "latestEmpty": "No shoes in the catalogue yet",
-    "latestEmptyHint": "Recently added models will appear here after catalogue data is added.",
-    "latestError": "Recently added shoes couldn't be loaded",
-    "latestErrorHint": "Open the catalogue or try again later.",
-    "openCatalogue": "Open catalogue"
+    "popular": "Popular:"
   },
   "catalogue": {
     "eyebrow": "Shoe catalogue",

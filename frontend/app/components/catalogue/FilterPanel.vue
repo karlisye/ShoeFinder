@@ -49,7 +49,7 @@ function isSelected(key, value) {
 </script>
 
 <template>
-  <form class="space-y-1" @submit.prevent="emit('apply')">
+  <form class="filter-form" @submit.prevent="emit('apply')">
     <details v-if="options.brands.length" open class="filter-group">
       <summary>{{ $t('filters.brand') }}</summary>
       <div class="filter-options">
@@ -112,12 +112,12 @@ function isSelected(key, value) {
 
     <details v-if="options.sizes.length" class="filter-group">
       <summary>{{ $t('filters.size') }}</summary>
-      <div class="grid max-h-52 grid-cols-3 gap-2 overflow-y-auto pr-1">
+      <div class="filter-size-grid">
         <label v-for="size in options.sizes" :key="size.label" class="size-option">
           <input
             :id="`${idPrefix}-size-${size.label}`"
             type="checkbox"
-            class="sr-only"
+            class="visually-hidden"
             :checked="isSelected('size', size.label)"
             @change="toggleArrayValue('size', size.label, $event.target.checked)"
           />
@@ -143,8 +143,8 @@ function isSelected(key, value) {
 
     <details open class="filter-group">
       <summary>{{ $t('filters.price') }}</summary>
-      <div class="grid grid-cols-2 gap-3">
-        <label class="text-xs font-semibold text-secondary">
+      <div class="filter-price-grid">
+        <label class="filter-price-label">
           {{ $t('filters.priceFrom') }}
           <input
             :id="`${idPrefix}-min-price`"
@@ -152,13 +152,13 @@ function isSelected(key, value) {
             min="0"
             step="0.01"
             inputmode="decimal"
-            class="form-input mt-1.5"
+            class="filter-price-input"
             :placeholder="options.price_bounds?.minimum ?? '0'"
             :value="filters.min_price"
             @input="setField('min_price', $event.target.value)"
           />
         </label>
-        <label class="text-xs font-semibold text-secondary">
+        <label class="filter-price-label">
           {{ $t('filters.priceTo') }}
           <input
             :id="`${idPrefix}-max-price`"
@@ -166,7 +166,7 @@ function isSelected(key, value) {
             min="0"
             step="0.01"
             inputmode="decimal"
-            class="form-input mt-1.5"
+            class="filter-price-input"
             :placeholder="options.price_bounds?.maximum ?? ''"
             :value="filters.max_price"
             @input="setField('max_price', $event.target.value)"
@@ -175,9 +175,9 @@ function isSelected(key, value) {
       </div>
     </details>
 
-    <fieldset class="border-t border-secondary-light/15 py-5">
-      <legend class="sr-only">{{ $t('filters.availability') }}</legend>
-      <div class="space-y-3">
+    <fieldset class="filter-availability">
+      <legend class="visually-hidden">{{ $t('filters.availability') }}</legend>
+      <div class="filter-availability-options">
         <label class="filter-option">
           <input
             :id="`${idPrefix}-in-stock`"
@@ -199,7 +199,7 @@ function isSelected(key, value) {
       </div>
     </fieldset>
 
-    <div class="grid grid-cols-2 gap-3 border-t border-secondary-light/15 pt-5">
+    <div class="filter-actions">
       <button type="button" class="button-secondary" @click="emit('reset')">
         {{ $t('filters.clear') }}
       </button>
