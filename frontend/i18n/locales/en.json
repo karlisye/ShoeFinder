@@ -3,7 +3,9 @@
     "homeTitle": "ShoeFinder | Compare shoe prices",
     "homeDescription": "Compare shoe prices and available sizes from Latvian retailers.",
     "catalogueTitle": "Shoe catalogue | ShoeFinder",
-    "catalogueDescription": "Find shoes and compare current prices from Latvian retailers."
+    "catalogueDescription": "Find shoes and compare current prices from Latvian retailers.",
+    "productFallbackTitle": "Compare shoes | ShoeFinder",
+    "productFallbackDescription": "Compare shoe prices, sizes, and delivery from Latvian retailers."
   },
   "language": {
     "label": "Language selection"
@@ -74,7 +76,37 @@
     "priceUnavailable": "Price unavailable",
     "availableSizes": "Available sizes",
     "noSizes": "Sizes not provided",
-    "imageFallback": "Shoe image unavailable"
+    "imageFallback": "Shoe image unavailable",
+    "openProduct": "View {name}"
+  },
+  "productDetail": {
+    "backToCatalogue": "Back to catalogue",
+    "errorTitle": "The shoe couldn't be loaded",
+    "errorDescription": "This shoe is unavailable or there was a connection problem.",
+    "showImage": "Show image {number}",
+    "lowestForSize": "Lowest price for size {size}",
+    "colour": "Colour",
+    "size": "EU size",
+    "clearSize": "Clear selection",
+    "productCode": "Product code",
+    "audience": "Audience",
+    "offersEyebrow": "Retailer offers",
+    "offersTitle": "Compare prices",
+    "offerCount": "Retailers: {count}",
+    "selectSizeHint": "Select a size to see its exact price and availability.",
+    "noOffers": "No retailer offers are available for this colour.",
+    "staleOffer": "Price not checked recently",
+    "sizeUnavailable": "Size {size} unavailable",
+    "inStock": "In stock",
+    "withDelivery": "{price} with delivery",
+    "openRetailer": "View at retailer",
+    "description": "Description"
+  },
+  "audience": {
+    "men": "Men",
+    "women": "Women",
+    "kids": "Kids",
+    "unisex": "Unisex"
   },
   "pagination": {
     "label": "Catalogue pages",

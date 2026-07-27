@@ -3,7 +3,9 @@
     "homeTitle": "ShoeFinder | Apavu cenu salīdzinājums",
     "homeDescription": "Salīdzini apavu cenas un pieejamos izmērus Latvijas veikalos.",
     "catalogueTitle": "Apavu katalogs | ShoeFinder",
-    "catalogueDescription": "Meklē apavus un salīdzini aktuālās cenas Latvijas veikalos."
+    "catalogueDescription": "Meklē apavus un salīdzini aktuālās cenas Latvijas veikalos.",
+    "productFallbackTitle": "Apavu salīdzinājums | ShoeFinder",
+    "productFallbackDescription": "Salīdzini apavu cenas, izmērus un piegādi Latvijas veikalos."
   },
   "language": {
     "label": "Valodas izvēle"
@@ -74,7 +76,37 @@
     "priceUnavailable": "Cena nav pieejama",
     "availableSizes": "Pieejamie izmēri",
     "noSizes": "Izmēri nav norādīti",
-    "imageFallback": "Apavu attēls nav pieejams"
+    "imageFallback": "Apavu attēls nav pieejams",
+    "openProduct": "Skatīt {name}"
+  },
+  "productDetail": {
+    "backToCatalogue": "Atpakaļ uz katalogu",
+    "errorTitle": "Apavus neizdevās ielādēt",
+    "errorDescription": "Šie apavi nav pieejami vai radās savienojuma kļūda.",
+    "showImage": "Rādīt {number}. attēlu",
+    "lowestForSize": "Zemākā cena {size}. izmēram",
+    "colour": "Krāsa",
+    "size": "EU izmērs",
+    "clearSize": "Noņemt izvēli",
+    "productCode": "Preces kods",
+    "audience": "Kam paredzēti",
+    "offersEyebrow": "Veikalu piedāvājumi",
+    "offersTitle": "Salīdzini cenas",
+    "offerCount": "Veikali: {count}",
+    "selectSizeHint": "Izvēlies izmēru, lai redzētu precīzu cenu un pieejamību.",
+    "noOffers": "Šai krāsai veikalu piedāvājumi nav pieejami.",
+    "staleOffer": "Cena nav nesen pārbaudīta",
+    "sizeUnavailable": "{size}. izmērs nav pieejams",
+    "inStock": "Pieejams",
+    "withDelivery": "Ar piegādi {price}",
+    "openRetailer": "Skatīt veikalā",
+    "description": "Apraksts"
+  },
+  "audience": {
+    "men": "Vīriešiem",
+    "women": "Sievietēm",
+    "kids": "Bērniem",
+    "unisex": "Ikvienam"
   },
   "pagination": {
     "label": "Kataloga lapas",
