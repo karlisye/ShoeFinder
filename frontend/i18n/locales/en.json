@@ -1,10 +1,10 @@
 {
   "meta": {
-    "homeTitle": "ShoeFinder | Compare shoe prices",
+    "homeTitle": "ShoeFinder · Compare shoe prices",
     "homeDescription": "Compare shoe prices and available sizes from Latvian retailers.",
-    "catalogueTitle": "Shoe catalogue | ShoeFinder",
+    "catalogueTitle": "Shoe catalogue · ShoeFinder",
     "catalogueDescription": "Find shoes and compare current prices from Latvian retailers.",
-    "productFallbackTitle": "Compare shoes | ShoeFinder",
+    "productFallbackTitle": "Compare shoes · ShoeFinder",
     "productFallbackDescription": "Compare shoe prices, sizes, and delivery from Latvian retailers."
   },
   "language": {

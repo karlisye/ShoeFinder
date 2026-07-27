@@ -5,7 +5,9 @@ import {
   selectedVariant,
   validSelectedSize
 } from '~/utils/productComparison'
+import { breadcrumbJsonLd, localizedPath, productJsonLd } from '~/utils/seo'
 
+const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 const { locale, t } = useI18n()
@@ -45,6 +47,23 @@ const lowestPrice = computed(() =>
   lowestProductPrice(variant.value ? [variant.value] : [], size.value, 'EUR')
 )
 const currentPath = computed(() => route.fullPath)
+const seoPath = computed(() => `/shoes/${slug.value}`)
+const seoTitle = computed(() =>
+  shoe.value ? `${shoe.value.name} · ShoeFinder` : t('meta.productFallbackTitle')
+)
+const seoDescription = computed(
+  () => shoe.value?.description || t('meta.productFallbackDescription')
+)
+const seoImage = computed(
+  () =>
+    shoe.value?.variants.flatMap((item) => item.images ?? []).find((image) => image.url)?.url ??
+    null
+)
+const seoImageAlt = computed(
+  () =>
+    shoe.value?.variants.flatMap((item) => item.images ?? []).find((image) => image.url)?.alt ??
+    null
+)
 
 function updateSelection(colour, selectedSize = null) {
   const query = { ...route.query, colour }
@@ -69,14 +88,40 @@ function selectSize(selectedSize) {
   return updateSelection(variant.value.colour.code, selectedSize)
 }
 
-useHead({
-  title: () => (shoe.value ? `${shoe.value.name} | ShoeFinder` : t('meta.productFallbackTitle')),
-  meta: [
-    {
-      name: 'description',
-      content: () => shoe.value?.description || t('meta.productFallbackDescription')
+usePublicSeo({
+  title: seoTitle,
+  description: seoDescription,
+  path: seoPath,
+  type: 'product',
+  image: seoImage,
+  imageAlt: seoImageAlt,
+  noindex: computed(() => Boolean(error.value) || !shoe.value),
+  includeAlternates: computed(() => Boolean(shoe.value)),
+  schemas: computed(() => {
+    if (!shoe.value) {
+      return []
     }
-  ]
+
+    const localizedProductPath = localizedPath(seoPath.value, locale.value)
+
+    return [
+      breadcrumbJsonLd(config.public.siteUrl, [
+        {
+          name: t('nav.home'),
+          path: localizedPath('/', locale.value)
+        },
+        {
+          name: t('nav.catalogue'),
+          path: localizedPath('/catalogue', locale.value)
+        },
+        {
+          name: shoe.value.name,
+          path: localizedProductPath
+        }
+      ]),
+      productJsonLd(shoe.value, config.public.siteUrl, localizedProductPath, 'EUR')
+    ]
+  })
 })
 </script>
 

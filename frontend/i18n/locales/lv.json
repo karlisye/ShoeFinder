@@ -1,10 +1,10 @@
 {
   "meta": {
-    "homeTitle": "ShoeFinder | Apavu cenu salīdzinājums",
+    "homeTitle": "ShoeFinder · Apavu cenu salīdzinājums",
     "homeDescription": "Salīdzini apavu cenas un pieejamos izmērus Latvijas veikalos.",
-    "catalogueTitle": "Apavu katalogs | ShoeFinder",
+    "catalogueTitle": "Apavu katalogs · ShoeFinder",
     "catalogueDescription": "Meklē apavus un salīdzini aktuālās cenas Latvijas veikalos.",
-    "productFallbackTitle": "Apavu salīdzinājums | ShoeFinder",
+    "productFallbackTitle": "Apavu salīdzinājums · ShoeFinder",
     "productFallbackDescription": "Salīdzini apavu cenas, izmērus un piegādi Latvijas veikalos."
   },
   "language": {

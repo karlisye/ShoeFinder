@@ -1,5 +1,8 @@
 <script setup>
-const { t } = useI18n()
+import { organizationJsonLd, websiteJsonLd } from '~/utils/seo'
+
+const config = useRuntimeConfig()
+const { locale, t } = useI18n()
 const localePath = useLocalePath()
 const router = useRouter()
 const search = ref('')
@@ -24,14 +27,14 @@ function searchCatalogue() {
   )
 }
 
-useHead({
-  title: () => t('meta.homeTitle'),
-  meta: [
-    {
-      name: 'description',
-      content: () => t('meta.homeDescription')
-    }
-  ]
+usePublicSeo({
+  title: computed(() => t('meta.homeTitle')),
+  description: computed(() => t('meta.homeDescription')),
+  path: '/',
+  schemas: computed(() => [
+    organizationJsonLd(config.public.siteUrl),
+    websiteJsonLd(config.public.siteUrl, t('meta.homeDescription'), locale.value)
+  ])
 })
 </script>
 

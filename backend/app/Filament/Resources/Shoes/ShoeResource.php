@@ -78,6 +78,7 @@ class ShoeResource extends Resource
                         TextInput::make('slug')
                             ->label('Adrese')
                             ->helperText('Nemainīga daļa publiskajā adresē.')
+                            ->disabledOn('edit')
                             ->required()
                             ->maxLength(255)
                             ->rules(['regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'])

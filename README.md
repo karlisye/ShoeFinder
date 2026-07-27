@@ -1,6 +1,6 @@
 # ShoeFinder
 
-Stage 5 provides the Dockerized foundation, catalogue domain layer, Latvian Filament workflow, public read-only API, and localized homepage and catalogue browsing.
+Stage 7 provides the Dockerized foundation, catalogue domain layer, Latvian Filament workflow, public read-only API, localized comparison pages, tracked retailer redirects, and public SEO output.
 
 ## Requirements
 
@@ -26,6 +26,8 @@ Open:
 - English application: <http://localhost:8080/en/>
 - Catalogue: <http://localhost:8080/catalogue>
 - English catalogue: <http://localhost:8080/en/catalogue>
+- Sitemap: <http://localhost:8080/sitemap.xml>
+- Robots rules: <http://localhost:8080/robots.txt>
 - Laravel health: <http://localhost:8080/up>
 - Filament admin: <http://localhost:8080/admin>
 - Catalogue API: <http://localhost:8080/api/v1/shoes>
@@ -60,6 +62,7 @@ The public API supports:
 - `GET /api/v1/shoes`
 - `GET /api/v1/shoes/{slug}`
 - `GET /api/v1/catalog-filters`
+- `GET /go/{listing}`
 
 Latvian is the default API language. Pass `locale=en` for English localized fields. The complete request and response rules are in [notes/api-contract.md](notes/api-contract.md).
 
@@ -90,7 +93,7 @@ Pint formats PHP. ESLint checks Vue, JavaScript, and TypeScript. Prettier format
 
 ## Production build and migrations
 
-Copy `.env.example` to a secure deployment environment file, replace all development credentials, and provide a generated `APP_KEY`. Set `FILAMENT_ADMIN_EMAIL` to the email of the administrator created through the documented command.
+Copy `.env.example` to a secure deployment environment file, replace all development credentials, and provide a generated `APP_KEY`. Set `APP_URL` to the final HTTPS public origin. Set `FILAMENT_ADMIN_EMAIL` to the email of the administrator created through the documented command.
 
 ```sh
 docker compose -f compose.production.yaml build

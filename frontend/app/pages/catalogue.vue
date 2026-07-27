@@ -5,7 +5,9 @@ import {
   catalogueFiltersFromQuery,
   catalogueRouteQuery
 } from '~/utils/catalogueQuery'
+import { breadcrumbJsonLd, hasRouteQuery, localizedPath } from '~/utils/seo'
 
+const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 const { locale, t } = useI18n()
@@ -163,14 +165,23 @@ function retry() {
   refreshShoes()
 }
 
-useHead({
-  title: () => t('meta.catalogueTitle'),
-  meta: [
-    {
-      name: 'description',
-      content: () => t('meta.catalogueDescription')
-    }
-  ]
+usePublicSeo({
+  title: computed(() => t('meta.catalogueTitle')),
+  description: computed(() => t('meta.catalogueDescription')),
+  path: '/catalogue',
+  noindex: computed(() => hasRouteQuery(route.query)),
+  schemas: computed(() => [
+    breadcrumbJsonLd(config.public.siteUrl, [
+      {
+        name: t('nav.home'),
+        path: localizedPath('/', locale.value)
+      },
+      {
+        name: t('nav.catalogue'),
+        path: localizedPath('/catalogue', locale.value)
+      }
+    ])
+  ])
 })
 </script>
 
