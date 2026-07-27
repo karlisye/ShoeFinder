@@ -86,10 +86,11 @@ Apply automatic fixes:
 ```sh
 docker compose exec -T backend-php composer format
 docker compose exec -T frontend npm run lint:fix
+docker compose exec -T frontend npm run lint:css:fix
 docker compose exec -T frontend npm run format
 ```
 
-Pint formats PHP. ESLint checks Vue, JavaScript, and TypeScript. Prettier formats frontend source and sorts Tailwind classes.
+Pint formats PHP. ESLint checks Vue, JavaScript, and TypeScript. Stylelint checks and orders public CSS. Prettier formats frontend source and sorts Tailwind classes.
 
 ## Production build and migrations
 
