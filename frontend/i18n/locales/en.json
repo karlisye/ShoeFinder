@@ -20,6 +20,17 @@
     "description": "Compare shoe prices from Latvian retailers.",
     "admin": "Admin"
   },
+  "errorPage": {
+    "notFoundMetaTitle": "Page not found · ShoeFinder",
+    "notFoundEyebrow": "Error 404",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "This address doesn't exist or the page has moved.",
+    "serverMetaTitle": "The page couldn't be loaded · ShoeFinder",
+    "serverEyebrow": "Error",
+    "serverTitle": "The page couldn't be loaded",
+    "serverDescription": "Try again or return to the homepage.",
+    "homeAction": "Return to homepage"
+  },
   "home": {
     "eyebrow": "Shoes from Latvian retailers",
     "titleFirst": "Find shoes.",

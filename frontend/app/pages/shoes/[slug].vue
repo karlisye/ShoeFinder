@@ -36,7 +36,11 @@ const {
 )
 
 if (error.value?.statusCode === 404) {
-  setResponseStatus(404)
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Not Found',
+    fatal: true
+  })
 }
 
 const shoe = computed(() => response.value?.data ?? null)

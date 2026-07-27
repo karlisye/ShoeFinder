@@ -20,6 +20,17 @@
     "description": "Apavu cenu salīdzinājums Latvijas veikalos.",
     "admin": "Administrācija"
   },
+  "errorPage": {
+    "notFoundMetaTitle": "Lapa nav atrasta · ShoeFinder",
+    "notFoundEyebrow": "Kļūda 404",
+    "notFoundTitle": "Lapa nav atrasta",
+    "notFoundDescription": "Šī adrese neeksistē vai lapa ir pārvietota.",
+    "serverMetaTitle": "Lapu neizdevās ielādēt · ShoeFinder",
+    "serverEyebrow": "Kļūda",
+    "serverTitle": "Lapu neizdevās ielādēt",
+    "serverDescription": "Mēģini vēlreiz vai atgriezies sākumlapā.",
+    "homeAction": "Atgriezties sākumlapā"
+  },
   "home": {
     "eyebrow": "Apavi Latvijas veikalos",
     "titleFirst": "Atrodi apavus.",

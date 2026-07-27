@@ -1,4 +1,11 @@
 <script setup>
+const props = defineProps({
+  localeTargets: {
+    type: Object,
+    default: null
+  }
+})
+
 const route = useRoute()
 const { locale, t } = useI18n()
 const localePath = useLocalePath()
@@ -14,6 +21,10 @@ const navigation = computed(() => [
 ])
 
 function localeTarget(code) {
+  if (props.localeTargets?.[code]) {
+    return props.localeTargets[code]
+  }
+
   return {
     path: switchLocalePath(code),
     query: route.query

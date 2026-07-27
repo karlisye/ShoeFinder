@@ -278,6 +278,45 @@
 }
 
 @layer components {
+  /* Error page */
+
+  .error-page {
+    @apply flex items-center py-20;
+  }
+
+  .error-page-content {
+    @apply mx-auto max-w-2xl text-center;
+  }
+
+  .error-page-code {
+    @apply font-bold tracking-[-0.06em] text-secondary-light;
+
+    font-size: clamp(5rem, 24vw, 9rem);
+    line-height: 0.8;
+  }
+
+  .error-page-eyebrow {
+    @apply mt-8 text-xs font-bold tracking-[0.14em] text-secondary uppercase;
+  }
+
+  .error-page-title {
+    @apply mt-3 text-3xl font-bold tracking-tight text-primary-dark;
+
+    text-wrap: balance;
+  }
+
+  .error-page-description {
+    @apply mx-auto mt-4 max-w-lg text-base leading-7 text-secondary;
+
+    text-wrap: balance;
+  }
+
+  .error-page-action {
+    @apply mt-8;
+
+    width: min(100%, 18rem);
+  }
+
   /* Homepage */
 
   .home-page {
