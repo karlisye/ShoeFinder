@@ -1,6 +1,6 @@
 # ShoeFinder
 
-Stage 3 provides the Dockerized foundation, catalogue domain layer, and the Latvian Filament workflow for manual catalogue entry. Public APIs and catalogue screens are not implemented yet.
+Stage 4 provides the Dockerized foundation, catalogue domain layer, Latvian Filament workflow, and public read-only catalogue API. Catalogue screens are not implemented yet.
 
 ## Requirements
 
@@ -26,6 +26,8 @@ Open:
 - English application: <http://localhost:8080/en/>
 - Laravel health: <http://localhost:8080/up>
 - Filament admin: <http://localhost:8080/admin>
+- Catalogue API: <http://localhost:8080/api/v1/shoes>
+- Catalogue filters: <http://localhost:8080/api/v1/catalog-filters>
 
 Create the first administrator interactively:
 
@@ -49,6 +51,14 @@ The default test suite uses in-memory SQLite. `./docker/test-postgres.sh` create
 `docker compose down` keeps the database, dependency, and media volumes. Do not use `docker compose down -v` unless intentionally deleting all local project data.
 
 `OFFER_STALE_AFTER_HOURS` controls how long a checked retailer listing can define a lowest price. It defaults to 168 hours.
+
+The public API supports:
+
+- `GET /api/v1/shoes`
+- `GET /api/v1/shoes/{slug}`
+- `GET /api/v1/catalog-filters`
+
+Latvian is the default API language. Pass `locale=en` for English localized fields. The complete request and response rules are in [notes/api-contract.md](notes/api-contract.md).
 
 ## Code quality
 
