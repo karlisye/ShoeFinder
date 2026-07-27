@@ -52,7 +52,7 @@ final class CatalogueRules
             'name_en' => ['required', 'string', 'max:255'],
             'description_lv' => ['nullable', 'string'],
             'description_en' => ['nullable', 'string'],
-            'sort_order' => ['sometimes', 'integer', 'min:0', 'max:65535'],
+            'sort_order' => ['sometimes', 'integer', 'min:0', 'max:32767'],
             'active' => ['sometimes', 'boolean'],
         ];
     }
@@ -69,7 +69,7 @@ final class CatalogueRules
             ],
             'name_lv' => ['required', 'string', 'max:255'],
             'name_en' => ['required', 'string', 'max:255'],
-            'sort_order' => ['sometimes', 'integer', 'min:0', 'max:65535'],
+            'sort_order' => ['sometimes', 'integer', 'min:0', 'max:32767'],
             'active' => ['sometimes', 'boolean'],
         ];
     }
@@ -94,7 +94,7 @@ final class CatalogueRules
                 'required',
                 'integer',
                 'min:0',
-                'max:65535',
+                'max:32767',
                 $this->unique('sizes', 'sort_order', $size),
             ],
             'active' => ['sometimes', 'boolean'],
@@ -244,7 +244,7 @@ final class CatalogueRules
                 'required',
                 'integer',
                 'min:0',
-                'max:65535',
+                'max:32767',
                 $sortOrder,
             ],
             'is_primary' => ['sometimes', 'boolean'],
@@ -301,7 +301,7 @@ final class CatalogueRules
             'nullable',
             'integer',
             'min:0',
-            'max:65535',
+            'max:32767',
         ];
 
         if (($data['delivery_min_days'] ?? null) !== null) {
@@ -371,7 +371,7 @@ final class CatalogueRules
                 'nullable',
                 'integer',
                 'min:0',
-                'max:65535',
+                'max:32767',
             ],
             'delivery_max_days' => $deliveryMaxDays,
             'delivery_note_lv' => ['nullable', 'string'],

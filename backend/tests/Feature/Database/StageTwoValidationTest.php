@@ -154,6 +154,40 @@ class StageTwoValidationTest extends TestCase
         );
     }
 
+    public function test_small_integer_inputs_fit_the_postgresql_range(): void
+    {
+        $context = $this->createCatalogueContext();
+        $rules = app(CatalogueRules::class);
+        $categoryData = [
+            'slug' => 'oversized-sort-order',
+            'name_lv' => 'Kategorija',
+            'name_en' => 'Category',
+            'sort_order' => 32768,
+            'active' => true,
+        ];
+        $listingData = $this->listingPayload(
+            $context['variant'],
+            $context['retailer'],
+            [
+                'delivery_min_days' => 32768,
+                'delivery_max_days' => null,
+            ],
+        );
+
+        $this->assertTrue(
+            Validator::make(
+                $categoryData,
+                $rules->category(),
+            )->errors()->has('sort_order'),
+        );
+        $this->assertTrue(
+            Validator::make(
+                $listingData,
+                $rules->listing($listingData),
+            )->errors()->has('delivery_min_days'),
+        );
+    }
+
     public function test_scoped_listing_identities_are_unique_and_updates_ignore_the_record(): void
     {
         $context = $this->createCatalogueContext();

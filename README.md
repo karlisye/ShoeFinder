@@ -1,6 +1,6 @@
 # ShoeFinder
 
-Stage 2 provides the Dockerized foundation, catalogue schema, domain models, validation, freshness, pricing, and backend-only price history. Admin resources, APIs, and public catalogue screens are intentionally not implemented yet.
+Stage 3 provides the Dockerized foundation, catalogue domain layer, and the Latvian Filament workflow for manual catalogue entry. Public APIs and catalogue screens are not implemented yet.
 
 ## Requirements
 
