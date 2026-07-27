@@ -1,6 +1,18 @@
+<script setup>
+const { locale } = useI18n()
+
+useHead({
+  htmlAttrs: {
+    lang: locale
+  }
+})
+</script>
+
 <template>
-  <div class="min-h-screen">
+  <div class="flex min-h-screen flex-col">
     <NuxtRouteAnnouncer />
-    <NuxtPage />
+    <AppHeader />
+    <NuxtPage class="flex-1" />
+    <AppFooter />
   </div>
 </template>

@@ -77,6 +77,7 @@ services:
       target: development
     environment:
       NUXT_BACKEND_HEALTH_URL: http://backend-web/up
+      NUXT_BACKEND_API_URL: http://backend-web/api/v1
       NUXT_PUBLIC_SITE_URL: http://localhost:${APP_PORT:-8080}
       CHOKIDAR_USEPOLLING: "true"
     volumes:

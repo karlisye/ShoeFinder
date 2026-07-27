@@ -1,23 +1,108 @@
 {
   "meta": {
-    "title": "ShoeFinder — projekta pamats",
-    "description": "ShoeFinder prototipa tehniskā vide ir gatava turpmākai izstrādei."
+    "homeTitle": "ShoeFinder | Apavu cenu salīdzinājums",
+    "homeDescription": "Salīdzini apavu cenas un pieejamos izmērus Latvijas veikalos.",
+    "catalogueTitle": "Apavu katalogs | ShoeFinder",
+    "catalogueDescription": "Meklē apavus un salīdzini aktuālās cenas Latvijas veikalos."
   },
   "language": {
     "label": "Valodas izvēle"
   },
-  "eyebrow": "0. posms",
-  "title": "Projekta pamats darbojas",
-  "description": "Nuxt, Laravel, Filament un PostgreSQL ir savienoti Docker vidē. Apavu salīdzināšanas funkcijas tiks veidotas nākamajos posmos.",
-  "status": {
-    "frontend": "Nuxt saskarne",
-    "locale": "Aktīvā valoda",
-    "backend": "Laravel un datubāze",
-    "ready": "Darbojas",
-    "connected": "Savienots",
-    "checking": "Pārbauda…",
-    "unavailable": "Nav pieejams",
-    "retry": "Pārbaudīt vēlreiz",
-    "backendHint": "Pārbaudi Docker servisu stāvokli un Laravel žurnālu."
+  "nav": {
+    "primary": "Galvenā navigācija",
+    "home": "Sākums",
+    "homeLabel": "ShoeFinder sākumlapa",
+    "catalogue": "Katalogs"
+  },
+  "footer": {
+    "description": "Apavu cenu salīdzinājums Latvijas veikalos.",
+    "admin": "Administrācija"
+  },
+  "home": {
+    "eyebrow": "Cenas Latvijas veikalos",
+    "title": "Salīdzini apavu cenas pirms pirkuma",
+    "description": "Atrodi modeli, pārbaudi pieejamos izmērus un salīdzini veikalu cenas vienuviet.",
+    "searchLabel": "Meklēt apavus vai zīmolu",
+    "searchPlaceholder": "Modelis vai zīmols",
+    "searchAction": "Meklēt",
+    "priceExample": "Piemēra cena",
+    "howEyebrow": "Kā tas darbojas",
+    "howTitle": "No modeļa līdz cenas salīdzinājumam",
+    "steps": {
+      "search": {
+        "title": "Atrodi apavus",
+        "description": "Meklē pēc modeļa vai zīmola."
+      },
+      "filter": {
+        "title": "Atlasi vajadzīgo",
+        "description": "Izvēlies kategoriju, izmēru, krāsu un cenu."
+      },
+      "compare": {
+        "title": "Salīdzini cenas",
+        "description": "Pārbaudi pieejamību un cenas vairākos veikalos."
+      }
+    },
+    "latestEyebrow": "Jaunākie katalogā",
+    "latestTitle": "Nesen pievienotie apavi",
+    "viewCatalogue": "Skatīt visu katalogu",
+    "latestEmpty": "Katalogā vēl nav apavu",
+    "latestEmptyHint": "Pēc datu pievienošanas šeit būs redzami jaunākie modeļi.",
+    "latestError": "Neizdevās ielādēt jaunākos apavus",
+    "latestErrorHint": "Atver katalogu vai mēģini vēlreiz vēlāk.",
+    "openCatalogue": "Atvērt katalogu"
+  },
+  "catalogue": {
+    "eyebrow": "Apavu katalogs",
+    "title": "Atrodi piemērotos apavus",
+    "description": "Meklē pēc modeļa un sašaurini rezultātus ar filtriem.",
+    "searchLabel": "Meklēt katalogā",
+    "searchPlaceholder": "Modelis vai zīmols",
+    "searchAction": "Meklēt",
+    "resultCount": "Atrasti: {count}",
+    "sortLabel": "Kārtot",
+    "sort": {
+      "newest": "Jaunākie",
+      "priceAsc": "Cena: no zemākās",
+      "priceDesc": "Cena: no augstākās",
+      "name": "Nosaukums"
+    },
+    "errorTitle": "Neizdevās ielādēt katalogu",
+    "errorDescription": "Pārbaudi savienojumu un mēģini vēlreiz.",
+    "retry": "Mēģināt vēlreiz",
+    "emptyTitle": "Apavi nav atrasti",
+    "emptyDescription": "Maini meklēšanas tekstu vai noņem daļu filtru."
+  },
+  "filters": {
+    "title": "Filtri",
+    "brand": "Zīmols",
+    "category": "Kategorija",
+    "audience": "Kam paredzēti",
+    "colour": "Krāsa",
+    "size": "EU izmērs",
+    "retailer": "Veikals",
+    "price": "Cena",
+    "priceFrom": "No",
+    "priceTo": "Līdz",
+    "availability": "Pieejamība",
+    "inStock": "Pieejams veikalā",
+    "onSale": "Ar atlaidi",
+    "apply": "Rādīt rezultātus",
+    "clear": "Notīrīt",
+    "clearApplied": "Noņemt filtrus",
+    "close": "Aizvērt filtrus"
+  },
+  "product": {
+    "from": "No",
+    "onSale": "Atlaide",
+    "priceUnavailable": "Cena nav pieejama",
+    "availableSizes": "Pieejamie izmēri",
+    "noSizes": "Izmēri nav norādīti",
+    "imageFallback": "Apavu attēls nav pieejams"
+  },
+  "pagination": {
+    "label": "Kataloga lapas",
+    "previous": "Iepriekšējā lapa",
+    "next": "Nākamā lapa",
+    "page": "{page}. lapa"
   }
 }

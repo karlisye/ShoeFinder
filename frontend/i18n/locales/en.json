@@ -1,23 +1,108 @@
 {
   "meta": {
-    "title": "ShoeFinder — project foundation",
-    "description": "The ShoeFinder prototype foundation is ready for staged development."
+    "homeTitle": "ShoeFinder | Compare shoe prices",
+    "homeDescription": "Compare shoe prices and available sizes from Latvian retailers.",
+    "catalogueTitle": "Shoe catalogue | ShoeFinder",
+    "catalogueDescription": "Find shoes and compare current prices from Latvian retailers."
   },
   "language": {
     "label": "Language selection"
   },
-  "eyebrow": "Stage 0",
-  "title": "The project foundation is running",
-  "description": "Nuxt, Laravel, Filament, and PostgreSQL are connected through Docker. Shoe comparison features will be added in later stages.",
-  "status": {
-    "frontend": "Nuxt frontend",
-    "locale": "Active language",
-    "backend": "Laravel and database",
-    "ready": "Running",
-    "connected": "Connected",
-    "checking": "Checking…",
-    "unavailable": "Unavailable",
-    "retry": "Check again",
-    "backendHint": "Check the Docker service status and Laravel log."
+  "nav": {
+    "primary": "Main navigation",
+    "home": "Home",
+    "homeLabel": "ShoeFinder home",
+    "catalogue": "Catalogue"
+  },
+  "footer": {
+    "description": "Compare shoe prices from Latvian retailers.",
+    "admin": "Admin"
+  },
+  "home": {
+    "eyebrow": "Prices from Latvian retailers",
+    "title": "Compare shoe prices before you buy",
+    "description": "Find a model, check available sizes, and compare retailer prices in one place.",
+    "searchLabel": "Search for shoes or a brand",
+    "searchPlaceholder": "Model or brand",
+    "searchAction": "Search",
+    "priceExample": "Example price",
+    "howEyebrow": "How it works",
+    "howTitle": "From model search to price comparison",
+    "steps": {
+      "search": {
+        "title": "Find shoes",
+        "description": "Search by model or brand."
+      },
+      "filter": {
+        "title": "Narrow the results",
+        "description": "Choose a category, size, colour, and price."
+      },
+      "compare": {
+        "title": "Compare prices",
+        "description": "Check availability and prices across retailers."
+      }
+    },
+    "latestEyebrow": "New in the catalogue",
+    "latestTitle": "Recently added shoes",
+    "viewCatalogue": "View full catalogue",
+    "latestEmpty": "No shoes in the catalogue yet",
+    "latestEmptyHint": "Recently added models will appear here after catalogue data is added.",
+    "latestError": "Recently added shoes couldn't be loaded",
+    "latestErrorHint": "Open the catalogue or try again later.",
+    "openCatalogue": "Open catalogue"
+  },
+  "catalogue": {
+    "eyebrow": "Shoe catalogue",
+    "title": "Find the right shoes",
+    "description": "Search by model and narrow the results with filters.",
+    "searchLabel": "Search the catalogue",
+    "searchPlaceholder": "Model or brand",
+    "searchAction": "Search",
+    "resultCount": "Found: {count}",
+    "sortLabel": "Sort",
+    "sort": {
+      "newest": "Newest",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "name": "Name"
+    },
+    "errorTitle": "The catalogue couldn't be loaded",
+    "errorDescription": "Check your connection and try again.",
+    "retry": "Try again",
+    "emptyTitle": "No shoes found",
+    "emptyDescription": "Change your search or remove some filters."
+  },
+  "filters": {
+    "title": "Filters",
+    "brand": "Brand",
+    "category": "Category",
+    "audience": "Audience",
+    "colour": "Colour",
+    "size": "EU size",
+    "retailer": "Retailer",
+    "price": "Price",
+    "priceFrom": "From",
+    "priceTo": "To",
+    "availability": "Availability",
+    "inStock": "In stock",
+    "onSale": "On sale",
+    "apply": "Show results",
+    "clear": "Clear",
+    "clearApplied": "Remove filters",
+    "close": "Close filters"
+  },
+  "product": {
+    "from": "From",
+    "onSale": "Sale",
+    "priceUnavailable": "Price unavailable",
+    "availableSizes": "Available sizes",
+    "noSizes": "Sizes not provided",
+    "imageFallback": "Shoe image unavailable"
+  },
+  "pagination": {
+    "label": "Catalogue pages",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Page {page}"
   }
 }

@@ -1,6 +1,6 @@
 # ShoeFinder
 
-Stage 4 provides the Dockerized foundation, catalogue domain layer, Latvian Filament workflow, and public read-only catalogue API. Catalogue screens are not implemented yet.
+Stage 5 provides the Dockerized foundation, catalogue domain layer, Latvian Filament workflow, public read-only API, and localized homepage and catalogue browsing.
 
 ## Requirements
 
@@ -24,6 +24,8 @@ Open:
 
 - Application: <http://localhost:8080>
 - English application: <http://localhost:8080/en/>
+- Catalogue: <http://localhost:8080/catalogue>
+- English catalogue: <http://localhost:8080/en/catalogue>
 - Laravel health: <http://localhost:8080/up>
 - Filament admin: <http://localhost:8080/admin>
 - Catalogue API: <http://localhost:8080/api/v1/shoes>
@@ -41,6 +43,7 @@ Useful commands:
 docker compose ps
 docker compose logs -f
 docker compose exec -T backend-php php artisan test
+docker compose exec -T frontend npm run test
 ./docker/test-postgres.sh
 docker compose down
 docker compose up -d
@@ -71,6 +74,7 @@ docker compose exec -T backend-php composer format:check
 Check frontend linting and formatting:
 
 ```sh
+docker compose exec -T frontend npm run test
 docker compose exec -T frontend npm run quality
 ```
 

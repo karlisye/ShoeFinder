@@ -12,8 +12,10 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     backendHealthUrl: process.env.NUXT_BACKEND_HEALTH_URL || 'http://backend-web/up',
+    backendApiUrl: process.env.NUXT_BACKEND_API_URL || 'http://backend-web/api/v1',
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:8080'
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:8080',
+      apiBase: '/api/v1'
     }
   },
   vite: {
