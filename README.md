@@ -1,6 +1,6 @@
 # ShoeFinder
 
-Stage 1 provides the Dockerized application foundation, catalogue schema, and reference data. Product models, services, admin resources, APIs, and public catalogue screens are intentionally not implemented yet.
+Stage 2 provides the Dockerized foundation, catalogue schema, domain models, validation, freshness, pricing, and backend-only price history. Admin resources, APIs, and public catalogue screens are intentionally not implemented yet.
 
 ## Requirements
 
@@ -44,9 +44,11 @@ docker compose down
 docker compose up -d
 ```
 
-The default test suite uses in-memory SQLite. `./docker/test-postgres.sh` creates a temporary PostgreSQL database, runs the Stage 1 integration tests, and removes that database.
+The default test suite uses in-memory SQLite. `./docker/test-postgres.sh` creates a temporary PostgreSQL database, runs the database integration tests, and removes that database.
 
 `docker compose down` keeps the database, dependency, and media volumes. Do not use `docker compose down -v` unless intentionally deleting all local project data.
+
+`OFFER_STALE_AFTER_HOURS` controls how long a checked retailer listing can define a lowest price. It defaults to 168 hours.
 
 ## Code quality
 

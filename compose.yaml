@@ -28,6 +28,7 @@ services:
       APP_URL: http://localhost:${APP_PORT:-8080}
       APP_LOCALE: lv
       APP_FALLBACK_LOCALE: lv
+      OFFER_STALE_AFTER_HOURS: ${OFFER_STALE_AFTER_HOURS:-168}
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432

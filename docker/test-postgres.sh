@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-test_database="shoe_finder_stage1_test"
+test_database="shoe_finder_test"
 
 run_backend() {
     docker compose exec -T \
