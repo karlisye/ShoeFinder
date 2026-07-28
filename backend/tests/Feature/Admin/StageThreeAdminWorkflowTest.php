@@ -294,6 +294,60 @@ class StageThreeAdminWorkflowTest extends TestCase
         );
     }
 
+    public function test_sizes_can_be_added_quickly_with_the_offer_price(): void
+    {
+        $context = $this->createCatalogueContext('admin-quick-size');
+        $listing = $this->createListing(
+            $context['variant'],
+            $context['retailer'],
+            ['current_price' => 89.99],
+        );
+        $this->createListingSize($listing, $context['size']);
+        $additionalSize = Size::create([
+            'eu_size' => 43,
+            'label' => '43',
+            'sort_order' => 54,
+            'active' => true,
+        ]);
+
+        $edit = Livewire::test(VariantsRelationManager::class, [
+            'ownerRecord' => $context['shoe'],
+            'pageClass' => EditShoe::class,
+        ])->mountAction(
+            TestAction::make('edit')->table($context['variant']),
+        );
+
+        $listingKey = array_key_first(
+            $edit->get('mountedActions')[0]['data']['retailerListings'],
+        );
+        $quickSizePath = "mountedActions.0.data.retailerListings.{$listingKey}.quick_size_ids";
+
+        $this->assertContains(
+            (string) $context['size']->id,
+            $edit->get($quickSizePath),
+        );
+
+        $edit
+            ->set(
+                $quickSizePath,
+                [
+                    (string) $context['size']->id,
+                    (string) $additionalSize->id,
+                ],
+            )
+            ->callMountedAction()
+            ->assertHasNoActionErrors();
+
+        $quickSize = $listing->listingSizes()
+            ->where('size_id', $additionalSize->id)
+            ->firstOrFail();
+
+        $this->assertTrue($quickSize->in_stock);
+        $this->assertNull($quickSize->price);
+        $this->assertSame('89.99', $quickSize->effectivePrice());
+        $this->assertSame(2, $listing->listingSizes()->count());
+    }
+
     public function test_unauthorized_user_cannot_enter_the_panel(): void
     {
         $unauthorized = User::factory()->create([
