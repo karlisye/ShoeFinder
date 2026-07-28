@@ -166,21 +166,21 @@ class StageOneSchemaTest extends TestCase
         $this->assertDatabaseCount('retailer_listings', 2);
     }
 
-    public function test_price_history_prevents_listing_deletion(): void
+    public function test_price_history_is_removed_with_listing(): void
     {
         $records = $this->createCatalogueGraph();
 
-        DB::table('price_changes')->insert([
+        $priceChangeId = DB::table('price_changes')->insertGetId([
             'retailer_listing_id' => $records['listing_id'],
             'price' => 99.99,
             'original_price' => 119.99,
         ]);
 
-        $this->expectException(QueryException::class);
-
         DB::table('retailer_listings')
             ->where('id', $records['listing_id'])
             ->delete();
+
+        $this->assertDatabaseMissing('price_changes', ['id' => $priceChangeId]);
     }
 
     #[DataProvider('invalidListingData')]

@@ -21,7 +21,7 @@ docker compose exec -T postgres sh -c \
     "createdb -U \"\$POSTGRES_USER\" \"$test_database\""
 run_backend php artisan migrate:fresh --seed --force --no-interaction
 run_backend php artisan db:seed --force --no-interaction
-run_backend php artisan migrate:rollback --step=3 --force --no-interaction
+run_backend php artisan migrate:rollback --step=4 --force --no-interaction
 run_backend php artisan tinker --execute="
     foreach ([
         'brands',

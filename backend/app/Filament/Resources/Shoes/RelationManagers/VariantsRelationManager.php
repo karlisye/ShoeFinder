@@ -410,7 +410,12 @@ class VariantsRelationManager extends RelationManager
                                             : 'Veikala piedāvājums';
                                     })
                                     ->addActionLabel('Pievienot piedāvājumu')
-                                    ->deletable(false)
+                                    ->deleteAction(fn (Action $action): Action => $action
+                                        ->label('Dzēst piedāvājumu')
+                                        ->requiresConfirmation()
+                                        ->modalHeading('Dzēst piedāvājumu?')
+                                        ->modalDescription('Tiks dzēsti arī piedāvājuma izmēri, cenu vēsture un klikšķu dati.')
+                                        ->modalSubmitActionLabel('Dzēst'))
                                     ->collapsible(),
                             ])
                             ->visible(fn (?ShoeVariant $record): bool => $record !== null),

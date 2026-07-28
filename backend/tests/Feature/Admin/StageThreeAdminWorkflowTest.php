@@ -14,6 +14,7 @@ use App\Filament\Resources\Shoes\RelationManagers\VariantsRelationManager;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Colour;
+use App\Models\OutboundClick;
 use App\Models\Retailer;
 use App\Models\Shoe;
 use App\Models\Size;
@@ -409,6 +410,39 @@ class StageThreeAdminWorkflowTest extends TestCase
         $this->assertNull($quickSize->price);
         $this->assertSame('89.99', $quickSize->effectivePrice());
         $this->assertSame(2, $listing->listingSizes()->count());
+    }
+
+    public function test_offer_can_be_deleted_with_its_dependent_records(): void
+    {
+        $context = $this->createCatalogueContext('admin-delete-offer');
+        $listing = $this->createListing(
+            $context['variant'],
+            $context['retailer'],
+        );
+        $listingSize = $this->createListingSize($listing, $context['size']);
+        $click = OutboundClick::create([
+            'retailer_listing_id' => $listing->id,
+            'locale' => 'lv',
+            'referrer_path' => '/catalogue',
+            'clicked_at' => now(),
+        ]);
+        $priceChangeId = $listing->priceChanges()->firstOrFail()->id;
+
+        Livewire::test(VariantsRelationManager::class, [
+            'ownerRecord' => $context['shoe'],
+            'pageClass' => EditShoe::class,
+        ])
+            ->mountAction(
+                TestAction::make('edit')->table($context['variant']),
+            )
+            ->set('mountedActions.0.data.retailerListings', [])
+            ->callMountedAction()
+            ->assertHasNoActionErrors();
+
+        $this->assertDatabaseMissing('retailer_listings', ['id' => $listing->id]);
+        $this->assertDatabaseMissing('retailer_listing_sizes', ['id' => $listingSize->id]);
+        $this->assertDatabaseMissing('price_changes', ['id' => $priceChangeId]);
+        $this->assertDatabaseMissing('outbound_clicks', ['id' => $click->id]);
     }
 
     public function test_unauthorized_user_cannot_enter_the_panel(): void
