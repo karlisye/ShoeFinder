@@ -65,7 +65,7 @@ test('API query uses bracketed array fields and explicit API defaults', () => {
     'brand[]': ['nike', 'adidas'],
     'size[]': ['42'],
     max_price: '120.00',
-    on_sale: true
+    on_sale: '1'
   })
 })
 

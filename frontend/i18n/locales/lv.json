@@ -89,9 +89,11 @@
     "onSale": "Atlaide",
     "priceUnavailable": "Cena nav pieejama",
     "availableSizes": "Pieejamie izmēri",
+    "colours": "Krāsas",
     "noSizes": "Izmēri nav norādīti",
     "imageFallback": "Apavu attēls nav pieejams",
-    "openProduct": "Skatīt {name}"
+    "openProduct": "Skatīt {name}",
+    "openProductColour": "Skatīt {name}, krāsa {colour}"
   },
   "productDetail": {
     "backToCatalogue": "Atpakaļ uz katalogu",

@@ -379,7 +379,7 @@ usePublicSeo({
             :class="{ 'catalogue-results-updating': shoeStatus === 'pending' }"
           >
             <div class="catalogue-grid">
-              <CatalogueProductCard v-for="shoe in shoes" :key="shoe.id" :shoe="shoe" />
+              <CatalogueProductCard v-for="shoe in shoes" :key="shoe.card_key" :shoe="shoe" />
             </div>
 
             <CataloguePaginationNav

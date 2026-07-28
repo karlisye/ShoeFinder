@@ -89,9 +89,11 @@
     "onSale": "Sale",
     "priceUnavailable": "Price unavailable",
     "availableSizes": "Available sizes",
+    "colours": "Colours",
     "noSizes": "Sizes not provided",
     "imageFallback": "Shoe image unavailable",
-    "openProduct": "View {name}"
+    "openProduct": "View {name}",
+    "openProductColour": "View {name}, colour {colour}"
   },
   "productDetail": {
     "backToCatalogue": "Back to catalogue",

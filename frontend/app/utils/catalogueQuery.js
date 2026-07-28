@@ -111,11 +111,11 @@ export function catalogueApiQuery(routeQuery, locale, perPage = 12) {
   }
 
   if (filters.in_stock) {
-    query.in_stock = true
+    query.in_stock = '1'
   }
 
   if (filters.on_sale) {
-    query.on_sale = true
+    query.on_sale = '1'
   }
 
   return query

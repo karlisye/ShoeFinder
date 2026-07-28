@@ -9,6 +9,31 @@ use Illuminate\Validation\Rule;
 
 class ListShoesRequest extends ApiRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $normalized = [];
+
+        foreach (['in_stock', 'on_sale'] as $field) {
+            $value = $this->input($field);
+
+            if (! is_string($value)) {
+                continue;
+            }
+
+            $boolean = filter_var(
+                $value,
+                FILTER_VALIDATE_BOOLEAN,
+                FILTER_NULL_ON_FAILURE,
+            );
+
+            if ($boolean !== null) {
+                $normalized[$field] = $boolean;
+            }
+        }
+
+        $this->merge($normalized);
+    }
+
     public function rules(): array
     {
         return [

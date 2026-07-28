@@ -55,11 +55,17 @@ final readonly class CatalogueReadService
 
         $cards = $query
             ->get()
-            ->map(fn (Shoe $shoe): array => $this->shoeCard(
-                $shoe,
-                $filters['locale'],
-                $filters['currency'],
-            ))
+            ->flatMap(fn (Shoe $shoe): Collection => $shoe->variants
+                ->filter(
+                    fn (ShoeVariant $variant): bool => $this
+                        ->variantMatchesFilters($variant, $filters),
+                )
+                ->map(fn (ShoeVariant $variant): array => $this->shoeCard(
+                    $shoe,
+                    $variant,
+                    $filters['locale'],
+                    $filters['currency'],
+                )))
             ->all();
 
         $this->sortCards($cards, $filters['sort']);
@@ -421,55 +427,49 @@ final readonly class CatalogueReadService
             $query->whereIn('audience', $filters['audience']);
         }
 
+    }
+
+    private function variantMatchesFilters(
+        ShoeVariant $variant,
+        array $filters,
+    ): bool {
+        if (
+            filled($filters['colour'] ?? [])
+            && ! in_array(
+                $variant->colour->code,
+                $filters['colour'],
+                true,
+            )
+        ) {
+            return false;
+        }
+
         $hasRowFilters = $this->hasRowFilters($filters);
 
-        if (filled($filters['colour'] ?? []) && ! $hasRowFilters) {
-            $query->whereHas(
-                'variants',
-                fn ($query) => $query
-                    ->where('active', true)
-                    ->whereHas(
-                        'colour',
-                        fn ($query) => $query
-                            ->where('active', true)
-                            ->whereIn('code', $filters['colour']),
-                    ),
-            );
+        if (! $hasRowFilters && ! array_key_exists('in_stock', $filters)) {
+            return true;
         }
 
         $baseRows = $this->filteredQualifyingRows($filters)
-            ->whereColumn('qualified_shoes.id', 'shoes.id');
+            ->where('qualified_variants.id', $variant->id);
 
         if (
             array_key_exists('in_stock', $filters)
             && $filters['in_stock'] === false
         ) {
-            $query->whereNotExists($baseRows->selectRaw('1'));
-
-            return;
+            return ! $baseRows->exists();
         }
 
         if (($filters['on_sale'] ?? null) === true) {
-            $query->whereExists(
-                $this->saleRows(clone $baseRows)->selectRaw('1'),
-            );
-
-            return;
+            return $this->saleRows(clone $baseRows)->exists();
         }
 
         if (($filters['on_sale'] ?? null) === false) {
-            $query
-                ->whereExists((clone $baseRows)->selectRaw('1'))
-                ->whereNotExists(
-                    $this->saleRows(clone $baseRows)->selectRaw('1'),
-                );
-
-            return;
+            return (clone $baseRows)->exists()
+                && ! $this->saleRows(clone $baseRows)->exists();
         }
 
-        if ($hasRowFilters || (($filters['in_stock'] ?? null) === true)) {
-            $query->whereExists($baseRows->selectRaw('1'));
-        }
+        return $baseRows->exists();
     }
 
     private function filteredQualifyingRows(array $filters): QueryBuilder
@@ -527,10 +527,11 @@ final readonly class CatalogueReadService
 
     private function shoeCard(
         Shoe $shoe,
+        ShoeVariant $variant,
         string $locale,
         string $currency,
     ): array {
-        $rows = $this->qualifyingRowsForShoe($shoe->id, $currency);
+        $rows = $this->qualifyingRowsForVariant($variant->id, $currency);
         $lowest = $rows->first();
         $availableSizes = $rows
             ->unique('size_id')
@@ -549,6 +550,8 @@ final readonly class CatalogueReadService
 
         return [
             'id' => $shoe->id,
+            'variant_id' => $variant->id,
+            'card_key' => "{$shoe->id}:{$variant->id}",
             'name' => $shoe->name,
             'slug' => $shoe->slug,
             'brand' => [
@@ -569,7 +572,38 @@ final readonly class CatalogueReadService
                 $shoe->description_en,
                 $locale,
             ),
-            'primary_image' => $this->primaryImage($shoe, $locale),
+            'colour' => [
+                'code' => $variant->colour->code,
+                'name' => $this->localized(
+                    $variant->colour->name_lv,
+                    $variant->colour->name_en,
+                    $locale,
+                ),
+            ],
+            'colours' => $shoe->variants
+                ->sort(function (
+                    ShoeVariant $left,
+                    ShoeVariant $right,
+                ): int {
+                    $sort = $left->colour->sort_order
+                        <=> $right->colour->sort_order;
+
+                    return $sort !== 0
+                        ? $sort
+                        : ($left->id <=> $right->id);
+                })
+                ->map(fn (ShoeVariant $item): array => [
+                    'variant_id' => $item->id,
+                    'code' => $item->colour->code,
+                    'name' => $this->localized(
+                        $item->colour->name_lv,
+                        $item->colour->name_en,
+                        $locale,
+                    ),
+                ])
+                ->values()
+                ->all(),
+            'primary_image' => $this->primaryImage($variant, $locale),
             'available_sizes' => $availableSizes,
             'lowest_price' => $lowest === null
                 ? null
@@ -585,13 +619,13 @@ final readonly class CatalogueReadService
         ];
     }
 
-    private function qualifyingRowsForShoe(
-        int $shoeId,
+    private function qualifyingRowsForVariant(
+        int $variantId,
         string $currency,
     ): Collection {
         return $this->qualifyingListingSizes
             ->build($currency)
-            ->where('qualified_shoes.id', $shoeId)
+            ->where('qualified_variants.id', $variantId)
             ->select([
                 'qualified_listing_sizes.id',
                 'qualified_listing_sizes.size_id',
@@ -788,12 +822,11 @@ final readonly class CatalogueReadService
         ];
     }
 
-    private function primaryImage(Shoe $shoe, string $locale): ?array
-    {
-        $image = $shoe->variants
-            ->flatMap(
-                fn (ShoeVariant $variant): Collection => $variant->images,
-            )
+    private function primaryImage(
+        ShoeVariant $variant,
+        string $locale,
+    ): ?array {
+        $image = $variant->images
             ->sort(function (ShoeImage $left, ShoeImage $right): int {
                 $primary = $right->is_primary <=> $left->is_primary;
 
@@ -862,7 +895,7 @@ final readonly class CatalogueReadService
 
             return $comparison !== 0
                 ? $comparison
-                : ($left['id'] <=> $right['id']);
+                : ($left['variant_id'] <=> $right['variant_id']);
         });
     }
 
