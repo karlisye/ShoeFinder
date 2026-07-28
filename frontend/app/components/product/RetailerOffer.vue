@@ -1,5 +1,5 @@
 <script setup>
-import { deliveryText } from '~/utils/productComparison'
+import { deliveryText, offerPreviousPrice } from '~/utils/productComparison'
 
 const props = defineProps({
   offer: {
@@ -22,6 +22,7 @@ const { formatMoney } = useMoney()
 const delivery = computed(() =>
   deliveryText(props.offer.delivery, locale.value, formatMoney, props.offer.currency)
 )
+const previousPrice = computed(() => offerPreviousPrice(props.offer))
 const outboundHref = computed(() => {
   const query = new URLSearchParams({
     locale: locale.value,
@@ -65,9 +66,14 @@ const outboundHref = computed(() => {
     </div>
 
     <div class="retailer-offer-price">
-      <p v-if="offer.item_price" class="retailer-offer-price-value">
-        {{ formatMoney(offer.item_price, offer.currency) }}
-      </p>
+      <div v-if="offer.item_price" class="retailer-offer-price-values">
+        <p class="retailer-offer-price-value">
+          {{ formatMoney(offer.item_price, offer.currency) }}
+        </p>
+        <del v-if="previousPrice" class="retailer-offer-price-previous">
+          {{ formatMoney(previousPrice, offer.currency) }}
+        </del>
+      </div>
       <p v-else class="retailer-offer-price-missing">
         {{ t('product.priceUnavailable') }}
       </p>

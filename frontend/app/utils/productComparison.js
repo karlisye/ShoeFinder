@@ -48,6 +48,17 @@ export function listingOffer(listing, size, currency = 'EUR') {
   }
 }
 
+export function offerPreviousPrice(offer) {
+  const currentPrice = amountNumber(offer.item_price)
+  const originalPrice = amountNumber(offer.original_price)
+
+  if (currentPrice === null || originalPrice === null || originalPrice <= currentPrice) {
+    return null
+  }
+
+  return offer.original_price
+}
+
 export function orderedOffers(listings, size, currency = 'EUR') {
   return listings
     .map((listing) => listingOffer(listing, size, currency))

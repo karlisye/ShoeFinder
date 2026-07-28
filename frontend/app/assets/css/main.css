@@ -1321,8 +1321,16 @@
     @apply min-w-0;
   }
 
+  .retailer-offer-price-values {
+    @apply flex flex-wrap items-baseline gap-x-2;
+  }
+
   .retailer-offer-price-value {
     @apply text-xl font-bold text-primary-dark;
+  }
+
+  .retailer-offer-price-previous {
+    @apply text-sm font-semibold text-secondary;
   }
 
   .retailer-offer-price-missing {

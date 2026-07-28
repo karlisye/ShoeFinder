@@ -234,6 +234,44 @@ class StageThreeAdminWorkflowTest extends TestCase
         ]);
     }
 
+    public function test_variant_colour_can_be_created_from_the_colour_selector(): void
+    {
+        $context = $this->createCatalogueContext('inline-colour');
+
+        $relationManager = Livewire::test(VariantsRelationManager::class, [
+            'ownerRecord' => $context['shoe'],
+            'pageClass' => EditShoe::class,
+        ])->mountAction(TestAction::make('create')->table());
+
+        $relationManager
+            ->callFormComponentAction(
+                'colour_id',
+                'createOption',
+                [
+                    'code' => 'burgundy-test',
+                    'name_lv' => 'Bordo',
+                    'name_en' => 'Burgundy',
+                ],
+                formName: 'mountedActionSchema0',
+            )
+            ->callMountedAction()
+            ->assertHasNoActionErrors();
+
+        $colour = Colour::where('code', 'burgundy-test')->firstOrFail();
+
+        $this->assertDatabaseHas('colours', [
+            'id' => $colour->id,
+            'name_lv' => 'Bordo',
+            'name_en' => 'Burgundy',
+            'sort_order' => 0,
+            'active' => true,
+        ]);
+        $this->assertDatabaseHas('shoe_variants', [
+            'shoe_id' => $context['shoe']->id,
+            'colour_id' => $colour->id,
+        ]);
+    }
+
     public function test_listing_price_edits_keep_change_only_history(): void
     {
         $context = $this->createCatalogueContext('admin-price');

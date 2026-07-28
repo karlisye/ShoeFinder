@@ -4,6 +4,7 @@ import test from 'node:test'
 import {
   deliveryText,
   lowestProductPrice,
+  offerPreviousPrice,
   orderedOffers,
   selectedVariant,
   validSelectedSize
@@ -127,6 +128,37 @@ test('lowest product price excludes stale and unavailable offers', () => {
     amount: '80.00',
     currency: 'EUR'
   })
+})
+
+test('previous price is shown only for a real offer discount', () => {
+  assert.equal(
+    offerPreviousPrice({
+      item_price: '89.99',
+      original_price: '109.99'
+    }),
+    '109.99'
+  )
+  assert.equal(
+    offerPreviousPrice({
+      item_price: '109.99',
+      original_price: '109.99'
+    }),
+    null
+  )
+  assert.equal(
+    offerPreviousPrice({
+      item_price: '119.99',
+      original_price: '109.99'
+    }),
+    null
+  )
+  assert.equal(
+    offerPreviousPrice({
+      item_price: null,
+      original_price: '109.99'
+    }),
+    null
+  )
 })
 
 test('delivery copy never treats an unknown cost as free', () => {

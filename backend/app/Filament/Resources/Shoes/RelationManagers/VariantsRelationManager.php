@@ -4,10 +4,12 @@ namespace App\Filament\Resources\Shoes\RelationManagers;
 
 use App\Enums\ImageSourceType;
 use App\Enums\ListingSourceType;
+use App\Models\Colour;
 use App\Models\Retailer;
 use App\Models\RetailerListing;
 use App\Models\ShoeVariant;
 use App\Models\Size;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -59,6 +61,38 @@ class VariantsRelationManager extends RelationManager
                                             ->relationship('colour', 'name_lv')
                                             ->searchable()
                                             ->preload()
+                                            ->createOptionForm([
+                                                TextInput::make('code')
+                                                    ->label('Kods')
+                                                    ->helperText('Mazie burti, cipari un defises. Pēc izveides kodu nemaini.')
+                                                    ->required()
+                                                    ->maxLength(64)
+                                                    ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                                                    ->unique(Colour::class, 'code'),
+                                                TextInput::make('name_lv')
+                                                    ->label('Nosaukums latviski')
+                                                    ->required()
+                                                    ->maxLength(255),
+                                                TextInput::make('name_en')
+                                                    ->label('Nosaukums angliski')
+                                                    ->required()
+                                                    ->maxLength(255),
+                                            ])
+                                            ->createOptionUsing(
+                                                fn (array $data): int => Colour::query()
+                                                    ->create([
+                                                        ...$data,
+                                                        'sort_order' => 0,
+                                                        'active' => true,
+                                                    ])
+                                                    ->getKey(),
+                                            )
+                                            ->createOptionAction(
+                                                fn (Action $action): Action => $action
+                                                    ->label('Izveidot jaunu krāsu')
+                                                    ->modalHeading('Jauna krāsa')
+                                                    ->modalSubmitActionLabel('Izveidot'),
+                                            )
                                             ->required(),
                                         TextInput::make('manufacturer_variant_code')
                                             ->label('Ražotāja varianta kods')
