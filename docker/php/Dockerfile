@@ -43,6 +43,7 @@ RUN composer install --no-interaction --prefer-dist
 
 FROM base AS production
 
+COPY docker/php/php.production.ini /usr/local/etc/php/conf.d/zz-shoe-finder-production.ini
 COPY backend/ /var/www/html/
 RUN composer install \
         --no-dev \

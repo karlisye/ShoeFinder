@@ -38,7 +38,7 @@ const outboundHref = computed(() => {
       <img
         v-if="offer.retailer.logo_url"
         :src="offer.retailer.logo_url"
-        :alt="offer.retailer.name"
+        alt=""
         class="retailer-offer-logo"
       />
       <span v-else class="retailer-offer-logo-placeholder" aria-hidden="true" />

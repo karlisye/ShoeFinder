@@ -39,9 +39,10 @@ function returnHome() {
 <template>
   <div class="app-shell">
     <NuxtRouteAnnouncer />
+    <a href="#main-content" class="skip-link">{{ t('accessibility.skipToContent') }}</a>
     <AppHeader :locale-targets="localeTargets" />
 
-    <main class="error-page app-main">
+    <main id="main-content" class="error-page app-main">
       <div class="error-page-content container">
         <p class="error-page-code" aria-hidden="true">{{ statusCode }}</p>
         <p class="error-page-eyebrow">

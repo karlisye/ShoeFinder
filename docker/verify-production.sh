@@ -1,0 +1,133 @@
+#!/bin/sh
+set -eu
+
+repository_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+project_name=shoe_finder_production_verify
+environment_file=$(mktemp "${TMPDIR:-/tmp}/shoe-finder-production.XXXXXX")
+services="postgres backend-php backend-web frontend proxy"
+
+compose() {
+    docker compose \
+        --env-file "$environment_file" \
+        --project-name "$project_name" \
+        --file "$repository_root/compose.production.yaml" \
+        "$@"
+}
+
+cleanup() {
+    compose down --volumes --remove-orphans >/dev/null 2>&1 || true
+    rm -f "$environment_file"
+}
+
+wait_for_health() {
+    attempt=0
+
+    while [ "$attempt" -lt 60 ]; do
+        all_healthy=true
+
+        for service in $services; do
+            container_id=$(compose ps --quiet "$service")
+
+            if [ -z "$container_id" ]; then
+                all_healthy=false
+                continue
+            fi
+
+            container_status=$(
+                docker inspect \
+                    --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \
+                    "$container_id"
+            )
+
+            if [ "$container_status" != "healthy" ]; then
+                all_healthy=false
+            fi
+        done
+
+        if [ "$all_healthy" = "true" ]; then
+            return 0
+        fi
+
+        attempt=$((attempt + 1))
+        sleep 2
+    done
+
+    compose ps
+    return 1
+}
+
+trap cleanup EXIT INT TERM
+
+app_key="base64:$(dd if=/dev/urandom bs=32 count=1 2>/dev/null | base64 | tr -d '\n')"
+
+umask 077
+{
+    printf '%s\n' "COMPOSE_PROJECT_NAME=$project_name"
+    printf '%s\n' "APP_PORT=18080"
+    printf '%s\n' "APP_URL=http://localhost:18080"
+    printf '%s\n' "APP_KEY=$app_key"
+    printf '%s\n' "FILAMENT_ADMIN_EMAIL=stage8-production@example.test"
+    printf '%s\n' "POSTGRES_DB=shoe_finder_production_verify"
+    printf '%s\n' "POSTGRES_USER=shoe_finder_production_verify"
+    printf '%s\n' "POSTGRES_PASSWORD=stage8-production-verification-only"
+    printf '%s\n' "OFFER_STALE_AFTER_HOURS=168"
+} >"$environment_file"
+
+compose config --quiet
+compose build
+compose up --detach
+wait_for_health
+
+compose exec --no-TTY backend-php php artisan tinker --execute='
+    if (Illuminate\Support\Facades\Schema::hasTable("migrations")) {
+        throw new RuntimeException("Production startup ran migrations automatically.");
+    }
+'
+
+compose exec --no-TTY backend-php php artisan migrate --force --no-interaction
+compose exec --no-TTY backend-php php artisan db:seed --force --no-interaction
+
+compose exec --no-TTY backend-php php artisan tinker --execute='
+    if (! Illuminate\Support\Facades\Schema::hasTable("migrations")) {
+        throw new RuntimeException("Explicit migrations did not create the migration table.");
+    }
+
+    if (App\Models\Size::query()->count() !== 79) {
+        throw new RuntimeException("EU size reference data is incomplete.");
+    }
+
+    if (App\Models\Colour::query()->count() !== 13) {
+        throw new RuntimeException("Colour reference data is incomplete.");
+    }
+'
+
+if [ "$(compose exec --no-TTY frontend id -u)" = "0" ]; then
+    printf '%s\n' "The production frontend must not run as root." >&2
+    exit 1
+fi
+
+compose exec --no-TTY backend-php php -r '
+    if (ini_get("display_errors") !== "" || ini_get("opcache.validate_timestamps") !== "0") {
+        exit(1);
+    }
+'
+
+compose exec --no-TTY proxy wget -q -O /dev/null http://127.0.0.1/
+compose exec --no-TTY proxy wget -q -O /dev/null http://127.0.0.1/en/
+compose exec --no-TTY proxy wget -q -O /dev/null http://127.0.0.1/catalogue
+compose exec --no-TTY proxy wget -q -O /dev/null http://127.0.0.1/admin
+compose exec --no-TTY proxy wget -q -O - http://127.0.0.1/up |
+    grep -q '"database":"connected"'
+response_headers=$(compose exec --no-TTY proxy wget -S -O /dev/null http://127.0.0.1/ 2>&1)
+printf '%s\n' "$response_headers" | grep -qi 'X-Content-Type-Options: nosniff'
+printf '%s\n' "$response_headers" | grep -qi 'X-Frame-Options: SAMEORIGIN'
+printf '%s\n' "$response_headers" | grep -qi 'Referrer-Policy: strict-origin-when-cross-origin'
+printf '%s\n' "$response_headers" | grep -qi 'Permissions-Policy: camera=(), geolocation=(), microphone=()'
+
+compose restart
+wait_for_health
+compose exec --no-TTY proxy wget -q -O /dev/null http://127.0.0.1/
+compose exec --no-TTY proxy wget -q -O - http://127.0.0.1/up |
+    grep -q '"database":"connected"'
+
+printf '%s\n' "Production verification passed."

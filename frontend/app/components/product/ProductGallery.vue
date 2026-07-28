@@ -1,4 +1,6 @@
 <script setup>
+import { imageCanRender, recordFailedImage } from '~/utils/imageFallback'
+
 const props = defineProps({
   images: {
     type: Array,
@@ -21,7 +23,7 @@ const activeImage = computed(() => props.images[activeIndex.value] ?? null)
 const activeImageFailed = computed(() => failedImages.value.has(activeIndex.value))
 
 function markFailed(index) {
-  failedImages.value = new Set([...failedImages.value, index])
+  failedImages.value = recordFailedImage(failedImages.value, index)
 }
 </script>
 
@@ -29,7 +31,7 @@ function markFailed(index) {
   <div class="product-gallery">
     <div class="product-gallery-main">
       <img
-        v-if="activeImage?.url && !activeImageFailed"
+        v-if="imageCanRender(activeImage, activeImageFailed)"
         :src="activeImage.url"
         :alt="activeImage.alt || ''"
         class="product-gallery-image"
@@ -69,9 +71,9 @@ function markFailed(index) {
         @click="activeIndex = index"
       >
         <img
-          v-if="image.url && !failedImages.has(index)"
+          v-if="imageCanRender(image, failedImages.has(index))"
           :src="image.url"
-          :alt="image.alt || ''"
+          alt=""
           class="product-gallery-thumbnail-image"
           loading="lazy"
           @error="markFailed(index)"

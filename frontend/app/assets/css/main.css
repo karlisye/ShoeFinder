@@ -119,6 +119,16 @@
     clip-path: inset(50%);
   }
 
+  .skip-link {
+    @apply fixed top-3 left-3 z-[60] rounded-xl bg-primary px-4 py-3 text-sm font-bold text-elevated;
+
+    transform: translateY(calc(-100% - 1rem));
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+
   .app-shell {
     @apply flex min-h-screen flex-col;
   }

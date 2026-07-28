@@ -1,5 +1,5 @@
 <script setup>
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 useHead({
   htmlAttrs: {
@@ -11,8 +11,9 @@ useHead({
 <template>
   <div class="app-shell">
     <NuxtRouteAnnouncer />
+    <a href="#main-content" class="skip-link">{{ t('accessibility.skipToContent') }}</a>
     <AppHeader />
-    <NuxtPage class="app-main" />
+    <NuxtPage id="main-content" class="app-main" />
     <AppFooter />
   </div>
 </template>

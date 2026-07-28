@@ -13,6 +13,18 @@ const router = useRouter()
 const { locale, t } = useI18n()
 const catalogue = useCatalogueApi()
 const filterDrawerOpen = ref(false)
+const filterButton = ref(null)
+const filterDrawer = ref(null)
+const filterDrawerClose = ref(null)
+const focusableSelector = [
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  'a[href]',
+  'summary',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',')
 
 const activeFilters = computed(() => catalogueFiltersFromQuery(route.query))
 const draftFilters = ref({ ...activeFilters.value })
@@ -37,15 +49,25 @@ watch(
   { deep: true }
 )
 
-watch(filterDrawerOpen, (open) => {
+watch(filterDrawerOpen, async (open) => {
   if (import.meta.client) {
     document.body.style.overflow = open ? 'hidden' : ''
+    document.querySelector('.app-shell').inert = open
+
+    await nextTick()
+
+    if (open) {
+      filterDrawerClose.value?.focus()
+    } else {
+      filterButton.value?.focus()
+    }
   }
 })
 
 onBeforeUnmount(() => {
   if (import.meta.client) {
     document.body.style.overflow = ''
+    document.querySelector('.app-shell').inert = false
   }
 })
 
@@ -115,6 +137,37 @@ async function applyFilters() {
     page: 1
   })
   filterDrawerOpen.value = false
+}
+
+function closeFilterDrawer() {
+  filterDrawerOpen.value = false
+}
+
+function keepFocusInDrawer(event) {
+  if (event.key !== 'Tab') {
+    return
+  }
+
+  const controls = [...filterDrawer.value.querySelectorAll(focusableSelector)].filter(
+    (element) => element.getClientRects().length > 0
+  )
+
+  if (!controls.length) {
+    event.preventDefault()
+    filterDrawer.value.focus()
+    return
+  }
+
+  const first = controls[0]
+  const last = controls.at(-1)
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
 }
 
 function resetFilters() {
@@ -231,6 +284,7 @@ usePublicSeo({
       <div class="catalogue-toolbar">
         <div class="catalogue-toolbar-main">
           <button
+            ref="filterButton"
             type="button"
             class="button-secondary mobile-filter-button"
             :aria-expanded="filterDrawerOpen"
@@ -367,22 +421,25 @@ usePublicSeo({
       <div
         v-if="filterDrawerOpen"
         id="mobile-filter-drawer"
+        ref="filterDrawer"
         class="filter-drawer"
         role="dialog"
         aria-modal="true"
-        :aria-label="t('filters.title')"
-        @keydown.esc="filterDrawerOpen = false"
+        aria-labelledby="mobile-filter-title"
+        tabindex="-1"
+        @keydown="keepFocusInDrawer"
+        @keydown.esc="closeFilterDrawer"
       >
-        <div class="filter-drawer-backdrop" aria-hidden="true" @click="filterDrawerOpen = false" />
+        <div class="filter-drawer-backdrop" aria-hidden="true" @click="closeFilterDrawer" />
         <div class="filter-drawer-panel">
           <div class="filter-drawer-header">
-            <h2 class="filter-title">{{ t('filters.title') }}</h2>
+            <h2 id="mobile-filter-title" class="filter-title">{{ t('filters.title') }}</h2>
             <button
+              ref="filterDrawerClose"
               type="button"
               class="filter-drawer-close"
               :aria-label="t('filters.close')"
-              autofocus
-              @click="filterDrawerOpen = false"
+              @click="closeFilterDrawer"
             >
               <svg
                 viewBox="0 0 20 20"

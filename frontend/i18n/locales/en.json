@@ -10,6 +10,9 @@
   "language": {
     "label": "Language selection"
   },
+  "accessibility": {
+    "skipToContent": "Skip to content"
+  },
   "nav": {
     "primary": "Main navigation",
     "home": "Home",

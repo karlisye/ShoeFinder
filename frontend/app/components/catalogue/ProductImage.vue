@@ -1,4 +1,6 @@
 <script setup>
+import { imageCanRender } from '~/utils/imageFallback'
+
 const props = defineProps({
   image: {
     type: Object,
@@ -19,7 +21,7 @@ watch(
 <template>
   <div class="product-image">
     <img
-      v-if="image?.url && !failed"
+      v-if="imageCanRender(image, failed)"
       :src="image.url"
       :alt="image.alt || ''"
       class="product-image-media"

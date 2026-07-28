@@ -1,6 +1,6 @@
 # ShoeFinder
 
-Stage 7 provides the Dockerized foundation, catalogue domain layer, Latvian Filament workflow, public read-only API, localized comparison pages, tracked retailer redirects, and public SEO output.
+The prototype includes the Dockerized foundation, catalogue domain layer, Latvian Filament workflow, public read-only API, localized comparison pages, tracked retailer redirects, SEO output, and focused Stage 8 verification.
 
 ## Requirements
 
@@ -94,17 +94,53 @@ Pint formats PHP. ESLint checks Vue, JavaScript, and TypeScript. Stylelint check
 
 ## Production build and migrations
 
-Copy `.env.example` to a secure deployment environment file, replace all development credentials, and provide a generated `APP_KEY`. Set `APP_URL` to the final HTTPS public origin. Set `FILAMENT_ADMIN_EMAIL` to the email of the administrator created through the documented command.
+Create a protected production environment file outside version control. Set a strong `POSTGRES_PASSWORD`, a persistent generated `APP_KEY`, the final HTTPS `APP_URL`, and the exact `FILAMENT_ADMIN_EMAIL`. Production Compose rejects missing values.
+
+Keep the same `APP_KEY` between deployments. Changing it invalidates encrypted application data and active sessions.
+
+Before each deployment:
+
+1. Back up PostgreSQL and the media volume through the hosting platform.
+2. Validate the resolved Compose configuration.
+3. Build the new images.
+4. Start PostgreSQL.
+5. Run migrations as an explicit deployment step.
+6. Seed reference data.
+7. Start or replace the application services.
+8. Check service health and the public `/up` response.
 
 ```sh
-docker compose -f compose.production.yaml build
-docker compose -f compose.production.yaml run --rm backend-php php artisan migrate --force
-docker compose -f compose.production.yaml run --rm backend-php php artisan db:seed --force
-docker compose -f compose.production.yaml run --rm backend-php php artisan make:filament-user
-docker compose -f compose.production.yaml up -d
+docker compose --env-file .env.production -f compose.production.yaml config --quiet
+docker compose --env-file .env.production -f compose.production.yaml build
+docker compose --env-file .env.production -f compose.production.yaml up -d postgres
+docker compose --env-file .env.production -f compose.production.yaml run --rm backend-php php artisan migrate --force --no-interaction
+docker compose --env-file .env.production -f compose.production.yaml run --rm backend-php php artisan db:seed --force --no-interaction
+docker compose --env-file .env.production -f compose.production.yaml up -d
+docker compose --env-file .env.production -f compose.production.yaml ps
+docker compose --env-file .env.production -f compose.production.yaml exec -T proxy wget -q -O - http://127.0.0.1/up
 ```
 
 Production containers never run migrations during startup. The migration command is a separate deployment step.
+
+Create the first administrator only after migrations succeed:
+
+```sh
+docker compose --env-file .env.production -f compose.production.yaml run --rm backend-php php artisan make:filament-user
+```
+
+The public Compose proxy listens for plain HTTP. Terminate HTTPS at the hosting platform or an external load balancer. Set HSTS there, where the TLS connection is known. Forward the original host, port, and protocol headers to the application.
+
+The production frontend runs as an unprivileged user. PHP hides runtime errors and uses production OPcache settings. The public proxy sends baseline content-type, frame, referrer, and browser-permission headers. Container logs rotate at three 10 MB files per service.
+
+Run the isolated production proof after deployment changes:
+
+```sh
+./docker/verify-production.sh
+```
+
+It builds production images, starts fresh isolated volumes, confirms startup did not create the migration table, runs migrations explicitly, checks reference data and public routes, restarts the stack, and removes its temporary project.
+
+Do not run `migrate:rollback` automatically during a failed deployment. Stop the rollout and restore the previous application image only when it is compatible with the migrated schema. Restore the database backup when a migration is not backward-compatible.
 
 Uploaded media uses a named Docker volume for the prototype. A production deployment should later move media to S3-compatible object storage through Laravel’s filesystem abstraction.
 

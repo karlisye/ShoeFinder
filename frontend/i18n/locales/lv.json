@@ -10,6 +10,9 @@
   "language": {
     "label": "Valodas izvēle"
   },
+  "accessibility": {
+    "skipToContent": "Pāriet uz saturu"
+  },
   "nav": {
     "primary": "Galvenā navigācija",
     "home": "Sākums",
