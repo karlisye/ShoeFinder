@@ -33,6 +33,7 @@ use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Validation\Rules\Unique;
 
 class VariantsRelationManager extends RelationManager
 {
@@ -58,6 +59,7 @@ class VariantsRelationManager extends RelationManager
                                     ->schema([
                                         Select::make('colour_id')
                                             ->label('Krāsa')
+                                            ->helperText('Vairāku krāsu modelim izveido vienu kombinētu krāsu, piemēram, “Balta/melna” ar kodu “white-black”.')
                                             ->relationship('colour', 'name_lv')
                                             ->searchable()
                                             ->preload()
@@ -93,10 +95,30 @@ class VariantsRelationManager extends RelationManager
                                                     ->modalHeading('Jauna krāsa')
                                                     ->modalSubmitActionLabel('Izveidot'),
                                             )
+                                            ->unique(
+                                                table: ShoeVariant::class,
+                                                column: 'colour_id',
+                                                ignoreRecord: true,
+                                                modifyRuleUsing: fn (Unique $rule): Unique => $rule
+                                                    ->where('shoe_id', $this->getOwnerRecord()->getKey()),
+                                            )
+                                            ->validationMessages([
+                                                'unique' => 'Šim apavu modelim variants ar šo krāsu jau pastāv.',
+                                            ])
                                             ->required(),
                                         TextInput::make('manufacturer_variant_code')
                                             ->label('Ražotāja varianta kods')
-                                            ->maxLength(100),
+                                            ->maxLength(100)
+                                            ->unique(
+                                                table: ShoeVariant::class,
+                                                column: 'manufacturer_variant_code',
+                                                ignoreRecord: true,
+                                                modifyRuleUsing: fn (Unique $rule): Unique => $rule
+                                                    ->where('shoe_id', $this->getOwnerRecord()->getKey()),
+                                            )
+                                            ->validationMessages([
+                                                'unique' => 'Šim apavu modelim variants ar šo ražotāja kodu jau pastāv.',
+                                            ]),
                                         Toggle::make('active')
                                             ->label('Aktīvs')
                                             ->default(true),

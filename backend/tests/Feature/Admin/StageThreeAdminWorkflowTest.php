@@ -272,6 +272,31 @@ class StageThreeAdminWorkflowTest extends TestCase
         ]);
     }
 
+    public function test_duplicate_variant_colour_and_code_show_validation_errors(): void
+    {
+        $context = $this->createCatalogueContext('duplicate-variant');
+
+        Livewire::test(VariantsRelationManager::class, [
+            'ownerRecord' => $context['shoe'],
+            'pageClass' => EditShoe::class,
+        ])
+            ->callAction(
+                TestAction::make('create')->table(),
+                [
+                    'colour_id' => $context['colour']->id,
+                    'manufacturer_variant_code' => $context['variant']
+                        ->manufacturer_variant_code,
+                    'active' => true,
+                ],
+            )
+            ->assertHasActionErrors([
+                'colour_id' => 'unique',
+                'manufacturer_variant_code' => 'unique',
+            ]);
+
+        $this->assertSame(1, $context['shoe']->variants()->count());
+    }
+
     public function test_listing_price_edits_keep_change_only_history(): void
     {
         $context = $this->createCatalogueContext('admin-price');
