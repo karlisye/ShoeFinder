@@ -1,0 +1,128 @@
+[
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "retailer_external_id",
+        "code": "identity_missing"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "gtin",
+        "code": "gtin_invalid"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "title",
+        "code": "required"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "current_price",
+        "code": "money_negative"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "original_price",
+        "code": "original_price_below_current"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "currency",
+        "code": "currency_unsupported"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "product_url",
+        "code": "url_invalid"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "delivery_cost",
+        "code": "money_negative"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "delivery_max_days",
+        "code": "delivery_range_invalid"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "sizes.0.price",
+        "code": "money_negative"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "observed_at",
+        "code": "date_invalid"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 3,
+        "field": null,
+        "code": "syntax_error"
+    },
+    {
+        "file": "urban-step-invalid.json",
+        "record": 1,
+        "field": "retailer_sku",
+        "code": "identity_duplicate"
+    },
+    {
+        "file": "urban-step-invalid.json",
+        "record": 1,
+        "field": "gtin",
+        "code": "identity_conflict"
+    },
+    {
+        "file": "urban-step-invalid.json",
+        "record": 1,
+        "field": "unexpected_field",
+        "code": "field_unknown"
+    },
+    {
+        "file": "sneaker-point-invalid.jsonl",
+        "record": 1,
+        "field": "sizes",
+        "code": "size_duplicate"
+    },
+    {
+        "file": "sneaker-point-invalid.jsonl",
+        "record": 2,
+        "field": null,
+        "code": "syntax_error"
+    },
+    {
+        "file": "sneaker-point-invalid.jsonl",
+        "record": 3,
+        "field": "active",
+        "code": "boolean_invalid"
+    },
+    {
+        "file": "sneaker-point-invalid.jsonl",
+        "record": 3,
+        "field": "product_url",
+        "code": "url_invalid"
+    },
+    {
+        "file": "sneaker-point-invalid.jsonl",
+        "record": 3,
+        "field": "current_price",
+        "code": "money_invalid"
+    },
+    {
+        "file": "apavu-nams-invalid.xml",
+        "record": null,
+        "field": null,
+        "code": "syntax_error"
+    }
+]

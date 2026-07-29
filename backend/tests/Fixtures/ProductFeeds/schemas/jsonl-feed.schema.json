@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.shoefinder.example/product-feed-record.json",
+  "title": "Normalized product-feed record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "retailer_external_id",
+    "retailer_sku",
+    "manufacturer_variant_code",
+    "brand",
+    "title",
+    "colour",
+    "product_url",
+    "current_price",
+    "currency",
+    "delivery",
+    "images",
+    "sizes",
+    "active",
+    "observed_at"
+  ],
+  "properties": {
+    "retailer_external_id": { "type": "string", "minLength": 1 },
+    "retailer_sku": { "type": "string", "minLength": 1 },
+    "gtin": {
+      "type": ["string", "null"],
+      "pattern": "^(?:[0-9]{8}|[0-9]{12}|[0-9]{13}|[0-9]{14})$"
+    },
+    "manufacturer_style_code": { "type": ["string", "null"] },
+    "manufacturer_variant_code": { "type": "string", "minLength": 1 },
+    "brand": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "colour": { "type": "string", "minLength": 1 },
+    "product_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+    "affiliate_url": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "current_price": { "$ref": "#/$defs/money" },
+    "original_price": {
+      "oneOf": [{ "$ref": "#/$defs/money" }, { "type": "null" }]
+    },
+    "currency": { "const": "EUR" },
+    "delivery": { "$ref": "#/$defs/delivery" },
+    "images": {
+      "type": "array",
+      "items": { "type": "string", "format": "uri", "pattern": "^https://" },
+      "uniqueItems": true
+    },
+    "sizes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/size" }
+    },
+    "active": { "type": "boolean" },
+    "observed_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "money": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)\\.[0-9]{2}$"
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cost", "min_days", "max_days", "note_lv", "note_en"],
+      "properties": {
+        "cost": {
+          "oneOf": [{ "$ref": "#/$defs/money" }, { "type": "null" }]
+        },
+        "min_days": { "type": ["integer", "null"], "minimum": 0 },
+        "max_days": { "type": ["integer", "null"], "minimum": 0 },
+        "note_lv": { "type": ["string", "null"] },
+        "note_en": { "type": ["string", "null"] }
+      }
+    },
+    "size": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eu_size", "in_stock", "price"],
+      "properties": {
+        "eu_size": { "type": "string", "pattern": "^[0-9]{2}(?:\\.5)?$" },
+        "in_stock": { "type": "boolean" },
+        "price": {
+          "oneOf": [{ "$ref": "#/$defs/money" }, { "type": "null" }]
+        }
+      }
+    }
+  }
+}

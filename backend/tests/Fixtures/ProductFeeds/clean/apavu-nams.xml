@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogue retailer="apavu-nams" generated-at="2026-07-29T09:00:00+03:00" xmlns="https://feeds.shoefinder.example/v1">
+ <product external-id="APAVUNAMS-00025">
+  <sku>APA-1203A438-020</sku>
+  <style-code>1203A438</style-code>
+  <variant-code>1203A438-020</variant-code>
+  <brand>ASICS</brand>
+  <title>ASICS GEL-Venture 6</title>
+  <colour>Graphite Grey/Black</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00025</product-url>
+  <price currency="EUR" current="95.36" original="112.19"/>
+  <delivery cost="3.49" min-days="1" max-days="3">
+   <note-lv>Piegāde uz pakomātu</note-lv>
+   <note-en>Delivery to a parcel locker</note-en>
+  </delivery>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00025-1.webp</image>
+   <image>https://images.apavu-nams.example/apavunams-00025-2.webp</image>
+  </images>
+  <sizes>
+   <size eu="39" in-stock="false"/>
+   <size eu="39.5" in-stock="true"/>
+   <size eu="40" in-stock="true"/>
+   <size eu="40.5" in-stock="true"/>
+   <size eu="41" in-stock="true" price="117.19"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00026">
+  <sku>APA-398846-01</sku>
+  <gtin>4750000000260</gtin>
+  <style-code>398846</style-code>
+  <variant-code>398846-01</variant-code>
+  <brand>Puma</brand>
+  <title>Puma Speedcat OG</title>
+  <colour>For All Time Red/White</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00026</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00026</affiliate-url>
+  <price currency="EUR" current="112.19"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00026-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="40" in-stock="true"/>
+   <size eu="40.5" in-stock="true"/>
+   <size eu="41" in-stock="true"/>
+   <size eu="41.5" in-stock="true"/>
+   <size eu="42" in-stock="false"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00027">
+  <sku>APA-396463-05</sku>
+  <gtin>4750000000277</gtin>
+  <style-code>396463</style-code>
+  <variant-code>396463-05</variant-code>
+  <brand>Puma</brand>
+  <title>Puma Palermo</title>
+  <colour>Green/White/Gum</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00027</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00027</affiliate-url>
+  <price currency="EUR" current="91.79"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00027-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="41" in-stock="true"/>
+   <size eu="41.5" in-stock="true"/>
+   <size eu="42" in-stock="true"/>
+   <size eu="42.5" in-stock="false"/>
+   <size eu="43" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00028">
+  <sku>APA-395205-02</sku>
+  <gtin>4750000000284</gtin>
+  <style-code>395205</style-code>
+  <variant-code>395205-02</variant-code>
+  <brand>Puma</brand>
+  <title>Puma Suede XL</title>
+  <colour>Black/White</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00028</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00028</affiliate-url>
+  <price currency="EUR" current="101.99"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00028-1.webp</image>
+   <image>https://images.apavu-nams.example/apavunams-00028-2.webp</image>
+  </images>
+  <sizes>
+   <size eu="42" in-stock="true"/>
+   <size eu="42.5" in-stock="true"/>
+   <size eu="43" in-stock="false"/>
+   <size eu="43.5" in-stock="true"/>
+   <size eu="44" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00029">
+  <sku>APA-AR0456</sku>
+  <gtin>4750000000291</gtin>
+  <style-code>AR0456</style-code>
+  <variant-code>AR0456</variant-code>
+  <brand>Reebok</brand>
+  <title>Reebok Club C 85</title>
+  <colour>Chalk/Green</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00029</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00029</affiliate-url>
+  <price currency="EUR" current="78.02" original="91.79"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00029-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="36" in-stock="true"/>
+   <size eu="36.5" in-stock="false"/>
+   <size eu="37" in-stock="true"/>
+   <size eu="37.5" in-stock="true"/>
+   <size eu="38" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00030">
+  <sku>APA-100008491</sku>
+  <gtin>4750000000307</gtin>
+  <style-code>100008491</style-code>
+  <variant-code>100008491</variant-code>
+  <brand>Reebok</brand>
+  <title>Reebok Classic Leather</title>
+  <colour>White/Light Grey</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00030</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00030</affiliate-url>
+  <price currency="EUR" current="101.99"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00030-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="37" in-stock="false"/>
+   <size eu="37.5" in-stock="true"/>
+   <size eu="38" in-stock="true"/>
+   <size eu="38.5" in-stock="true"/>
+   <size eu="39" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00031">
+  <sku>APA-162050C</sku>
+  <style-code>162050C</style-code>
+  <variant-code>162050C</variant-code>
+  <brand>Converse</brand>
+  <title>Converse Chuck 70</title>
+  <colour>Black/Egret</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00031</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00031</affiliate-url>
+  <price currency="EUR" current="101.99"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00031-1.webp</image>
+   <image>https://images.apavu-nams.example/apavunams-00031-2.webp</image>
+  </images>
+  <sizes>
+   <size eu="38" in-stock="true"/>
+   <size eu="38.5" in-stock="true"/>
+   <size eu="39" in-stock="true"/>
+   <size eu="39.5" in-stock="true"/>
+   <size eu="40" in-stock="false"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00032">
+  <sku>APA-166800C</sku>
+  <gtin>4750000000321</gtin>
+  <style-code>166800C</style-code>
+  <variant-code>166800C</variant-code>
+  <brand>Converse</brand>
+  <title>Converse Run Star Hike</title>
+  <colour>Black/White/Gum</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00032</product-url>
+  <price currency="EUR" current="132.59"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00032-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="39" in-stock="true"/>
+   <size eu="39.5" in-stock="true"/>
+   <size eu="40" in-stock="true"/>
+   <size eu="40.5" in-stock="false"/>
+   <size eu="41" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00033">
+  <sku>APA-VN0009QC6BT</sku>
+  <gtin>4750000000338</gtin>
+  <style-code>VN0009QC</style-code>
+  <variant-code>VN0009QC6BT</variant-code>
+  <brand>Vans</brand>
+  <title>Vans Knu Skool</title>
+  <colour>Black/True White</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00033</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00033</affiliate-url>
+  <price currency="EUR" current="86.69" original="101.99"/>
+  <delivery cost="3.49" min-days="1" max-days="3">
+   <note-lv>Piegāde uz pakomātu</note-lv>
+   <note-en>Delivery to a parcel locker</note-en>
+  </delivery>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00033-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="40" in-stock="true"/>
+   <size eu="40.5" in-stock="true"/>
+   <size eu="41" in-stock="false"/>
+   <size eu="41.5" in-stock="true"/>
+   <size eu="42" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00034">
+  <sku>APA-VN000D3HY28</sku>
+  <gtin>4750000000345</gtin>
+  <variant-code>VN000D3HY28</variant-code>
+  <brand>Vans</brand>
+  <title>Vans Old Skool</title>
+  <colour>Black/White</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00034</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00034</affiliate-url>
+  <price currency="EUR" current="86.69"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00034-1.webp</image>
+   <image>https://images.apavu-nams.example/apavunams-00034-2.webp</image>
+  </images>
+  <sizes>
+   <size eu="41" in-stock="true"/>
+   <size eu="41.5" in-stock="false"/>
+   <size eu="42" in-stock="true"/>
+   <size eu="42.5" in-stock="true"/>
+   <size eu="43" in-stock="true" price="91.69"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00035">
+  <sku>APA-L47444800</sku>
+  <gtin>4750000000352</gtin>
+  <style-code>L47444800</style-code>
+  <variant-code>L47444800</variant-code>
+  <brand>Salomon</brand>
+  <title>Salomon XT-6</title>
+  <colour>Black/Phantom</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00035</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00035</affiliate-url>
+  <price currency="EUR" current="183.59"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00035-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="42" in-stock="false"/>
+   <size eu="42.5" in-stock="true"/>
+   <size eu="43" in-stock="true"/>
+   <size eu="43.5" in-stock="true"/>
+   <size eu="44" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00036">
+  <sku>APA-L47299000</sku>
+  <gtin>4750000000369</gtin>
+  <style-code>L47299000</style-code>
+  <variant-code>L47299000</variant-code>
+  <brand>Salomon</brand>
+  <title>Salomon ACS Pro</title>
+  <colour>Vanilla Ice/Lunar Rock</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00036</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00036</affiliate-url>
+  <price currency="EUR" current="203.99"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00036-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="36" in-stock="true"/>
+   <size eu="36.5" in-stock="true"/>
+   <size eu="37" in-stock="true"/>
+   <size eu="37.5" in-stock="true"/>
+   <size eu="38" in-stock="false"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00037">
+  <sku>APA-1162030-BWHT</sku>
+  <style-code>1162030</style-code>
+  <variant-code>1162030-BWHT</variant-code>
+  <brand>Hoka</brand>
+  <title>Hoka Clifton 10</title>
+  <colour>Black/White</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00037</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00037</affiliate-url>
+  <price currency="EUR" current="156.05" original="183.59"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00037-1.webp</image>
+   <image>https://images.apavu-nams.example/apavunams-00037-2.webp</image>
+  </images>
+  <sizes>
+   <size eu="37" in-stock="true"/>
+   <size eu="37.5" in-stock="true"/>
+   <size eu="38" in-stock="true"/>
+   <size eu="38.5" in-stock="false"/>
+   <size eu="39" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00038">
+  <sku>APA-1162011-WWH</sku>
+  <gtin>4750000000383</gtin>
+  <style-code>1162011</style-code>
+  <variant-code>1162011-WWH</variant-code>
+  <brand>Hoka</brand>
+  <title>Hoka Bondi 9</title>
+  <colour>White/White</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00038</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00038</affiliate-url>
+  <price currency="EUR" current="193.79"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00038-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="38" in-stock="true"/>
+   <size eu="38.5" in-stock="true"/>
+   <size eu="39" in-stock="false"/>
+   <size eu="39.5" in-stock="true"/>
+   <size eu="40" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00039">
+  <sku>APA-3MF1007-100</sku>
+  <gtin>4750000000390</gtin>
+  <style-code>3MF1007</style-code>
+  <variant-code>3MF1007-100</variant-code>
+  <brand>On</brand>
+  <title>On Cloud 6</title>
+  <colour>White/White</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00039</product-url>
+  <price currency="EUR" current="163.19"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00039-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="39" in-stock="true"/>
+   <size eu="39.5" in-stock="false"/>
+   <size eu="40" in-stock="true"/>
+   <size eu="40.5" in-stock="true"/>
+   <size eu="41" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00040">
+  <sku>APA-3ME1012-104</sku>
+  <gtin>4750000000406</gtin>
+  <style-code>3ME1012</style-code>
+  <variant-code>3ME1012-104</variant-code>
+  <brand>On</brand>
+  <title>On Cloudmonster 2</title>
+  <colour>Undyed White/White</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00040</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00040</affiliate-url>
+  <price currency="EUR" current="193.79"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00040-1.webp</image>
+   <image>https://images.apavu-nams.example/apavunams-00040-2.webp</image>
+  </images>
+  <sizes>
+   <size eu="40" in-stock="false"/>
+   <size eu="40.5" in-stock="true"/>
+   <size eu="41" in-stock="true"/>
+   <size eu="41.5" in-stock="true"/>
+   <size eu="42" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00001">
+  <sku>APA-CW2288-111</sku>
+  <variant-code>CW2288-111</variant-code>
+  <brand>Nike</brand>
+  <title>Nike Air Force 1 '07</title>
+  <colour>White/White</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00001</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00001</affiliate-url>
+  <price currency="EUR" current="104.03" original="122.39"/>
+  <delivery cost="3.49" min-days="1" max-days="3">
+   <note-lv>Piegāde uz pakomātu</note-lv>
+   <note-en>Delivery to a parcel locker</note-en>
+  </delivery>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00001-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="36" in-stock="true"/>
+   <size eu="36.5" in-stock="true"/>
+   <size eu="37" in-stock="true"/>
+   <size eu="37.5" in-stock="true"/>
+   <size eu="38" in-stock="false"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00002">
+  <sku>APA-DD1391-100</sku>
+  <gtin>4750000000024</gtin>
+  <style-code>DD1391</style-code>
+  <variant-code>DD1391-100</variant-code>
+  <brand>Nike</brand>
+  <title>Nike Dunk Low Retro</title>
+  <colour>White/Black</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00002</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00002</affiliate-url>
+  <price currency="EUR" current="122.39"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00002-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="37" in-stock="true"/>
+   <size eu="37.5" in-stock="true"/>
+   <size eu="38" in-stock="true"/>
+   <size eu="38.5" in-stock="false"/>
+   <size eu="39" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00003">
+  <sku>APA-CN8490-100</sku>
+  <gtin>4750000000031</gtin>
+  <style-code>CN8490</style-code>
+  <variant-code>CN8490-100</variant-code>
+  <brand>Nike</brand>
+  <title>Nike Air Max 90</title>
+  <colour>White/Wolf Grey</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00003</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00003</affiliate-url>
+  <price currency="EUR" current="152.99"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00003-1.webp</image>
+   <image>https://images.apavu-nams.example/apavunams-00003-2.webp</image>
+  </images>
+  <sizes>
+   <size eu="38" in-stock="true"/>
+   <size eu="38.5" in-stock="true"/>
+   <size eu="39" in-stock="false"/>
+   <size eu="39.5" in-stock="true"/>
+   <size eu="40" in-stock="true" price="157.99"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00004">
+  <sku>APA-CD6404-101</sku>
+  <gtin>4750000000048</gtin>
+  <style-code>CD6404</style-code>
+  <variant-code>CD6404-101</variant-code>
+  <brand>Nike</brand>
+  <title>Nike P-6000</title>
+  <colour>White/Metallic Silver</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00004</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00004</affiliate-url>
+  <price currency="EUR" current="112.19"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00004-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="39" in-stock="true"/>
+   <size eu="39.5" in-stock="false"/>
+   <size eu="40" in-stock="true"/>
+   <size eu="40.5" in-stock="true"/>
+   <size eu="41" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00005">
+  <sku>APA-FD0736-100</sku>
+  <gtin>4750000000055</gtin>
+  <style-code>FD0736</style-code>
+  <variant-code>FD0736-100</variant-code>
+  <brand>Nike</brand>
+  <title>Nike V2K Run</title>
+  <colour>Summit White/Metallic Silver</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00005</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00005</affiliate-url>
+  <price currency="EUR" current="104.03" original="122.39"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00005-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="40" in-stock="false"/>
+   <size eu="40.5" in-stock="true"/>
+   <size eu="41" in-stock="true"/>
+   <size eu="41.5" in-stock="true"/>
+   <size eu="42" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00006">
+  <sku>APA-BV1358-001</sku>
+  <gtin>4750000000062</gtin>
+  <style-code>BV1358</style-code>
+  <variant-code>BV1358-001</variant-code>
+  <brand>Nike</brand>
+  <title>Nike Zoom Vomero 5</title>
+  <colour>Vast Grey/Black</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00006</product-url>
+  <price currency="EUR" current="163.19"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00006-1.webp</image>
+   <image>https://images.apavu-nams.example/apavunams-00006-2.webp</image>
+  </images>
+  <sizes>
+   <size eu="41" in-stock="true"/>
+   <size eu="41.5" in-stock="true"/>
+   <size eu="42" in-stock="true"/>
+   <size eu="42.5" in-stock="true"/>
+   <size eu="43" in-stock="false"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00007">
+  <sku>APA-AH8050-100</sku>
+  <style-code>AH8050</style-code>
+  <variant-code>AH8050-100</variant-code>
+  <brand>Nike</brand>
+  <title>Nike Air Max 270</title>
+  <colour>White/Black</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00007</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00007</affiliate-url>
+  <price currency="EUR" current="173.39"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00007-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="42" in-stock="true"/>
+   <size eu="42.5" in-stock="true"/>
+   <size eu="43" in-stock="true"/>
+   <size eu="43.5" in-stock="false"/>
+   <size eu="44" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00008">
+  <sku>APA-FD2722-001</sku>
+  <gtin>4750000000086</gtin>
+  <style-code>FD2722</style-code>
+  <variant-code>FD2722-001</variant-code>
+  <brand>Nike</brand>
+  <title>Nike Pegasus 41</title>
+  <colour>Black/Anthracite</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00008</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00008</affiliate-url>
+  <price currency="EUR" current="142.79"/>
+  <delivery cost="3.49" min-days="1" max-days="3"/>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00008-1.webp</image>
+  </images>
+  <sizes>
+   <size eu="36" in-stock="true"/>
+   <size eu="36.5" in-stock="true"/>
+   <size eu="37" in-stock="false"/>
+   <size eu="37.5" in-stock="true"/>
+   <size eu="38" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+ <product external-id="APAVUNAMS-00009">
+  <sku>APA-B75806</sku>
+  <gtin>4750000000093</gtin>
+  <style-code>B75806</style-code>
+  <variant-code>B75806</variant-code>
+  <brand>Adidas</brand>
+  <title>Adidas Samba OG</title>
+  <colour>Cloud White/Core Black</colour>
+  <product-url>https://apavu-nams.example/products/apavunams-00009</product-url>
+  <affiliate-url>https://track.apavu-nams.example/click/apavunams-00009</affiliate-url>
+  <price currency="EUR" current="104.03" original="122.39"/>
+  <delivery cost="3.49" min-days="1" max-days="3">
+   <note-lv>Piegāde uz pakomātu</note-lv>
+   <note-en>Delivery to a parcel locker</note-en>
+  </delivery>
+  <images>
+   <image>https://images.apavu-nams.example/apavunams-00009-1.webp</image>
+   <image>https://images.apavu-nams.example/apavunams-00009-2.webp</image>
+  </images>
+  <sizes>
+   <size eu="37" in-stock="true"/>
+   <size eu="37.5" in-stock="false"/>
+   <size eu="38" in-stock="true"/>
+   <size eu="38.5" in-stock="true"/>
+   <size eu="39" in-stock="true"/>
+  </sizes>
+  <active>true</active>
+  <observed-at>2026-07-29T09:00:00+03:00</observed-at>
+ </product>
+</catalogue>

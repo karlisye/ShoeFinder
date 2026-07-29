@@ -1,0 +1,1368 @@
+{
+    "retailer": {
+        "code": "urban-step",
+        "name": "Urban Step"
+    },
+    "generated_at": "2026-07-29T09:00:00+03:00",
+    "products": [
+        {
+            "retailer_external_id": "URBANSTEP-00009",
+            "retailer_sku": "URB-B75806",
+            "gtin": "4750000000093",
+            "manufacturer_style_code": "B75806",
+            "manufacturer_variant_code": "B75806",
+            "brand": "Adidas",
+            "title": "Adidas Samba OG",
+            "colour": "Cloud White/Core Black",
+            "product_url": "https://urban-step.example/products/urbanstep-00009",
+            "affiliate_url": null,
+            "current_price": "106.07",
+            "original_price": "124.79",
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": "Piegāde uz pakomātu",
+                "note_en": "Delivery to a parcel locker"
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00009-1.webp",
+                "https://images.urban-step.example/urbanstep-00009-2.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "37",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "37.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": "129.79"
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00010",
+            "retailer_sku": "URB-H06261",
+            "gtin": "4750000000109",
+            "manufacturer_style_code": "H06261",
+            "manufacturer_variant_code": "H06261",
+            "brand": "Adidas",
+            "title": "Adidas Gazelle Indoor",
+            "colour": "Collegiate Green/White",
+            "product_url": "https://urban-step.example/products/urbanstep-00010",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00010",
+            "current_price": "124.79",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00010-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "38",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40",
+                    "in_stock": false,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00011",
+            "retailer_sku": "URB-HQ8708",
+            "gtin": "4750000000116",
+            "manufacturer_style_code": "HQ8708",
+            "manufacturer_variant_code": "HQ8708",
+            "brand": "Adidas",
+            "title": "Adidas Campus 00s",
+            "colour": "Core Black/Cloud White",
+            "product_url": "https://urban-step.example/products/urbanstep-00011",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00011",
+            "current_price": "114.39",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00011-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "41",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00012",
+            "retailer_sku": "URB-DB3021",
+            "gtin": "4750000000123",
+            "manufacturer_style_code": null,
+            "manufacturer_variant_code": "DB3021",
+            "brand": "Adidas",
+            "title": "Adidas Handball Spezial",
+            "colour": "Navy/Gum",
+            "product_url": "https://urban-step.example/products/urbanstep-00012",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00012",
+            "current_price": "114.39",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00012-1.webp",
+                "https://images.urban-step.example/urbanstep-00012-2.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "40",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "41.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "42",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00013",
+            "retailer_sku": "URB-IG2132",
+            "gtin": null,
+            "manufacturer_style_code": "IG2132",
+            "manufacturer_variant_code": "IG2132",
+            "brand": "Adidas",
+            "title": "Adidas SL 72 RS",
+            "colour": "Blue/White/Red",
+            "product_url": "https://urban-step.example/products/urbanstep-00013",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00013",
+            "current_price": "88.39",
+            "original_price": "103.99",
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00013-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "41",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "42",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "42.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "43",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00014",
+            "retailer_sku": "URB-JI0079",
+            "gtin": "4750000000147",
+            "manufacturer_style_code": "JI0079",
+            "manufacturer_variant_code": "JI0079",
+            "brand": "Adidas",
+            "title": "Adidas Superstar II",
+            "colour": "White/Core Black",
+            "product_url": "https://urban-step.example/products/urbanstep-00014",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00014",
+            "current_price": "124.79",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00014-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "42",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "42.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "43",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "43.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "44",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00015",
+            "retailer_sku": "URB-MR530SG",
+            "gtin": "4750000000154",
+            "manufacturer_style_code": "MR530SG",
+            "manufacturer_variant_code": "MR530SG",
+            "brand": "New Balance",
+            "title": "New Balance 530",
+            "colour": "White/Silver/Navy",
+            "product_url": "https://urban-step.example/products/urbanstep-00015",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00015",
+            "current_price": "124.79",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00015-1.webp",
+                "https://images.urban-step.example/urbanstep-00015-2.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "36",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "36.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "37",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "37.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38",
+                    "in_stock": false,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00016",
+            "retailer_sku": "URB-ML574EVG",
+            "gtin": "4750000000161",
+            "manufacturer_style_code": "ML574EVG",
+            "manufacturer_variant_code": "ML574EVG",
+            "brand": "New Balance",
+            "title": "New Balance 574",
+            "colour": "Grey/White",
+            "product_url": "https://urban-step.example/products/urbanstep-00016",
+            "affiliate_url": null,
+            "current_price": "114.39",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00016-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "37",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "37.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00017",
+            "retailer_sku": "URB-U9060GRY",
+            "gtin": "4750000000178",
+            "manufacturer_style_code": "U9060GRY",
+            "manufacturer_variant_code": "U9060GRY",
+            "brand": "New Balance",
+            "title": "New Balance 9060",
+            "colour": "Grey/Silver",
+            "product_url": "https://urban-step.example/products/urbanstep-00017",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00017",
+            "current_price": "167.95",
+            "original_price": "197.59",
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": "Piegāde uz pakomātu",
+                "note_en": "Delivery to a parcel locker"
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00017-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "38",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "39.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00018",
+            "retailer_sku": "URB-M2002RCC",
+            "gtin": "4750000000185",
+            "manufacturer_style_code": "M2002RCC",
+            "manufacturer_variant_code": "M2002RCC",
+            "brand": "New Balance",
+            "title": "New Balance 2002R",
+            "colour": "Calm Taupe",
+            "product_url": "https://urban-step.example/products/urbanstep-00018",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00018",
+            "current_price": "166.39",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00018-1.webp",
+                "https://images.urban-step.example/urbanstep-00018-2.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "40",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41",
+                    "in_stock": true,
+                    "price": "171.39"
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00019",
+            "retailer_sku": "URB-M1906RER",
+            "gtin": null,
+            "manufacturer_style_code": "M1906RER",
+            "manufacturer_variant_code": "M1906RER",
+            "brand": "New Balance",
+            "title": "New Balance 1906R",
+            "colour": "Silver/Black",
+            "product_url": "https://urban-step.example/products/urbanstep-00019",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00019",
+            "current_price": "176.79",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00019-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "40",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "40.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "42",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00020",
+            "retailer_sku": "URB-MS327CWB",
+            "gtin": "4750000000208",
+            "manufacturer_style_code": "MS327CWB",
+            "manufacturer_variant_code": "MS327CWB",
+            "brand": "New Balance",
+            "title": "New Balance 327",
+            "colour": "White/Black",
+            "product_url": "https://urban-step.example/products/urbanstep-00020",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00020",
+            "current_price": "124.79",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00020-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "41",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "42",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "42.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "43",
+                    "in_stock": false,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00021",
+            "retailer_sku": "URB-1011B867-400",
+            "gtin": "4750000000215",
+            "manufacturer_style_code": "1011B867",
+            "manufacturer_variant_code": "1011B867-400",
+            "brand": "ASICS",
+            "title": "ASICS GEL-Kayano 31",
+            "colour": "Blue Expanse/Grey Blue",
+            "product_url": "https://urban-step.example/products/urbanstep-00021",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00021",
+            "current_price": "176.79",
+            "original_price": "207.99",
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00021-1.webp",
+                "https://images.urban-step.example/urbanstep-00021-2.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "42",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "42.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "43",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "43.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "44",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00022",
+            "retailer_sku": "URB-1201A789-103",
+            "gtin": "4750000000222",
+            "manufacturer_style_code": "1201A789",
+            "manufacturer_variant_code": "1201A789-103",
+            "brand": "ASICS",
+            "title": "ASICS GEL-NYC",
+            "colour": "Cream/Oyster Grey",
+            "product_url": "https://urban-step.example/products/urbanstep-00022",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00022",
+            "current_price": "176.79",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00022-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "36",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "36.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "37",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "37.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00023",
+            "retailer_sku": "URB-1201A256-112",
+            "gtin": "4750000000239",
+            "manufacturer_style_code": null,
+            "manufacturer_variant_code": "1201A256-112",
+            "brand": "ASICS",
+            "title": "ASICS GEL-1130",
+            "colour": "White/Clay Grey",
+            "product_url": "https://urban-step.example/products/urbanstep-00023",
+            "affiliate_url": null,
+            "current_price": "124.79",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00023-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "37",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "37.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "38",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00024",
+            "retailer_sku": "URB-1203A275-103",
+            "gtin": "4750000000246",
+            "manufacturer_style_code": "1203A275",
+            "manufacturer_variant_code": "1203A275-103",
+            "brand": "ASICS",
+            "title": "ASICS GT-2160",
+            "colour": "White/Shamrock Green",
+            "product_url": "https://urban-step.example/products/urbanstep-00024",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00024",
+            "current_price": "135.19",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00024-1.webp",
+                "https://images.urban-step.example/urbanstep-00024-2.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "38",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "38.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00025",
+            "retailer_sku": "URB-1203A438-020",
+            "gtin": null,
+            "manufacturer_style_code": "1203A438",
+            "manufacturer_variant_code": "1203A438-020",
+            "brand": "ASICS",
+            "title": "ASICS GEL-Venture 6",
+            "colour": "Graphite Grey/Black",
+            "product_url": "https://urban-step.example/products/urbanstep-00025",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00025",
+            "current_price": "97.23",
+            "original_price": "114.39",
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": "Piegāde uz pakomātu",
+                "note_en": "Delivery to a parcel locker"
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00025-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41",
+                    "in_stock": false,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00026",
+            "retailer_sku": "URB-398846-01",
+            "gtin": "4750000000260",
+            "manufacturer_style_code": "398846",
+            "manufacturer_variant_code": "398846-01",
+            "brand": "Puma",
+            "title": "Puma Speedcat OG",
+            "colour": "For All Time Red/White",
+            "product_url": "https://urban-step.example/products/urbanstep-00026",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00026",
+            "current_price": "114.39",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00026-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "40",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "42",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00027",
+            "retailer_sku": "URB-396463-05",
+            "gtin": "4750000000277",
+            "manufacturer_style_code": "396463",
+            "manufacturer_variant_code": "396463-05",
+            "brand": "Puma",
+            "title": "Puma Palermo",
+            "colour": "Green/White/Gum",
+            "product_url": "https://urban-step.example/products/urbanstep-00027",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00027",
+            "current_price": "93.59",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00027-1.webp",
+                "https://images.urban-step.example/urbanstep-00027-2.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "41",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "42",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "42.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "43",
+                    "in_stock": true,
+                    "price": "98.59"
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00028",
+            "retailer_sku": "URB-395205-02",
+            "gtin": "4750000000284",
+            "manufacturer_style_code": "395205",
+            "manufacturer_variant_code": "395205-02",
+            "brand": "Puma",
+            "title": "Puma Suede XL",
+            "colour": "Black/White",
+            "product_url": "https://urban-step.example/products/urbanstep-00028",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00028",
+            "current_price": "103.99",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00028-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "42",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "42.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "43",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "43.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "44",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00029",
+            "retailer_sku": "URB-AR0456",
+            "gtin": "4750000000291",
+            "manufacturer_style_code": "AR0456",
+            "manufacturer_variant_code": "AR0456",
+            "brand": "Reebok",
+            "title": "Reebok Club C 85",
+            "colour": "Chalk/Green",
+            "product_url": "https://urban-step.example/products/urbanstep-00029",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00029",
+            "current_price": "79.55",
+            "original_price": "93.59",
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00029-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "36",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "36.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "37",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "37.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00030",
+            "retailer_sku": "URB-100008491",
+            "gtin": "4750000000307",
+            "manufacturer_style_code": "100008491",
+            "manufacturer_variant_code": "100008491",
+            "brand": "Reebok",
+            "title": "Reebok Classic Leather",
+            "colour": "White/Light Grey",
+            "product_url": "https://urban-step.example/products/urbanstep-00030",
+            "affiliate_url": null,
+            "current_price": "103.99",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00030-1.webp",
+                "https://images.urban-step.example/urbanstep-00030-2.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "37",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "37.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39",
+                    "in_stock": false,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00031",
+            "retailer_sku": "URB-162050C",
+            "gtin": null,
+            "manufacturer_style_code": "162050C",
+            "manufacturer_variant_code": "162050C",
+            "brand": "Converse",
+            "title": "Converse Chuck 70",
+            "colour": "Black/Egret",
+            "product_url": "https://urban-step.example/products/urbanstep-00031",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00031",
+            "current_price": "103.99",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00031-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "38",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "38.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "40",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00032",
+            "retailer_sku": "URB-166800C",
+            "gtin": "4750000000321",
+            "manufacturer_style_code": "166800C",
+            "manufacturer_variant_code": "166800C",
+            "brand": "Converse",
+            "title": "Converse Run Star Hike",
+            "colour": "Black/White/Gum",
+            "product_url": "https://urban-step.example/products/urbanstep-00032",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00032",
+            "current_price": "135.19",
+            "original_price": null,
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": null,
+                "note_en": null
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00032-1.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "39",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "39.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "40.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        },
+        {
+            "retailer_external_id": "URBANSTEP-00033",
+            "retailer_sku": "URB-VN0009QC6BT",
+            "gtin": "4750000000338",
+            "manufacturer_style_code": "VN0009QC",
+            "manufacturer_variant_code": "VN0009QC6BT",
+            "brand": "Vans",
+            "title": "Vans Knu Skool",
+            "colour": "Black/True White",
+            "product_url": "https://urban-step.example/products/urbanstep-00033",
+            "affiliate_url": "https://track.urban-step.example/click/urbanstep-00033",
+            "current_price": "88.39",
+            "original_price": "103.99",
+            "currency": "EUR",
+            "delivery": {
+                "cost": "0.00",
+                "min_days": 3,
+                "max_days": 5,
+                "note_lv": "Piegāde uz pakomātu",
+                "note_en": "Delivery to a parcel locker"
+            },
+            "images": [
+                "https://images.urban-step.example/urbanstep-00033-1.webp",
+                "https://images.urban-step.example/urbanstep-00033-2.webp"
+            ],
+            "sizes": [
+                {
+                    "eu_size": "40",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "40.5",
+                    "in_stock": false,
+                    "price": null
+                },
+                {
+                    "eu_size": "41",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "41.5",
+                    "in_stock": true,
+                    "price": null
+                },
+                {
+                    "eu_size": "42",
+                    "in_stock": true,
+                    "price": null
+                }
+            ],
+            "active": true,
+            "observed_at": "2026-07-29T09:00:00+03:00"
+        }
+    ]
+}

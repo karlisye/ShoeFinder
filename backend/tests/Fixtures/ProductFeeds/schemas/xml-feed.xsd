@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="https://feeds.shoefinder.example/v1"
+    xmlns:tns="https://feeds.shoefinder.example/v1"
+    xmlns="https://feeds.shoefinder.example/v1"
+    elementFormDefault="qualified">
+  <xs:simpleType name="money">
+    <xs:restriction base="xs:decimal">
+      <xs:fractionDigits value="2"/>
+      <xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="catalogue">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="product" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sku" type="xs:string"/>
+              <xs:element name="gtin" type="xs:string" minOccurs="0"/>
+              <xs:element name="style-code" type="xs:string" minOccurs="0"/>
+              <xs:element name="variant-code" type="xs:string"/>
+              <xs:element name="brand" type="xs:string"/>
+              <xs:element name="title" type="xs:string"/>
+              <xs:element name="colour" type="xs:string"/>
+              <xs:element name="product-url" type="xs:anyURI"/>
+              <xs:element name="affiliate-url" type="xs:anyURI" minOccurs="0"/>
+              <xs:element name="price">
+                <xs:complexType>
+                  <xs:attribute name="currency" type="xs:string" use="required"/>
+                  <xs:attribute name="current" type="tns:money" use="required"/>
+                  <xs:attribute name="original" type="tns:money"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="delivery">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="note-lv" type="xs:string" minOccurs="0"/>
+                    <xs:element name="note-en" type="xs:string" minOccurs="0"/>
+                  </xs:sequence>
+                  <xs:attribute name="cost" type="tns:money"/>
+                  <xs:attribute name="min-days" type="xs:nonNegativeInteger"/>
+                  <xs:attribute name="max-days" type="xs:nonNegativeInteger"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="images">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="image" type="xs:anyURI" minOccurs="0" maxOccurs="unbounded"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="sizes">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="size" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="eu" type="xs:decimal" use="required"/>
+                        <xs:attribute name="in-stock" type="xs:boolean" use="required"/>
+                        <xs:attribute name="price" type="tns:money"/>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="active" type="xs:boolean"/>
+              <xs:element name="observed-at" type="xs:dateTime"/>
+            </xs:sequence>
+            <xs:attribute name="external-id" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="retailer" type="xs:string" use="required"/>
+      <xs:attribute name="generated-at" type="xs:dateTime" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

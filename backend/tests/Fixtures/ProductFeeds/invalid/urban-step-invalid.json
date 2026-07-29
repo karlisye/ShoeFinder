@@ -1,0 +1,42 @@
+{
+    "retailer": {
+        "code": "urban-step",
+        "name": "Urban Step"
+    },
+    "generated_at": "invalid-date",
+    "products": [
+        {
+            "retailer_external_id": "US-INVALID-1",
+            "retailer_sku": "DUPLICATE-SKU",
+            "gtin": "4750000000008",
+            "brand": "Test Brand",
+            "title": "Conflicting identity product",
+            "colour": "Blue",
+            "product_url": "https://urban-step.example/products/invalid-1",
+            "current_price": "89.99",
+            "original_price": "79.99",
+            "currency": "USD",
+            "active": true,
+            "unexpected_field": "must be reported",
+            "sizes": [
+                {
+                    "eu_size": "forty-two",
+                    "in_stock": true
+                }
+            ]
+        },
+        {
+            "retailer_external_id": "US-INVALID-2",
+            "retailer_sku": "DUPLICATE-SKU",
+            "gtin": "4750000000008",
+            "brand": "Other Brand",
+            "title": "Second conflicting product",
+            "colour": "Red",
+            "product_url": "https://urban-step.example/products/invalid-2",
+            "current_price": "99.99",
+            "currency": "EUR",
+            "active": true,
+            "sizes": []
+        }
+    ]
+}

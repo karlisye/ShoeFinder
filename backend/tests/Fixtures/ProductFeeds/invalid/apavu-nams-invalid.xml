@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogue xmlns="https://feeds.shoefinder.example/v1" retailer="apavu-nams" generated-at="2026-07-29T09:00:00+03:00">
+  <product external-id="AN-INVALID-1">
+    <sku>AN-INVALID-1</sku>
+    <brand>Test Brand</brand>
+    <title>Broken XML product</title>
+    <colour>Black</colour>
+    <product-url>https://apavu-nams.example/products/invalid-1</product-url>
+    <price currency="EUR" current="99.99"/>
+    <sizes><size eu="42" in-stock="true"></sizes>
+  </product>
+</catalogue>
