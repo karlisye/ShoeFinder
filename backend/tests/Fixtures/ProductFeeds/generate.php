@@ -459,7 +459,7 @@ function writeInvalidFixtures(): void
 {
     $csv = <<<'CSV'
 external_id;sku;gtin;style_code;variant_code;brand;title;colour;product_url;affiliate_url;price;original_price;currency;delivery_cost;delivery_min_days;delivery_max_days;delivery_note_lv;delivery_note_en;images;sizes;active;observed_at
-;;12345;BAD-1;BAD-1-001;Test Brand;;Black;not-a-url;;-10,00;5,00;EURO;-1,00;6;2;;;https://images.sole-market.example/bad.webp;42:1:-5,00|42:1:;maybe;not-a-date
+;;12345;BAD-1;BAD-1-001;Test Brand;;Black;not-a-url;;-10,00;-20,00;EURO;-1,00;6;2;;;https://images.sole-market.example/bad.webp;42:1:-5,00|42:1:;maybe;not-a-date
 "BROKEN;ROW
 CSV;
     file_put_contents(FIXTURE_ROOT.'/invalid/sole-market-invalid.csv', $csv.PHP_EOL);
@@ -530,6 +530,7 @@ XML;
         ['file' => 'sole-market-invalid.csv', 'record' => 2, 'field' => 'gtin', 'code' => 'gtin_invalid'],
         ['file' => 'sole-market-invalid.csv', 'record' => 2, 'field' => 'title', 'code' => 'required'],
         ['file' => 'sole-market-invalid.csv', 'record' => 2, 'field' => 'current_price', 'code' => 'money_negative'],
+        ['file' => 'sole-market-invalid.csv', 'record' => 2, 'field' => 'original_price', 'code' => 'money_negative'],
         ['file' => 'sole-market-invalid.csv', 'record' => 2, 'field' => 'original_price', 'code' => 'original_price_below_current'],
         ['file' => 'sole-market-invalid.csv', 'record' => 2, 'field' => 'currency', 'code' => 'currency_unsupported'],
         ['file' => 'sole-market-invalid.csv', 'record' => 2, 'field' => 'product_url', 'code' => 'url_invalid'],

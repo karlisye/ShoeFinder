@@ -27,6 +27,12 @@
         "file": "sole-market-invalid.csv",
         "record": 2,
         "field": "original_price",
+        "code": "money_negative"
+    },
+    {
+        "file": "sole-market-invalid.csv",
+        "record": 2,
+        "field": "original_price",
         "code": "original_price_below_current"
     },
     {

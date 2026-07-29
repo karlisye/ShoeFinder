@@ -8,6 +8,8 @@
         <testsuite name="PostgreSQL integration">
             <directory>tests/Feature/Database</directory>
             <directory>tests/Feature/Api</directory>
+            <directory>tests/Feature/Feeds</directory>
+            <directory>tests/Feature/Fixtures</directory>
         </testsuite>
     </testsuites>
     <source>

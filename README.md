@@ -1,6 +1,6 @@
 # ShoeFinder
 
-The prototype includes the Dockerized foundation, catalogue domain layer, Latvian Filament workflow, public read-only API, localized comparison pages, tracked retailer redirects, SEO output, and focused Stage 8 verification.
+The prototype includes the Dockerized foundation, catalogue domain layer, Latvian Filament workflow, public read-only API, localized comparison pages, tracked retailer redirects, SEO output, product-feed import tooling, and focused verification.
 
 ## Requirements
 
@@ -65,6 +65,33 @@ The public API supports:
 - `GET /go/{listing}`
 
 Latvian is the default API language. Pass `locale=en` for English localized fields. The complete request and response rules are in [notes/api-contract.md](notes/api-contract.md).
+
+## Product-feed imports
+
+Feed imports run synchronously inside the backend container. Create the matching retailer in Filament before importing. Its slug must match one configured feed:
+
+- `sole-market`
+- `urban-step`
+- `sneaker-point`
+- `apavu-nams`
+
+Preview a fixture without changing the database:
+
+```sh
+docker compose exec -T backend-php php artisan feeds:import sole-market clean/sole-market.csv
+```
+
+Apply accepted records explicitly:
+
+```sh
+docker compose exec -T backend-php php artisan feeds:import sole-market clean/sole-market.csv --apply
+```
+
+The path may be absolute, relative to `backend/`, or relative to `backend/tests/Fixtures/ProductFeeds/`.
+
+The command updates listings matched by retailer external ID or SKU. It can create a listing only when GTIN, manufacturer variant code, or manufacturer style code plus colour identifies one existing shoe variant. It does not create shoes or reference data. Weak, conflicting, and unmatched records are reported for manual review.
+
+Invalid input prevents the entire apply operation. A listing missing from one snapshot is reported but remains unchanged.
 
 ## Code quality
 
