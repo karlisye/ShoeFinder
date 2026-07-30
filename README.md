@@ -30,8 +30,17 @@ Open:
 - Robots rules: <http://localhost:8080/robots.txt>
 - Laravel health: <http://localhost:8080/up>
 - Filament admin: <http://localhost:8080/admin>
+- Adminer database viewer: <http://localhost:8081>
 - Catalogue API: <http://localhost:8080/api/v1/shoes>
 - Catalogue filters: <http://localhost:8080/api/v1/catalog-filters>
+
+Adminer is available only in the development stack. Use these values to sign in:
+
+- System: `PostgreSQL`
+- Server: `postgres`
+- Username: the `POSTGRES_USER` value from `.env`
+- Password: the `POSTGRES_PASSWORD` value from `.env`
+- Database: the `POSTGRES_DB` value from `.env`
 
 Create the first administrator interactively:
 
