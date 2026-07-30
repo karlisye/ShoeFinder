@@ -385,6 +385,8 @@ class ItemsRelationManager extends RelationManager
                             ->title('Lēmums saglabāts')
                             ->success()
                             ->send();
+
+                        $this->dispatch('refresh-page');
                     }),
             ])
             ->defaultSort('source_record');

@@ -77,7 +77,8 @@ class FeedImportAdminTest extends TestCase
                     'resolution' => FeedImportItem::RESOLUTION_IGNORE,
                 ],
             )
-            ->assertHasNoActionErrors();
+            ->assertHasNoActionErrors()
+            ->assertDispatched('refresh-page');
 
         $this->assertSame(
             FeedImportItem::RESOLUTION_IGNORE,
@@ -85,6 +86,7 @@ class FeedImportAdminTest extends TestCase
         );
         $this->assertNotNull($item->resolved_at);
         $this->assertSame(auth()->id(), $item->resolved_by);
+        $this->assertTrue($feedImport->refresh()->canApply());
     }
 
     public function test_upload_creates_a_persisted_preview_without_catalogue_writes(): void
