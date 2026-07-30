@@ -106,10 +106,11 @@ Administrators can also open **Imports** in Filament:
 
 1. Select a configured retailer and upload a feed file.
 2. Review the preview. No catalogue data changes during upload.
-3. Link safe unmatched records to an existing variant, create a new colour variant, create a new shoe model with its first variant, or ignore them.
-4. Select **Import** after every review item has a decision.
+3. Select **View changes** on any row to compare current and incoming listing fields and sizes.
+4. Link safe unmatched records to an existing variant, create catalogue data after review, confirm a matched-listing identity update, or ignore the row.
+5. Select **Import** after every review item has a decision.
 
-Uploaded files use private Laravel storage. The UI accepts files up to 10 MB and previews up to 5,000 records. Identity conflicts can only be ignored in the first review workflow. Resolve the catalogue or source data and upload a corrected feed instead of overriding conflicting identifiers.
+Uploaded files use private Laravel storage. The UI accepts files up to 10 MB and previews up to 5,000 records. When exactly one listing was matched, the review modal compares stored and incoming identities and can confirm an update. If external ID and SKU point to two different listings, correct the catalogue or source data and upload a new file.
 
 Creating a colour variant requires selecting an existing variant from the correct shoe model. Select an existing shared colourway when it already exists, or leave that field empty and enter a new stable code, canonical name, and filter colours. Colourway names are shown unchanged in Latvian and English. Filter colours are localized and affect only catalogue filtering. The selected shoe cannot use the same colourway twice. The colourway, variant, and retailer offer are connected together only when the full import is applied.
 

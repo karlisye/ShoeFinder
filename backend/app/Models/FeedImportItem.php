@@ -41,6 +41,8 @@ class FeedImportItem extends Model
 
     public const RESOLUTION_IGNORE = 'ignore';
 
+    public const RESOLUTION_UPDATE_MATCHED = 'update_matched_listing';
+
     public const RESOLUTION_CREATE_COLOUR_VARIANT = 'create_colour_variant';
 
     public const RESOLUTION_CREATE_SHOE_VARIANT = 'create_shoe_variant';
@@ -112,6 +114,16 @@ class FeedImportItem extends Model
     public function canCreateShoeVariant(): bool
     {
         return $this->canAttachToVariant();
+    }
+
+    public function canUpdateMatchedListing(): bool
+    {
+        return $this->outcome === 'manual_review'
+            && $this->matched_listing_id !== null
+            && in_array($this->reason, [
+                'strong_identity_conflict',
+                'variant_listing_identity_conflict',
+            ], true);
     }
 
     protected function casts(): array

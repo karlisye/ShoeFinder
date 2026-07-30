@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FeedImports\RelationManagers;
 
 use App\Domain\Catalogue\Colours\FilterColourSuggester;
+use App\Domain\Feeds\FeedImportChangePreview;
 use App\Domain\Feeds\FeedImportWorkflow;
 use App\Enums\Audience;
 use App\Models\Brand;
@@ -14,6 +15,7 @@ use App\Models\FilterColour;
 use App\Models\Shoe;
 use App\Models\ShoeVariant;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
@@ -24,9 +26,11 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use LogicException;
 use Throwable;
@@ -98,6 +102,25 @@ class ItemsRelationManager extends RelationManager
                     ]),
             ])
             ->recordActions([
+                Action::make('viewChanges')
+                    ->label('View changes')
+                    ->icon('heroicon-o-arrows-right-left')
+                    ->schema([
+                        Placeholder::make('change_preview')
+                            ->hiddenLabel()
+                            ->html()
+                            ->content(
+                                fn (FeedImportItem $record): HtmlString => self::changePreviewHtml(
+                                    app(FeedImportChangePreview::class)->build(
+                                        $record,
+                                    ),
+                                ),
+                            ),
+                    ])
+                    ->modalHeading(fn (FeedImportItem $record): string => "Planned changes for {$record->identity}")
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->modalWidth(Width::FiveExtraLarge),
                 Action::make('review')
                     ->label('Review')
                     ->icon('heroicon-o-check-circle')
@@ -129,6 +152,7 @@ class ItemsRelationManager extends RelationManager
                         'new_shoe_style_code' => $record->new_shoe_style_code
                             ?? ($record->normalized_payload['manufacturer_style_code'] ?? null),
                         'new_shoe_audience' => $record->new_shoe_audience,
+                        'confirm_identity_update' => false,
                     ])
                     ->schema([
                         Placeholder::make('source_data')
@@ -136,18 +160,43 @@ class ItemsRelationManager extends RelationManager
                             ->content(fn (FeedImportItem $record): string => self::sourceSummary($record)),
                         Select::make('resolution')
                             ->label('Decision')
-                            ->options(fn (FeedImportItem $record): array => $record->canAttachToVariant()
-                                ? [
+                            ->options(fn (FeedImportItem $record): array => match (true) {
+                                $record->canAttachToVariant() => [
                                     FeedImportItem::RESOLUTION_ATTACH => 'Attach to existing variant',
                                     FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT => 'Create a new colour variant',
                                     FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT => 'Create a new shoe',
                                     FeedImportItem::RESOLUTION_IGNORE => 'Ignore record',
-                                ]
-                                : [
+                                ],
+                                $record->canUpdateMatchedListing() => [
+                                    FeedImportItem::RESOLUTION_UPDATE_MATCHED => 'Update matched listing',
                                     FeedImportItem::RESOLUTION_IGNORE => 'Ignore record',
-                                ])
+                                ],
+                                default => [
+                                    FeedImportItem::RESOLUTION_IGNORE => 'Ignore record',
+                                ],
+                            })
                             ->live()
                             ->required(),
+                        Section::make('Identity comparison')
+                            ->description('Only confirm this change when both columns describe the same retailer product.')
+                            ->schema([
+                                Placeholder::make('stored_identity')
+                                    ->label('Stored listing')
+                                    ->html()
+                                    ->content(fn (FeedImportItem $record): HtmlString|string => self::storedIdentitySummary($record)),
+                                Placeholder::make('incoming_identity')
+                                    ->label('Incoming feed record')
+                                    ->html()
+                                    ->content(fn (FeedImportItem $record): HtmlString => self::incomingIdentitySummary($record)),
+                                Checkbox::make('confirm_identity_update')
+                                    ->label('I confirm that the incoming identities belong to this matched listing.')
+                                    ->accepted()
+                                    ->required()
+                                    ->columnSpanFull(),
+                            ])
+                            ->columns(2)
+                            ->visible(fn (Get $get): bool => $get('resolution')
+                                === FeedImportItem::RESOLUTION_UPDATE_MATCHED),
                         Section::make('New shoe')
                             ->schema([
                                 Select::make('new_shoe_brand_id')
@@ -370,6 +419,7 @@ class ItemsRelationManager extends RelationManager
                                     'new_shoe_slug' => $data['new_shoe_slug'] ?? null,
                                     'new_shoe_style_code' => $data['new_shoe_style_code'] ?? null,
                                     'new_shoe_audience' => $data['new_shoe_audience'] ?? null,
+                                    'confirm_identity_update' => $data['confirm_identity_update'] ?? false,
                                 ],
                             );
                         } catch (Throwable $exception) {
@@ -547,6 +597,7 @@ class ItemsRelationManager extends RelationManager
             FeedImportItem::RESOLUTION_ATTACH => 'Attached to variant',
             FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT => 'New colour variant',
             FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT => 'New shoe',
+            FeedImportItem::RESOLUTION_UPDATE_MATCHED => 'Matched listing update',
             FeedImportItem::RESOLUTION_IGNORE => 'Ignored',
             default => 'None',
         };
@@ -576,6 +627,118 @@ class ItemsRelationManager extends RelationManager
             "Price: {$price}",
             $sizes !== '' ? "Sizes: {$sizes}" : null,
         ])->filter()->implode("\n");
+    }
+
+    private static function changePreviewHtml(array $preview): HtmlString
+    {
+        $content = sprintf(
+            '<p style="margin: 0; font-size: 0.875rem;">%s</p>',
+            e($preview['summary']),
+        );
+
+        if (! $preview['will_apply']) {
+            return new HtmlString($content);
+        }
+
+        $content .= self::changeTable(
+            'Listing fields',
+            'Field',
+            $preview['fields'],
+        );
+        $content .= self::changeTable(
+            'Size availability',
+            'Size',
+            $preview['sizes'],
+        );
+
+        if ($preview['fields'] === [] && $preview['sizes'] === []) {
+            $content .= '<p style="margin: 1rem 0 0; font-size: 0.875rem; opacity: 0.75;">No visible listing or size values will change. The stored source snapshot will still be refreshed.</p>';
+        }
+
+        return new HtmlString($content);
+    }
+
+    private static function changeTable(
+        string $heading,
+        string $firstColumn,
+        array $rows,
+    ): string {
+        if ($rows === []) {
+            return '';
+        }
+
+        $body = collect($rows)
+            ->map(fn (array $row): string => sprintf(
+                '<tr><th scope="row" style="width: 28%%; padding: 0.65rem 0.75rem; border-top: 1px solid rgba(128, 128, 128, 0.25); text-align: left; vertical-align: top; font-weight: 600; overflow-wrap: anywhere;">%s</th><td style="width: 36%%; padding: 0.65rem 0.75rem; border-top: 1px solid rgba(128, 128, 128, 0.25); vertical-align: top; overflow-wrap: anywhere;">%s</td><td style="width: 36%%; padding: 0.65rem 0.75rem; border-top: 1px solid rgba(128, 128, 128, 0.25); vertical-align: top; overflow-wrap: anywhere;">%s</td></tr>',
+                e($row['label']),
+                e($row['current']),
+                e($row['incoming']),
+            ))
+            ->implode('');
+
+        return sprintf(
+            '<section style="margin-top: 1.5rem;"><h3 style="margin: 0; font-size: 1rem; font-weight: 600;">%s</h3><div style="margin-top: 0.75rem; overflow-x: auto; border: 1px solid rgba(128, 128, 128, 0.3); border-radius: 0.5rem;"><table style="width: 100%%; min-width: 36rem; border-collapse: collapse; table-layout: fixed; font-size: 0.875rem;"><thead style="background: rgba(128, 128, 128, 0.1);"><tr><th style="width: 28%%; padding: 0.55rem 0.75rem; text-align: left; font-weight: 600;">%s</th><th style="width: 36%%; padding: 0.55rem 0.75rem; text-align: left; font-weight: 600;">Current</th><th style="width: 36%%; padding: 0.55rem 0.75rem; text-align: left; font-weight: 600;">Incoming</th></tr></thead><tbody>%s</tbody></table></div></section>',
+            e($heading),
+            e($firstColumn),
+            $body,
+        );
+    }
+
+    private static function storedIdentitySummary(FeedImportItem $item): HtmlString|string
+    {
+        $listing = $item->matchedListing?->loadMissing([
+            'variant.shoe.brand',
+            'variant.colour',
+        ]);
+
+        if ($listing === null) {
+            return 'No matched listing';
+        }
+
+        return self::identitySummary([
+            'Product' => sprintf(
+                '%s %s, %s',
+                $listing->variant->shoe->brand->name,
+                $listing->variant->shoe->name,
+                $listing->variant->colour->name,
+            ),
+            'Retailer external ID' => $listing->retailer_external_id,
+            'Retailer SKU' => $listing->retailer_sku,
+            'GTIN / EAN' => $listing->gtin,
+            'Manufacturer style code' => $listing->manufacturer_style_code,
+            'Manufacturer variant code' => $listing->variant->manufacturer_variant_code,
+        ]);
+    }
+
+    private static function incomingIdentitySummary(FeedImportItem $item): HtmlString
+    {
+        $data = $item->normalized_payload ?? [];
+
+        return self::identitySummary([
+            'Product' => $data['title'] ?? null,
+            'Retailer external ID' => $data['retailer_external_id'] ?? null,
+            'Retailer SKU' => $data['retailer_sku'] ?? null,
+            'GTIN / EAN' => $data['gtin'] ?? null,
+            'Manufacturer style code' => $data['manufacturer_style_code'] ?? null,
+            'Manufacturer variant code' => $data['manufacturer_variant_code'] ?? null,
+        ]);
+    }
+
+    private static function identitySummary(array $values): HtmlString
+    {
+        $rows = collect($values)
+            ->map(function (mixed $value, string $label): string {
+                $displayValue = filled($value) ? $value : 'Not provided';
+
+                return sprintf(
+                    '<div><div class="text-xs font-medium text-gray-500 dark:text-gray-400">%s</div><div class="text-gray-950 dark:text-white">%s</div></div>',
+                    e($label),
+                    e($displayValue),
+                );
+            })
+            ->implode('');
+
+        return new HtmlString('<div class="space-y-2 text-sm">'.$rows.'</div>');
     }
 
     private static function suggestColourCode(string $colour): string

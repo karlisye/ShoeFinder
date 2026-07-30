@@ -94,6 +94,113 @@ class FeedImportWorkflowTest extends TestCase
         );
     }
 
+    public function test_confirmed_identity_conflict_updates_the_matched_listing(): void
+    {
+        $context = $this->feedContext();
+        $context['variant']->update([
+            'manufacturer_variant_code' => 'OLD-VARIANT-CODE',
+        ]);
+        $listing = $this->createListing(
+            $context['variant'],
+            $context['retailer'],
+            [
+                'retailer_external_id' => 'SOLEMARKET-00001',
+                'retailer_sku' => 'SOL-CW2288-111',
+                'gtin' => null,
+                'manufacturer_style_code' => null,
+                'current_price' => 150,
+                'original_price' => 180,
+            ],
+        );
+        $feedImport = $this->createImport($context, $this->singleCsvRecord(0));
+        $workflow = app(FeedImportWorkflow::class);
+
+        $workflow->preview($feedImport);
+
+        $item = $feedImport->items()->firstOrFail();
+
+        $this->assertSame('manual_review', $item->outcome);
+        $this->assertSame('strong_identity_conflict', $item->reason);
+        $this->assertSame($listing->id, $item->matched_listing_id);
+
+        $workflow->resolve(
+            $item,
+            FeedImportItem::RESOLUTION_UPDATE_MATCHED,
+            null,
+            null,
+            ['confirm_identity_update' => true],
+        );
+
+        $this->assertSame('150.00', $listing->fresh()->current_price);
+        $this->assertSame(
+            'OLD-VARIANT-CODE',
+            $context['variant']->fresh()->manufacturer_variant_code,
+        );
+
+        $workflow->apply($feedImport);
+
+        $this->assertSame('101.99', $listing->fresh()->current_price);
+        $this->assertSame('feed', $listing->fresh()->source_type->value);
+        $this->assertSame(5, $listing->listingSizes()->count());
+        $this->assertSame(
+            'CW2288-111',
+            $context['variant']->fresh()->manufacturer_variant_code,
+        );
+    }
+
+    public function test_identity_update_requires_one_match_and_confirmation(): void
+    {
+        $context = $this->feedContext();
+        $feedImport = $this->createImport($context, $this->singleCsvRecord(0));
+        $feedImport->update(['status' => FeedImport::STATUS_READY]);
+        $item = $feedImport->items()->create([
+            'source_record' => 2,
+            'identity' => 'CONFLICT',
+            'outcome' => 'manual_review',
+            'reason' => 'retailer_identity_conflict',
+            'normalized_payload' => [],
+            'raw_payload' => [],
+        ]);
+        $workflow = app(FeedImportWorkflow::class);
+
+        try {
+            $workflow->resolve(
+                $item,
+                FeedImportItem::RESOLUTION_UPDATE_MATCHED,
+                null,
+                null,
+                ['confirm_identity_update' => true],
+            );
+            $this->fail('A two-listing conflict was accepted.');
+        } catch (LogicException $exception) {
+            $this->assertSame(
+                'This conflict has no single matched listing to update.',
+                $exception->getMessage(),
+            );
+        }
+
+        $listing = $this->createListing(
+            $context['variant'],
+            $context['retailer'],
+        );
+        $item->update([
+            'reason' => 'strong_identity_conflict',
+            'matched_listing_id' => $listing->id,
+        ]);
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(
+            'Confirm that the incoming identities belong to the matched listing.',
+        );
+
+        $workflow->resolve(
+            $item->fresh(),
+            FeedImportItem::RESOLUTION_UPDATE_MATCHED,
+            null,
+            null,
+        );
+    }
+
     public function test_invalid_preview_cannot_be_applied(): void
     {
         $context = $this->feedContext();

@@ -118,6 +118,7 @@ class FeedImportWorkflow
             FeedImportItem::RESOLUTION_ATTACH,
             FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT,
             FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
+            FeedImportItem::RESOLUTION_UPDATE_MATCHED,
             FeedImportItem::RESOLUTION_IGNORE,
         ], true)) {
             throw new LogicException('Unknown review resolution.');
@@ -144,6 +145,10 @@ class FeedImportWorkflow
             && ! $item->canCreateShoeVariant()
         ) {
             throw new LogicException('This identity conflict cannot create a shoe safely.');
+        }
+
+        if ($resolution === FeedImportItem::RESOLUTION_UPDATE_MATCHED) {
+            $this->validateMatchedListingUpdate($item, $newVariant);
         }
 
         if ($usesVariant && $variantId === null) {
@@ -218,6 +223,15 @@ class FeedImportWorkflow
                     $listing = $item->matched_listing_id === null
                         ? null
                         : RetailerListing::query()->findOrFail($item->matched_listing_id);
+
+                    if ($item->resolution === FeedImportItem::RESOLUTION_UPDATE_MATCHED) {
+                        if ($listing === null) {
+                            throw new LogicException('The matched listing no longer exists.');
+                        }
+
+                        $this->updateMatchedVariantIdentity($listing, $record);
+                    }
+
                     if (
                         $item->resolution
                         === FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT
@@ -250,6 +264,74 @@ class FeedImportWorkflow
         });
 
         return $feedImport->refresh();
+    }
+
+    private function validateMatchedListingUpdate(
+        FeedImportItem $item,
+        array $data,
+    ): void {
+        if (! $item->canUpdateMatchedListing()) {
+            throw new LogicException('This conflict has no single matched listing to update.');
+        }
+
+        if (($data['confirm_identity_update'] ?? false) !== true) {
+            throw new LogicException('Confirm that the incoming identities belong to the matched listing.');
+        }
+
+        $listing = RetailerListing::query()
+            ->with('variant')
+            ->findOrFail($item->matched_listing_id);
+
+        if ((int) $listing->retailer_id !== (int) $item->feedImport->retailer_id) {
+            throw new LogicException('The matched listing belongs to a different retailer.');
+        }
+
+        $incoming = $item->normalized_payload ?? [];
+
+        foreach (['retailer_external_id', 'retailer_sku'] as $field) {
+            if (blank($incoming[$field] ?? null)) {
+                continue;
+            }
+
+            $identityIsUsed = RetailerListing::query()
+                ->where('retailer_id', $item->feedImport->retailer_id)
+                ->where($field, $incoming[$field])
+                ->whereKeyNot($listing->getKey())
+                ->exists();
+
+            if ($identityIsUsed) {
+                throw new LogicException("The incoming {$field} belongs to another listing.");
+            }
+        }
+
+        $variantCode = $incoming['manufacturer_variant_code'] ?? null;
+
+        if (
+            filled($variantCode)
+            && ShoeVariant::query()
+                ->where('shoe_id', $listing->variant->shoe_id)
+                ->where('manufacturer_variant_code', $variantCode)
+                ->whereKeyNot($listing->variant->getKey())
+                ->exists()
+        ) {
+            throw new LogicException('The incoming manufacturer variant code belongs to another variant.');
+        }
+    }
+
+    private function updateMatchedVariantIdentity(
+        RetailerListing $listing,
+        FeedRecord $record,
+    ): void {
+        $variantCode = $record->data['manufacturer_variant_code'] ?? null;
+
+        if (
+            filled($variantCode)
+            && $listing->variant->manufacturer_variant_code !== $variantCode
+        ) {
+            $listing->variant->update([
+                'manufacturer_variant_code' => $variantCode,
+            ]);
+        }
     }
 
     private function validateNewVariant(

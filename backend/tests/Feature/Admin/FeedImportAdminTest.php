@@ -92,6 +92,112 @@ class FeedImportAdminTest extends TestCase
         $this->assertTrue($feedImport->refresh()->canApply());
     }
 
+    public function test_view_changes_action_renders_listing_and_size_differences(): void
+    {
+        $context = $this->createCatalogueContext('feed-admin-changes');
+        $listing = $this->createListing(
+            $context['variant'],
+            $context['retailer'],
+        );
+        $this->createListingSize($listing, $context['size']);
+        $feedImport = $this->createFeedImport($context);
+        $item = $feedImport->items()->create([
+            'source_record' => 2,
+            'identity' => 'ADMIN-CHANGES-1',
+            'outcome' => 'updated',
+            'reason' => 'retailer_identity',
+            'matched_listing_id' => $listing->id,
+            'matched_variant_id' => $context['variant']->id,
+            'normalized_payload' => [
+                'current_price' => '89.99',
+                'currency' => 'EUR',
+                'sizes' => [
+                    [
+                        'eu_size' => $context['size']->label,
+                        'in_stock' => false,
+                        'price' => null,
+                    ],
+                ],
+                'active' => true,
+                'observed_at' => '2026-07-30T09:00:00+03:00',
+            ],
+            'raw_payload' => ['source' => 'admin-change-test'],
+        ]);
+
+        Livewire::test(ItemsRelationManager::class, [
+            'ownerRecord' => $feedImport,
+            'pageClass' => EditFeedImport::class,
+        ])
+            ->assertActionExists(
+                TestAction::make('viewChanges')->table($item),
+            )
+            ->mountAction(TestAction::make('viewChanges')->table($item))
+            ->assertHasNoActionErrors();
+
+        $this->assertSame('99.99', $listing->fresh()->current_price);
+        $this->assertTrue(
+            $listing->listingSizes()->firstOrFail()->in_stock,
+        );
+    }
+
+    public function test_review_action_can_confirm_a_matched_listing_identity_update(): void
+    {
+        $context = $this->createCatalogueContext('feed-admin-identity-update');
+        $context['retailer']->update(['slug' => 'sole-market']);
+        $listing = $this->createListing(
+            $context['variant'],
+            $context['retailer'],
+        );
+        $feedImport = $this->createFeedImport($context);
+        $item = $feedImport->items()->create([
+            'source_record' => 2,
+            'identity' => 'IDENTITY-UPDATE-1',
+            'outcome' => 'manual_review',
+            'reason' => 'strong_identity_conflict',
+            'matched_listing_id' => $listing->id,
+            'matched_variant_id' => $context['variant']->id,
+            'normalized_payload' => [
+                'title' => 'Updated retailer title',
+                'retailer_external_id' => 'updated-external-id',
+                'retailer_sku' => 'updated-sku',
+                'manufacturer_variant_code' => 'UPDATED-VARIANT',
+            ],
+            'raw_payload' => ['title' => 'Updated retailer title'],
+        ]);
+
+        Livewire::test(ItemsRelationManager::class, [
+            'ownerRecord' => $feedImport,
+            'pageClass' => EditFeedImport::class,
+        ])
+            ->mountAction(TestAction::make('review')->table($item))
+            ->assertFormFieldExists(
+                'resolution',
+                'mountedActionSchema0',
+                fn (Select $field): bool => $field->getOptions()[
+                    FeedImportItem::RESOLUTION_UPDATE_MATCHED
+                ] === 'Update matched listing',
+            );
+
+        Livewire::test(ItemsRelationManager::class, [
+            'ownerRecord' => $feedImport,
+            'pageClass' => EditFeedImport::class,
+        ])
+            ->callAction(
+                TestAction::make('review')->table($item),
+                [
+                    'resolution' => FeedImportItem::RESOLUTION_UPDATE_MATCHED,
+                    'confirm_identity_update' => true,
+                ],
+            )
+            ->assertHasNoActionErrors();
+
+        $this->assertSame(
+            FeedImportItem::RESOLUTION_UPDATE_MATCHED,
+            $item->fresh()->resolution,
+        );
+        $this->assertTrue($feedImport->fresh()->canApply());
+    }
+
     public function test_upload_creates_a_persisted_preview_without_catalogue_writes(): void
     {
         $context = $this->createCatalogueContext('feed-admin-upload');
