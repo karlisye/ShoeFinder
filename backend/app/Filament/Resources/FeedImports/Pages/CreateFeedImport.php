@@ -15,7 +15,7 @@ class CreateFeedImport extends CreateRecord
 
     public function getHeading(): string
     {
-        return 'Jauns datu imports';
+        return 'New feed import';
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array
@@ -23,7 +23,7 @@ class CreateFeedImport extends CreateRecord
         $retailer = Retailer::query()->findOrFail($data['retailer_id']);
         $format = config("feeds.retailers.{$retailer->slug}.format");
 
-        abort_if($format === null, 422, 'Šim veikalam datu plūsma nav konfigurēta.');
+        abort_if($format === null, 422, 'No product feed is configured for this retailer.');
 
         $data['user_id'] = auth()->id();
         $data['format'] = $format;
@@ -40,8 +40,8 @@ class CreateFeedImport extends CreateRecord
 
         Notification::make()
             ->title($this->record->status === FeedImport::STATUS_READY
-                ? 'Priekšskatījums izveidots'
-                : 'Failu neizdevās sagatavot')
+                ? 'Preview created'
+                : 'File could not be prepared')
             ->status($this->record->status === FeedImport::STATUS_READY
                 ? 'success'
                 : 'danger')

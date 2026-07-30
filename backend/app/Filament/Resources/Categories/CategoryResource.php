@@ -29,11 +29,11 @@ class CategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
 
-    protected static ?string $navigationLabel = 'Kategorijas';
+    protected static ?string $navigationLabel = 'Categories';
 
-    protected static ?string $modelLabel = 'kategorija';
+    protected static ?string $modelLabel = 'category';
 
-    protected static ?string $pluralModelLabel = 'kategorijas';
+    protected static ?string $pluralModelLabel = 'Categories';
 
     protected static ?string $recordTitleAttribute = 'name_lv';
 
@@ -45,10 +45,10 @@ class CategoryResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Kategorijas dati')
+                Section::make('Category details')
                     ->schema([
                         TextInput::make('name_lv')
-                            ->label('Nosaukums latviski')
+                            ->label('Latvian name')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
@@ -58,18 +58,18 @@ class CategoryResource extends Resource
                                 }
                             }),
                         TextInput::make('name_en')
-                            ->label('Nosaukums angliski')
+                            ->label('English name')
                             ->required()
                             ->maxLength(255),
                         TextInput::make('slug')
-                            ->label('Adrese')
-                            ->helperText('Nemainīga daļa publiskajā adresē.')
+                            ->label('Slug')
+                            ->helperText('Stable part of the public URL.')
                             ->required()
                             ->maxLength(255)
                             ->rules(['regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'])
                             ->unique(ignoreRecord: true),
                         TextInput::make('sort_order')
-                            ->label('Kārtošanas secība')
+                            ->label('Sort order')
                             ->numeric()
                             ->integer()
                             ->minValue(0)
@@ -77,13 +77,13 @@ class CategoryResource extends Resource
                             ->default(0)
                             ->required(),
                         Textarea::make('description_lv')
-                            ->label('Apraksts latviski')
+                            ->label('Latvian description')
                             ->rows(4),
                         Textarea::make('description_en')
-                            ->label('Apraksts angliski')
+                            ->label('English description')
                             ->rows(4),
                         Toggle::make('active')
-                            ->label('Aktīva')
+                            ->label('Active')
                             ->default(true),
                     ])
                     ->columns(2),
@@ -95,25 +95,25 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name_lv')
-                    ->label('Nosaukums latviski')
+                    ->label('Latvian name')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name_en')
-                    ->label('Nosaukums angliski')
+                    ->label('English name')
                     ->searchable(),
                 TextColumn::make('sort_order')
-                    ->label('Secība')
+                    ->label('Order')
                     ->sortable(),
                 TextColumn::make('shoes_count')
-                    ->label('Apavi')
+                    ->label('Shoes')
                     ->counts('shoes')
                     ->sortable(),
                 IconColumn::make('active')
-                    ->label('Aktīva')
+                    ->label('Active')
                     ->boolean(),
             ])
             ->filters([
-                TernaryFilter::make('active')->label('Aktīva'),
+                TernaryFilter::make('active')->label('Active'),
             ])
             ->recordActions([
                 EditAction::make(),

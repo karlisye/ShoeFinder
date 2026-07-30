@@ -34,11 +34,11 @@ class ShoeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
-    protected static ?string $navigationLabel = 'Apavi';
+    protected static ?string $navigationLabel = 'Shoes';
 
-    protected static ?string $modelLabel = 'apavu modelis';
+    protected static ?string $modelLabel = 'shoe';
 
-    protected static ?string $pluralModelLabel = 'apavi';
+    protected static ?string $pluralModelLabel = 'Shoes';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -50,23 +50,23 @@ class ShoeResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Pamatdati')
+                Section::make('Shoe details')
                     ->schema([
                         Select::make('brand_id')
-                            ->label('Zīmols')
+                            ->label('Brand')
                             ->relationship('brand', 'name')
                             ->searchable()
                             ->preload()
                             ->required()
                             ->live(),
                         Select::make('category_id')
-                            ->label('Kategorija')
-                            ->relationship('category', 'name_lv')
+                            ->label('Category')
+                            ->relationship('category', 'name_en')
                             ->searchable()
                             ->preload()
                             ->required(),
                         TextInput::make('name')
-                            ->label('Oficiālais nosaukums')
+                            ->label('Official name')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
@@ -76,15 +76,15 @@ class ShoeResource extends Resource
                                 }
                             }),
                         TextInput::make('slug')
-                            ->label('Adrese')
-                            ->helperText('Nemainīga daļa publiskajā adresē.')
+                            ->label('Slug')
+                            ->helperText('Stable part of the public URL.')
                             ->disabledOn('edit')
                             ->required()
                             ->maxLength(255)
                             ->rules(['regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'])
                             ->unique(ignoreRecord: true),
                         TextInput::make('manufacturer_style_code')
-                            ->label('Ražotāja modeļa kods')
+                            ->label('Manufacturer style code')
                             ->maxLength(100)
                             ->unique(
                                 table: 'shoes',
@@ -96,26 +96,26 @@ class ShoeResource extends Resource
                                 ),
                             ),
                         Select::make('audience')
-                            ->label('Auditorija')
+                            ->label('Audience')
                             ->options([
-                                Audience::Men->value => 'Vīriešiem',
-                                Audience::Women->value => 'Sievietēm',
+                                Audience::Men->value => 'Men',
+                                Audience::Women->value => 'Women',
                                 Audience::Unisex->value => 'Unisex',
-                                Audience::Kids->value => 'Bērniem',
+                                Audience::Kids->value => 'Kids',
                             ])
                             ->required(),
                         Toggle::make('active')
-                            ->label('Aktīvs')
+                            ->label('Active')
                             ->default(true),
                     ])
                     ->columns(2),
-                Section::make('Apraksti')
+                Section::make('Descriptions')
                     ->schema([
                         Textarea::make('description_lv')
-                            ->label('Apraksts latviski')
+                            ->label('Latvian description')
                             ->rows(6),
                         Textarea::make('description_en')
-                            ->label('Apraksts angliski')
+                            ->label('English description')
                             ->rows(6),
                     ])
                     ->columns(2),
@@ -127,59 +127,59 @@ class ShoeResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nosaukums')
+                    ->label('Name')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('brand.name')
-                    ->label('Zīmols')
+                    ->label('Brand')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('category.name_lv')
-                    ->label('Kategorija')
+                TextColumn::make('category.name_en')
+                    ->label('Category')
                     ->sortable(),
                 TextColumn::make('audience')
-                    ->label('Auditorija')
+                    ->label('Audience')
                     ->formatStateUsing(fn (Audience|string $state): string => match (
                         $state instanceof Audience ? $state : Audience::from($state)
                     ) {
-                        Audience::Men => 'Vīriešiem',
-                        Audience::Women => 'Sievietēm',
+                        Audience::Men => 'Men',
+                        Audience::Women => 'Women',
                         Audience::Unisex => 'Unisex',
-                        Audience::Kids => 'Bērniem',
+                        Audience::Kids => 'Kids',
                     }),
                 TextColumn::make('variants_count')
-                    ->label('Varianti')
+                    ->label('Variants')
                     ->counts('variants')
                     ->sortable(),
                 IconColumn::make('active')
-                    ->label('Aktīvs')
+                    ->label('Active')
                     ->boolean(),
                 TextColumn::make('updated_at')
-                    ->label('Atjaunināts')
-                    ->dateTime('d.m.Y H:i')
+                    ->label('Updated')
+                    ->dateTime('Y-m-d H:i')
                     ->sortable()
                     ->toggleable(),
             ])
             ->filters([
                 SelectFilter::make('brand_id')
-                    ->label('Zīmols')
+                    ->label('Brand')
                     ->relationship('brand', 'name')
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('category_id')
-                    ->label('Kategorija')
-                    ->relationship('category', 'name_lv')
+                    ->label('Category')
+                    ->relationship('category', 'name_en')
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('audience')
-                    ->label('Auditorija')
+                    ->label('Audience')
                     ->options([
-                        Audience::Men->value => 'Vīriešiem',
-                        Audience::Women->value => 'Sievietēm',
+                        Audience::Men->value => 'Men',
+                        Audience::Women->value => 'Women',
                         Audience::Unisex->value => 'Unisex',
-                        Audience::Kids->value => 'Bērniem',
+                        Audience::Kids->value => 'Kids',
                     ]),
-                TernaryFilter::make('active')->label('Aktīvs'),
+                TernaryFilter::make('active')->label('Active'),
             ])
             ->recordActions([
                 EditAction::make(),

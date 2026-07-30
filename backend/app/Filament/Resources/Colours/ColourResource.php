@@ -29,11 +29,11 @@ class ColourResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSwatch;
 
-    protected static ?string $navigationLabel = 'Krāsu varianti';
+    protected static ?string $navigationLabel = 'Colourways';
 
-    protected static ?string $modelLabel = 'krāsu variants';
+    protected static ?string $modelLabel = 'colourway';
 
-    protected static ?string $pluralModelLabel = 'krāsu varianti';
+    protected static ?string $pluralModelLabel = 'Colourways';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -45,12 +45,12 @@ class ColourResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Krāsu varianta dati')
-                    ->description('Oficiālais nosaukums identificē variantu. Filtra krāsas nosaka, kuros kataloga filtros tas parādās.')
+                Section::make('Colourway details')
+                    ->description('The official name identifies the variant. Filter colours control which catalogue filters include it.')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Oficiālais nosaukums')
-                            ->helperText('Saglabā ražotāja vai veikala izmantoto nosaukumu. To netulko.')
+                            ->label('Official name')
+                            ->helperText('Use the manufacturer or retailer colourway name. Do not translate it.')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
@@ -60,19 +60,19 @@ class ColourResource extends Resource
                                 }
                             }),
                         TextInput::make('code')
-                            ->label('Kods')
-                            ->helperText('Mazie burti, cipari un defises. Pēc izveides kodu nemaini.')
+                            ->label('Code')
+                            ->helperText('Use lowercase letters, numbers, and hyphens. Do not change the code after creation.')
                             ->required()
                             ->maxLength(64)
                             ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                             ->disabledOn('edit')
                             ->unique(ignoreRecord: true),
                         CheckboxList::make('filterColours')
-                            ->label('Filtra krāsas')
-                            ->helperText('Izvēlies visas krāsas, kuras redzamas šajā variantā.')
+                            ->label('Filter colours')
+                            ->helperText('Select every colour visible in this colourway.')
                             ->relationship(
                                 'filterColours',
-                                'name_lv',
+                                'name_en',
                                 fn ($query) => $query
                                     ->where('active', true)
                                     ->orderBy('sort_order'),
@@ -83,7 +83,7 @@ class ColourResource extends Resource
                             ->required()
                             ->columnSpanFull(),
                         TextInput::make('sort_order')
-                            ->label('Kārtošanas secība')
+                            ->label('Sort order')
                             ->numeric()
                             ->integer()
                             ->minValue(0)
@@ -91,7 +91,7 @@ class ColourResource extends Resource
                             ->default(0)
                             ->required(),
                         Toggle::make('active')
-                            ->label('Aktīvs')
+                            ->label('Active')
                             ->default(true),
                     ])
                     ->columns(2),
@@ -103,26 +103,26 @@ class ColourResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Oficiālais nosaukums')
+                    ->label('Official name')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('code')
-                    ->label('Kods')
+                    ->label('Code')
                     ->searchable(),
-                TextColumn::make('filterColours.name_lv')
-                    ->label('Filtra krāsas')
+                TextColumn::make('filterColours.name_en')
+                    ->label('Filter colours')
                     ->badge()
                     ->separator(', '),
                 TextColumn::make('variants_count')
-                    ->label('Varianti')
+                    ->label('Variants')
                     ->counts('variants')
                     ->sortable(),
                 IconColumn::make('active')
-                    ->label('Aktīvs')
+                    ->label('Active')
                     ->boolean(),
             ])
             ->filters([
-                TernaryFilter::make('active')->label('Aktīvs'),
+                TernaryFilter::make('active')->label('Active'),
             ])
             ->recordActions([
                 EditAction::make(),

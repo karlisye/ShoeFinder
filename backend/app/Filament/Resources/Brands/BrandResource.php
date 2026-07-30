@@ -28,11 +28,11 @@ class BrandResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
-    protected static ?string $navigationLabel = 'Zīmoli';
+    protected static ?string $navigationLabel = 'Brands';
 
-    protected static ?string $modelLabel = 'zīmols';
+    protected static ?string $modelLabel = 'brand';
 
-    protected static ?string $pluralModelLabel = 'zīmoli';
+    protected static ?string $pluralModelLabel = 'Brands';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -44,10 +44,10 @@ class BrandResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Zīmola dati')
+                Section::make('Brand details')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nosaukums')
+                            ->label('Name')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
@@ -57,18 +57,18 @@ class BrandResource extends Resource
                                 }
                             }),
                         TextInput::make('slug')
-                            ->label('Adrese')
-                            ->helperText('Nemainīga daļa publiskajā adresē.')
+                            ->label('Slug')
+                            ->helperText('Stable part of the public URL.')
                             ->required()
                             ->maxLength(255)
                             ->rules(['regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'])
                             ->unique(ignoreRecord: true),
                         TextInput::make('website_url')
-                            ->label('Tīmekļvietne')
+                            ->label('Website')
                             ->url()
                             ->maxLength(2048),
                         Toggle::make('active')
-                            ->label('Aktīvs')
+                            ->label('Active')
                             ->default(true),
                     ])
                     ->columns(2),
@@ -80,23 +80,23 @@ class BrandResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nosaukums')
+                    ->label('Name')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('shoes_count')
-                    ->label('Apavi')
+                    ->label('Shoes')
                     ->counts('shoes')
                     ->sortable(),
                 IconColumn::make('active')
-                    ->label('Aktīvs')
+                    ->label('Active')
                     ->boolean(),
                 TextColumn::make('updated_at')
-                    ->label('Atjaunināts')
-                    ->dateTime('d.m.Y H:i')
+                    ->label('Updated')
+                    ->dateTime('Y-m-d H:i')
                     ->sortable(),
             ])
             ->filters([
-                TernaryFilter::make('active')->label('Aktīvs'),
+                TernaryFilter::make('active')->label('Active'),
             ])
             ->recordActions([
                 EditAction::make(),

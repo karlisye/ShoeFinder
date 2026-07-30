@@ -12,13 +12,13 @@ class ListFeedImports extends ListRecords
 
     public function getHeading(): string
     {
-        return 'Datu importi';
+        return 'Feed imports';
     }
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Jauns imports'),
+            CreateAction::make()->label('New import'),
         ];
     }
 }

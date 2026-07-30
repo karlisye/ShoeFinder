@@ -492,6 +492,7 @@ class StageThreeAdminWorkflowTest extends TestCase
     {
         $this->get('/admin')
             ->assertOk()
-            ->assertSee('Apavi');
+            ->assertSee('Shoes')
+            ->assertSee('lang="en"', false);
     }
 }

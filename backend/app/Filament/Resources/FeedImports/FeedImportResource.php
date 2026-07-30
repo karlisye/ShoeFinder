@@ -29,11 +29,11 @@ class FeedImportResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowUpTray;
 
-    protected static ?string $navigationLabel = 'Importi';
+    protected static ?string $navigationLabel = 'Imports';
 
-    protected static ?string $modelLabel = 'datu imports';
+    protected static ?string $modelLabel = 'feed import';
 
-    protected static ?string $pluralModelLabel = 'datu importi';
+    protected static ?string $pluralModelLabel = 'Feed imports';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
@@ -43,10 +43,10 @@ class FeedImportResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Importa fails')
+                Section::make('Import file')
                     ->schema([
                         Select::make('retailer_id')
-                            ->label('Veikals')
+                            ->label('Retailer')
                             ->options(fn () => Retailer::query()
                                 ->whereIn('slug', array_keys(config('feeds.retailers', [])))
                                 ->orderBy('name')
@@ -55,8 +55,8 @@ class FeedImportResource extends Resource
                             ->required()
                             ->disabled(fn (?FeedImport $record): bool => $record !== null),
                         FileUpload::make('stored_path')
-                            ->label('Fails')
-                            ->helperText('Atļauti CSV, JSON, JSONL un XML faili līdz 10 MB.')
+                            ->label('File')
+                            ->helperText('CSV, JSON, JSONL, and XML files up to 10 MB.')
                             ->disk('local')
                             ->directory('feed-imports')
                             ->visibility('private')
@@ -86,36 +86,36 @@ class FeedImportResource extends Resource
                             ->required()
                             ->visible(fn (string $operation): bool => $operation === 'create'),
                         Placeholder::make('file_name')
-                            ->label('Fails')
-                            ->content(fn (?FeedImport $record): string => $record?->original_filename ?? 'Nav')
+                            ->label('File')
+                            ->content(fn (?FeedImport $record): string => $record?->original_filename ?? 'None')
                             ->visible(fn (string $operation): bool => $operation === 'edit'),
                         TextInput::make('status')
-                            ->label('Statuss')
+                            ->label('Status')
                             ->formatStateUsing(fn (?string $state): string => self::statusLabel($state))
                             ->disabled()
                             ->dehydrated(false)
                             ->visible(fn (string $operation): bool => $operation === 'edit'),
                         TextInput::make('ready_count')
-                            ->label('Gatavi importēšanai')
+                            ->label('Ready to import')
                             ->disabled()
                             ->dehydrated(false)
                             ->visible(fn (string $operation): bool => $operation === 'edit'),
                         TextInput::make('review_count')
-                            ->label('Jāpārbauda')
+                            ->label('Needs review')
                             ->disabled()
                             ->dehydrated(false)
                             ->visible(fn (string $operation): bool => $operation === 'edit'),
                         TextInput::make('invalid_count')
-                            ->label('Nederīgi')
+                            ->label('Invalid')
                             ->disabled()
                             ->dehydrated(false)
                             ->visible(fn (string $operation): bool => $operation === 'edit'),
                         Textarea::make('errors')
-                            ->label('Kļūdas')
+                            ->label('Errors')
                             ->formatStateUsing(fn (?array $state): string => collect($state)
                                 ->map(fn (array $error): string => $error['message']
                                     ?? $error['code']
-                                    ?? 'Nezināma kļūda')
+                                    ?? 'Unknown error')
                                 ->implode("\n"))
                             ->disabled()
                             ->dehydrated(false)
@@ -131,14 +131,14 @@ class FeedImportResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('retailer.name')
-                    ->label('Veikals')
+                    ->label('Retailer')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('original_filename')
-                    ->label('Fails')
+                    ->label('File')
                     ->searchable(),
                 TextColumn::make('status')
-                    ->label('Statuss')
+                    ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (?string $state): string => self::statusLabel($state))
                     ->color(fn (?string $state): string => match ($state) {
@@ -148,30 +148,30 @@ class FeedImportResource extends Resource
                         default => 'gray',
                     }),
                 TextColumn::make('ready_count')
-                    ->label('Gatavi')
+                    ->label('Ready')
                     ->numeric(),
                 TextColumn::make('review_count')
-                    ->label('Jāpārbauda')
+                    ->label('Needs review')
                     ->numeric(),
                 TextColumn::make('invalid_count')
-                    ->label('Nederīgi')
+                    ->label('Invalid')
                     ->numeric(),
                 TextColumn::make('created_at')
-                    ->label('Izveidots')
-                    ->dateTime('d.m.Y H:i')
+                    ->label('Created')
+                    ->dateTime('Y-m-d H:i')
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label('Statuss')
+                    ->label('Status')
                     ->options([
-                        FeedImport::STATUS_READY => 'Gatavs pārbaudei',
-                        FeedImport::STATUS_APPLIED => 'Importēts',
-                        FeedImport::STATUS_FAILED => 'Kļūda',
+                        FeedImport::STATUS_READY => 'Ready for review',
+                        FeedImport::STATUS_APPLIED => 'Imported',
+                        FeedImport::STATUS_FAILED => 'Failed',
                     ]),
             ])
             ->recordActions([
-                EditAction::make()->label('Atvērt'),
+                EditAction::make()->label('Open'),
             ])
             ->defaultSort('created_at', 'desc');
     }
@@ -195,11 +195,11 @@ class FeedImportResource extends Resource
     public static function statusLabel(?string $status): string
     {
         return match ($status) {
-            FeedImport::STATUS_UPLOADED => 'Fails augšupielādēts',
-            FeedImport::STATUS_READY => 'Gatavs pārbaudei',
-            FeedImport::STATUS_FAILED => 'Kļūda',
-            FeedImport::STATUS_APPLIED => 'Importēts',
-            default => 'Nav zināms',
+            FeedImport::STATUS_UPLOADED => 'File uploaded',
+            FeedImport::STATUS_READY => 'Ready for review',
+            FeedImport::STATUS_FAILED => 'Failed',
+            FeedImport::STATUS_APPLIED => 'Imported',
+            default => 'Unknown',
         };
     }
 }

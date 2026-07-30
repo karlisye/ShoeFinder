@@ -40,11 +40,11 @@ class VariantsRelationManager extends RelationManager
 {
     protected static string $relationship = 'variants';
 
-    protected static ?string $title = 'Varianti un piedāvājumi';
+    protected static ?string $title = 'Variants and listings';
 
-    protected static ?string $modelLabel = 'variantu';
+    protected static ?string $modelLabel = 'variant';
 
-    protected static ?string $pluralModelLabel = 'varianti';
+    protected static ?string $pluralModelLabel = 'variants';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
@@ -52,38 +52,38 @@ class VariantsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Tabs::make('Varianta sadaļas')
+                Tabs::make('Variant sections')
                     ->tabs([
                         Tab::make('Variants')
                             ->schema([
-                                Section::make('Varianta dati')
+                                Section::make('Variant details')
                                     ->schema([
                                         Select::make('colour_id')
-                                            ->label('Krāsu variants')
-                                            ->helperText('Izvēlies oficiālo krāsu variantu. Tā filtra krāsas tiek pārvaldītas sadaļā “Krāsu varianti”.')
+                                            ->label('Colourway')
+                                            ->helperText('Select the official colourway. Its filter colours are managed under Colourways.')
                                             ->relationship('colour', 'name')
                                             ->searchable()
                                             ->preload()
                                             ->createOptionForm([
                                                 TextInput::make('code')
-                                                    ->label('Kods')
-                                                    ->helperText('Mazie burti, cipari un defises. Pēc izveides kodu nemaini.')
+                                                    ->label('Code')
+                                                    ->helperText('Use lowercase letters, numbers, and hyphens. Do not change the code after creation.')
                                                     ->required()
                                                     ->maxLength(64)
                                                     ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                                                     ->unique(Colour::class, 'code'),
                                                 TextInput::make('name')
-                                                    ->label('Oficiālais nosaukums')
-                                                    ->helperText('Saglabā ražotāja vai veikala izmantoto nosaukumu. To netulko.')
+                                                    ->label('Official name')
+                                                    ->helperText('Use the manufacturer or retailer colourway name. Do not translate it.')
                                                     ->required()
                                                     ->maxLength(255),
                                                 CheckboxList::make('filter_colour_ids')
-                                                    ->label('Filtra krāsas')
-                                                    ->helperText('Izvēlies visas krāsas, kuras redzamas šajā variantā.')
+                                                    ->label('Filter colours')
+                                                    ->helperText('Select every colour visible in this colourway.')
                                                     ->options(fn (): array => FilterColour::query()
                                                         ->where('active', true)
                                                         ->orderBy('sort_order')
-                                                        ->pluck('name_lv', 'id')
+                                                        ->pluck('name_en', 'id')
                                                         ->all())
                                                     ->columns(3)
                                                     ->minItems(1)
@@ -105,9 +105,9 @@ class VariantsRelationManager extends RelationManager
                                             )
                                             ->createOptionAction(
                                                 fn (Action $action): Action => $action
-                                                    ->label('Izveidot jaunu krāsu variantu')
-                                                    ->modalHeading('Jauns krāsu variants')
-                                                    ->modalSubmitActionLabel('Izveidot'),
+                                                    ->label('Create colourway')
+                                                    ->modalHeading('New colourway')
+                                                    ->modalSubmitActionLabel('Create'),
                                             )
                                             ->unique(
                                                 table: ShoeVariant::class,
@@ -117,11 +117,11 @@ class VariantsRelationManager extends RelationManager
                                                     ->where('shoe_id', $this->getOwnerRecord()->getKey()),
                                             )
                                             ->validationMessages([
-                                                'unique' => 'Šim apavu modelim variants ar šo krāsu jau pastāv.',
+                                                'unique' => 'This shoe already has a variant with this colourway.',
                                             ])
                                             ->required(),
                                         TextInput::make('manufacturer_variant_code')
-                                            ->label('Ražotāja varianta kods')
+                                            ->label('Manufacturer variant code')
                                             ->maxLength(100)
                                             ->unique(
                                                 table: ShoeVariant::class,
@@ -131,26 +131,26 @@ class VariantsRelationManager extends RelationManager
                                                     ->where('shoe_id', $this->getOwnerRecord()->getKey()),
                                             )
                                             ->validationMessages([
-                                                'unique' => 'Šim apavu modelim variants ar šo ražotāja kodu jau pastāv.',
+                                                'unique' => 'This shoe already has a variant with this manufacturer code.',
                                             ]),
                                         Toggle::make('active')
-                                            ->label('Aktīvs')
+                                            ->label('Active')
                                             ->default(true),
                                     ])
                                     ->columns(2),
                             ]),
-                        Tab::make('Attēli')
+                        Tab::make('Images')
                             ->schema([
                                 Repeater::make('images')
-                                    ->label('Attēli')
+                                    ->label('Images')
                                     ->relationship()
                                     ->defaultItems(0)
                                     ->schema([
                                         Select::make('source_type')
-                                            ->label('Avots')
+                                            ->label('Source')
                                             ->options([
-                                                ImageSourceType::Local->value => 'Augšupielādēts fails',
-                                                ImageSourceType::External->value => 'Ārēja adrese',
+                                                ImageSourceType::Local->value => 'Uploaded file',
+                                                ImageSourceType::External->value => 'External URL',
                                             ])
                                             ->default(ImageSourceType::Local->value)
                                             ->required()
@@ -165,7 +165,7 @@ class VariantsRelationManager extends RelationManager
                                                 }
                                             }),
                                         FileUpload::make('path')
-                                            ->label('Fails')
+                                            ->label('File')
                                             ->disk('public')
                                             ->directory('shoes')
                                             ->visibility('public')
@@ -175,18 +175,18 @@ class VariantsRelationManager extends RelationManager
                                             ->required(fn (Get $get): bool => $get('source_type') === ImageSourceType::Local->value)
                                             ->visible(fn (Get $get): bool => $get('source_type') === ImageSourceType::Local->value),
                                         TextInput::make('external_url')
-                                            ->label('Attēla adrese')
+                                            ->label('Image URL')
                                             ->url()
                                             ->required(fn (Get $get): bool => $get('source_type') === ImageSourceType::External->value)
                                             ->visible(fn (Get $get): bool => $get('source_type') === ImageSourceType::External->value),
                                         Textarea::make('alt_text_lv')
-                                            ->label('Alternatīvais teksts latviski')
+                                            ->label('Latvian alt text')
                                             ->rows(2),
                                         Textarea::make('alt_text_en')
-                                            ->label('Alternatīvais teksts angliski')
+                                            ->label('English alt text')
                                             ->rows(2),
                                         TextInput::make('sort_order')
-                                            ->label('Secība')
+                                            ->label('Sort order')
                                             ->numeric()
                                             ->integer()
                                             ->minValue(0)
@@ -194,28 +194,28 @@ class VariantsRelationManager extends RelationManager
                                             ->default(0)
                                             ->required(),
                                         Toggle::make('is_primary')
-                                            ->label('Galvenais attēls')
+                                            ->label('Primary image')
                                             ->default(false),
                                     ])
                                     ->columns(2)
                                     ->itemLabel(fn (array $state): string => filled($state['alt_text_lv'] ?? null)
                                         ? $state['alt_text_lv']
-                                        : 'Attēls')
-                                    ->addActionLabel('Pievienot attēlu')
+                                        : 'Image')
+                                    ->addActionLabel('Add image')
                                     ->collapsible(),
                             ])
                             ->visible(fn (?ShoeVariant $record): bool => $record !== null),
-                        Tab::make('Piedāvājumi')
+                        Tab::make('Listings')
                             ->schema([
                                 Repeater::make('retailerListings')
-                                    ->label('Veikalu piedāvājumi')
+                                    ->label('Retailer listings')
                                     ->relationship()
                                     ->defaultItems(0)
                                     ->schema([
-                                        Section::make('Piedāvājums')
+                                        Section::make('Listing')
                                             ->schema([
                                                 Select::make('retailer_id')
-                                                    ->label('Veikals')
+                                                    ->label('Retailer')
                                                     ->relationship('retailer', 'name')
                                                     ->searchable()
                                                     ->preload()
@@ -223,112 +223,112 @@ class VariantsRelationManager extends RelationManager
                                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                                     ->required(),
                                                 TextInput::make('product_url')
-                                                    ->label('Produkta adrese')
+                                                    ->label('Product URL')
                                                     ->url()
                                                     ->required(),
                                                 TextInput::make('affiliate_url')
-                                                    ->label('Partnerprogrammas saite')
-                                                    ->helperText('Nav obligāta. Ja norādīta, pircējs tiks novirzīts uz šo saiti.')
+                                                    ->label('Affiliate URL')
+                                                    ->helperText('Optional. When present, outbound clicks use this URL.')
                                                     ->url(),
                                                 Select::make('source_type')
-                                                    ->label('Datu avots')
+                                                    ->label('Source type')
                                                     ->options([
-                                                        ListingSourceType::Manual->value => 'Manuāli',
-                                                        ListingSourceType::Feed->value => 'Datu plūsma',
+                                                        ListingSourceType::Manual->value => 'Manual',
+                                                        ListingSourceType::Feed->value => 'Feed',
                                                         ListingSourceType::Api->value => 'API',
                                                     ])
                                                     ->default(ListingSourceType::Manual->value)
                                                     ->required(),
                                                 Toggle::make('active')
-                                                    ->label('Aktīvs')
+                                                    ->label('Active')
                                                     ->default(true),
                                                 DateTimePicker::make('last_checked_at')
-                                                    ->label('Pēdējā pārbaude')
+                                                    ->label('Last checked')
                                                     ->seconds(false)
                                                     ->default(now()),
                                             ])
                                             ->columns(2),
-                                        Section::make('Cena un piegāde')
+                                        Section::make('Price and delivery')
                                             ->schema([
                                                 TextInput::make('current_price')
-                                                    ->label('Cena')
-                                                    ->helperText('Pašreizējā cena. Ja precei ir atlaide, norādi cenu pēc atlaides.')
+                                                    ->label('Current price')
+                                                    ->helperText('Current item price. Enter the discounted price when the item is on sale.')
                                                     ->numeric()
                                                     ->minValue(0)
                                                     ->step(0.01)
                                                     ->required(),
                                                 TextInput::make('original_price')
-                                                    ->label('Cena pirms atlaides')
-                                                    ->helperText('Atstāj tukšu, ja atlaides nav.')
+                                                    ->label('Original price')
+                                                    ->helperText('Leave empty when there is no discount.')
                                                     ->numeric()
                                                     ->minValue(0)
                                                     ->step(0.01)
                                                     ->gte('current_price'),
                                                 TextInput::make('currency')
-                                                    ->label('Valūta')
+                                                    ->label('Currency')
                                                     ->default('EUR')
                                                     ->length(3)
                                                     ->rules(['uppercase', 'regex:/^[A-Z]{3}$/'])
                                                     ->required(),
                                                 TextInput::make('delivery_cost')
-                                                    ->label('Piegādes cena')
+                                                    ->label('Delivery cost')
                                                     ->numeric()
                                                     ->minValue(0)
                                                     ->step(0.01),
                                                 TextInput::make('delivery_min_days')
-                                                    ->label('Piegāde no, dienas')
+                                                    ->label('Minimum delivery days')
                                                     ->numeric()
                                                     ->integer()
                                                     ->minValue(0)
                                                     ->maxValue(32767),
                                                 TextInput::make('delivery_max_days')
-                                                    ->label('Piegāde līdz, dienas')
+                                                    ->label('Maximum delivery days')
                                                     ->numeric()
                                                     ->integer()
                                                     ->minValue(0)
                                                     ->maxValue(32767)
                                                     ->gte('delivery_min_days'),
                                                 Textarea::make('delivery_note_lv')
-                                                    ->label('Piegādes piezīme latviski')
+                                                    ->label('Latvian delivery note')
                                                     ->rows(2),
                                                 Textarea::make('delivery_note_en')
-                                                    ->label('Piegādes piezīme angliski')
+                                                    ->label('English delivery note')
                                                     ->rows(2),
                                             ])
                                             ->columns(2),
-                                        Section::make('Veikala preces identifikatori')
-                                            ->description('Nav obligāti manuālai ievadei. Tie būs vajadzīgi datu importam un vienas preces atpazīšanai dažādos avotos.')
+                                        Section::make('Retailer product identifiers')
+                                            ->description('Optional for manual entry. Imports use these fields to identify the same product across sources.')
                                             ->schema([
                                                 TextInput::make('retailer_external_id')
-                                                    ->label('Veikala ārējais ID')
+                                                    ->label('Retailer external ID')
                                                     ->maxLength(191),
                                                 TextInput::make('retailer_sku')
-                                                    ->label('Veikala SKU')
+                                                    ->label('Retailer SKU')
                                                     ->maxLength(191),
                                                 TextInput::make('gtin')
-                                                    ->label('GTIN vai EAN')
+                                                    ->label('GTIN or EAN')
                                                     ->rules(['regex:/^(?:[0-9]{8}|[0-9]{12}|[0-9]{13}|[0-9]{14})$/']),
                                                 TextInput::make('manufacturer_style_code')
-                                                    ->label('Ražotāja modeļa kods')
+                                                    ->label('Manufacturer style code')
                                                     ->maxLength(100),
                                                 Textarea::make('raw_title')
-                                                    ->label('Veikala sākotnējais nosaukums')
+                                                    ->label('Raw retailer title')
                                                     ->rows(2),
                                                 TextInput::make('raw_colour')
-                                                    ->label('Veikala sākotnējā krāsa')
+                                                    ->label('Raw retailer colour')
                                                     ->maxLength(255),
                                                 KeyValue::make('raw_payload')
-                                                    ->label('Sākotnējie importa dati')
-                                                    ->keyLabel('Lauks')
-                                                    ->valueLabel('Vērtība')
-                                                    ->addActionLabel('Pievienot lauku')
+                                                    ->label('Raw import data')
+                                                    ->keyLabel('Field')
+                                                    ->valueLabel('Value')
+                                                    ->addActionLabel('Add field')
                                                     ->columnSpanFull(),
                                             ])
                                             ->columns(2)
                                             ->collapsed(),
                                         CheckboxList::make('quick_size_ids')
-                                            ->label('Izmēru ātrā izvēle')
-                                            ->helperText('Atzīmētie izmēri ir pieejami ar piedāvājuma cenu. Noņemot atzīmi, izmērs tiks noņemts no piedāvājuma.')
+                                            ->label('Quick size selection')
+                                            ->helperText('Checked sizes are in stock at the listing price. Unchecking a size removes it from the listing.')
                                             ->options(fn (): array => Size::query()
                                                 ->where('active', true)
                                                 ->orderBy('sort_order')
@@ -381,12 +381,12 @@ class VariantsRelationManager extends RelationManager
                                                 $set('listingSizes', $listingSizes->all());
                                             }),
                                         Repeater::make('listingSizes')
-                                            ->label('Pieejamie izmēri')
+                                            ->label('Available sizes')
                                             ->relationship()
                                             ->defaultItems(0)
                                             ->schema([
                                                 Select::make('size_id')
-                                                    ->label('EU izmērs')
+                                                    ->label('EU size')
                                                     ->relationship(
                                                         'size',
                                                         'label',
@@ -397,21 +397,21 @@ class VariantsRelationManager extends RelationManager
                                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                                     ->required(),
                                                 Toggle::make('in_stock')
-                                                    ->label('Pieejams')
+                                                    ->label('In stock')
                                                     ->default(true)
                                                     ->required(),
                                                 TextInput::make('price')
-                                                    ->label('Atsevišķa cena')
-                                                    ->helperText('Atstāt tukšu, lai izmantotu piedāvājuma cenu.')
+                                                    ->label('Size-specific price')
+                                                    ->helperText('Leave empty to use the listing price.')
                                                     ->numeric()
                                                     ->minValue(0)
                                                     ->step(0.01),
                                             ])
                                             ->columns(3)
                                             ->itemLabel(fn (array $state): string => filled($state['size_id'] ?? null)
-                                                ? 'Izmēra ieraksts'
-                                                : 'Jauns izmērs')
-                                            ->addActionLabel('Pievienot izmēru')
+                                                ? 'Size entry'
+                                                : 'New size')
+                                            ->addActionLabel('Add size')
                                             ->collapsible(),
                                     ])
                                     ->itemLabel(function (array $state): string {
@@ -420,16 +420,16 @@ class VariantsRelationManager extends RelationManager
                                             : null;
 
                                         return filled($retailerName)
-                                            ? "Piedāvājums ({$retailerName})"
-                                            : 'Veikala piedāvājums';
+                                            ? "Listing ({$retailerName})"
+                                            : 'Retailer listing';
                                     })
-                                    ->addActionLabel('Pievienot piedāvājumu')
+                                    ->addActionLabel('Add listing')
                                     ->deleteAction(fn (Action $action): Action => $action
-                                        ->label('Dzēst piedāvājumu')
+                                        ->label('Delete listing')
                                         ->requiresConfirmation()
-                                        ->modalHeading('Dzēst piedāvājumu?')
-                                        ->modalDescription('Tiks dzēsti arī piedāvājuma izmēri, cenu vēsture un klikšķu dati.')
-                                        ->modalSubmitActionLabel('Dzēst'))
+                                        ->modalHeading('Delete listing?')
+                                        ->modalDescription('Its sizes, price history, and outbound click data will also be deleted.')
+                                        ->modalSubmitActionLabel('Delete'))
                                     ->collapsible(),
                             ])
                             ->visible(fn (?ShoeVariant $record): bool => $record !== null),
@@ -445,38 +445,38 @@ class VariantsRelationManager extends RelationManager
             ->recordTitleAttribute('manufacturer_variant_code')
             ->columns([
                 TextColumn::make('colour.name')
-                    ->label('Krāsu variants')
+                    ->label('Colourway')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('manufacturer_variant_code')
-                    ->label('Varianta kods')
-                    ->placeholder('Nav norādīts')
+                    ->label('Variant code')
+                    ->placeholder('Not provided')
                     ->searchable(),
                 TextColumn::make('images_count')
-                    ->label('Attēli')
+                    ->label('Images')
                     ->counts('images'),
                 TextColumn::make('retailer_listings_count')
-                    ->label('Piedāvājumi')
+                    ->label('Listings')
                     ->counts('retailerListings'),
                 IconColumn::make('active')
-                    ->label('Aktīvs')
+                    ->label('Active')
                     ->boolean(),
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Pievienot variantu')
-                    ->modalHeading('Pievienot variantu')
+                    ->label('Add variant')
+                    ->modalHeading('Add variant')
                     ->slideOver()
                     ->modalWidth(Width::Full),
             ])
             ->recordActions([
                 EditAction::make()
-                    ->label('Rediģēt')
-                    ->modalHeading('Rediģēt variantu')
+                    ->label('Edit')
+                    ->modalHeading('Edit variant')
                     ->slideOver()
                     ->modalWidth(Width::Full),
                 DeleteAction::make()
-                    ->label('Dzēst')
+                    ->label('Delete')
                     ->visible(fn (ShoeVariant $record): bool => ! $record->retailerListings()->exists()),
             ])
             ->defaultSort('id');

@@ -235,7 +235,7 @@ class FeedImportWorkflowTest extends TestCase
         $workflow->preview($feedImport);
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Šim apavu modelim šāds krāsas variants jau pastāv.');
+        $this->expectExceptionMessage('This shoe already has this colourway.');
 
         $workflow->resolve(
             $feedImport->items()->firstOrFail(),

@@ -305,7 +305,7 @@ class FeedImportAdminTest extends TestCase
                 'selected_colour_id',
                 'mountedActionSchema0',
                 fn (Select $field): bool => $field->getOptions()[$pendingOption]
-                    === 'Black/White (black-white, gaida importu)',
+                    === 'Black/White (black-white, pending import)',
             );
 
         Livewire::test(ItemsRelationManager::class, [
@@ -347,7 +347,7 @@ class FeedImportAdminTest extends TestCase
             'record' => $feedImport->getRouteKey(),
         ])
             ->callAction('apply')
-            ->assertNotified('Dati importēti');
+            ->assertNotified('Data imported');
 
         $this->assertSame(
             FeedImport::STATUS_APPLIED,

@@ -276,7 +276,7 @@ class FeedImportWorkflow
                 ->exists();
 
             if ($colourExists || $pendingColourExists) {
-                throw new LogicException('Šim apavu modelim šāds krāsas variants jau pastāv.');
+                throw new LogicException('This shoe already has this colourway.');
             }
         } elseif ($attributes['new_colour_code'] !== null) {
             $pendingColourExists = $item->feedImport->items()
@@ -290,7 +290,7 @@ class FeedImportWorkflow
                 ->exists();
 
             if ($pendingColourExists) {
-                throw new LogicException('Šim apavu modelim šāds krāsas variants jau pastāv.');
+                throw new LogicException('This shoe already has this colourway.');
             }
         }
 
@@ -309,7 +309,7 @@ class FeedImportWorkflow
                 ->exists();
 
             if ($variantCodeExists || $pendingVariantCodeExists) {
-                throw new LogicException('Šim apavu modelim ražotāja varianta kods jau tiek izmantots.');
+                throw new LogicException('This shoe already uses this manufacturer variant code.');
             }
         }
 
@@ -333,15 +333,15 @@ class FeedImportWorkflow
         $audience = (string) ($data['new_shoe_audience'] ?? '');
 
         if (! $brand->active || ! $category->active) {
-            throw new LogicException('Izvēlies aktīvu zīmolu un kategoriju.');
+            throw new LogicException('Select an active brand and category.');
         }
 
         if ($name === '') {
-            throw new LogicException('Norādi apavu modeļa nosaukumu.');
+            throw new LogicException('Enter the shoe name.');
         }
 
         if (! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
-            throw new LogicException('Adresē izmanto mazos burtus, ciparus un defises.');
+            throw new LogicException('Use lowercase letters, numbers, and hyphens in the slug.');
         }
 
         if (
@@ -349,11 +349,11 @@ class FeedImportWorkflow
             || mb_strlen($slug) > 255
             || ($styleCode !== null && mb_strlen($styleCode) > 100)
         ) {
-            throw new LogicException('Jaunā apavu modeļa dati ir pārāk gari.');
+            throw new LogicException('The new shoe data is too long.');
         }
 
         if (Audience::tryFrom($audience) === null) {
-            throw new LogicException('Izvēlies apavu auditoriju.');
+            throw new LogicException('Select the shoe audience.');
         }
 
         $slugExists = Shoe::query()->where('slug', $slug)->exists();
@@ -364,7 +364,7 @@ class FeedImportWorkflow
             ->exists();
 
         if ($slugExists || $pendingSlugExists) {
-            throw new LogicException('Šāda apavu modeļa adrese jau tiek izmantota.');
+            throw new LogicException('This shoe slug is already in use.');
         }
 
         return [
@@ -402,11 +402,11 @@ class FeedImportWorkflow
             $colour = Colour::query()->find($selectedColourId);
 
             if ($colour === null || ! $colour->active) {
-                throw new LogicException('Izvēlies aktīvu krāsu.');
+                throw new LogicException('Select an active colourway.');
             }
 
             if ($variantCode !== null && mb_strlen($variantCode) > 100) {
-                throw new LogicException('Ražotāja varianta kods ir pārāk garš.');
+                throw new LogicException('The manufacturer variant code is too long.');
             }
 
             return [
@@ -419,15 +419,15 @@ class FeedImportWorkflow
         }
 
         if (! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $colourCode)) {
-            throw new LogicException('Krāsas kodā izmanto mazos burtus, ciparus un defises.');
+            throw new LogicException('Use lowercase letters, numbers, and hyphens in the colourway code.');
         }
 
         if ($name === '') {
-            throw new LogicException('Norādi krāsas nosaukumu.');
+            throw new LogicException('Enter the colourway name.');
         }
 
         if ($filterColourIds === []) {
-            throw new LogicException('Izvēlies vismaz vienu filtra krāsu.');
+            throw new LogicException('Select at least one filter colour.');
         }
 
         $validFilterColourIds = FilterColour::query()
@@ -439,7 +439,7 @@ class FeedImportWorkflow
             ->all();
 
         if ($validFilterColourIds !== $filterColourIds) {
-            throw new LogicException('Izvēlies tikai aktīvas filtra krāsas.');
+            throw new LogicException('Select only active filter colours.');
         }
 
         if (
@@ -447,7 +447,7 @@ class FeedImportWorkflow
             || mb_strlen($name) > 255
             || ($variantCode !== null && mb_strlen($variantCode) > 100)
         ) {
-            throw new LogicException('Jaunā varianta dati ir pārāk gari.');
+            throw new LogicException('The new variant data is too long.');
         }
 
         $colourExists = Colour::query()
@@ -463,14 +463,14 @@ class FeedImportWorkflow
             ->first();
 
         if ($colourExists) {
-            throw new LogicException('Šāds krāsas kods jau tiek izmantots.');
+            throw new LogicException('This colourway code is already in use.');
         }
 
         if (
             $pendingColour !== null
             && $pendingColour->new_colour_name !== $name
         ) {
-            throw new LogicException('Gaidošajai krāsai ar šo kodu ir cits nosaukums.');
+            throw new LogicException('The pending colourway with this code has a different name.');
         }
 
         if (
@@ -481,7 +481,7 @@ class FeedImportWorkflow
                 ->values()
                 ->all() !== $filterColourIds
         ) {
-            throw new LogicException('Gaidošajai krāsai ar šo kodu ir citas filtra krāsas.');
+            throw new LogicException('The pending colourway with this code has different filter colours.');
         }
 
         return [
@@ -551,7 +551,7 @@ class FeedImportWorkflow
         ]);
 
         if ($colour->name !== $item->new_colour_name) {
-            throw new LogicException('Krāsas kodam un nosaukumam ir pretrunīgi dati.');
+            throw new LogicException('The colourway code and name conflict.');
         }
 
         $colour->filterColours()->syncWithoutDetaching(

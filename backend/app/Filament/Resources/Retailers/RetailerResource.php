@@ -30,11 +30,11 @@ class RetailerResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
-    protected static ?string $navigationLabel = 'Veikali';
+    protected static ?string $navigationLabel = 'Retailers';
 
-    protected static ?string $modelLabel = 'veikals';
+    protected static ?string $modelLabel = 'retailer';
 
-    protected static ?string $pluralModelLabel = 'veikali';
+    protected static ?string $pluralModelLabel = 'Retailers';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -46,10 +46,10 @@ class RetailerResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Veikala dati')
+                Section::make('Retailer details')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nosaukums')
+                            ->label('Name')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
@@ -59,18 +59,18 @@ class RetailerResource extends Resource
                                 }
                             }),
                         TextInput::make('slug')
-                            ->label('Adrese')
-                            ->helperText('Nemainīga daļa publiskajā adresē.')
+                            ->label('Slug')
+                            ->helperText('Stable part of the public URL.')
                             ->required()
                             ->maxLength(255)
                             ->rules(['regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'])
                             ->unique(ignoreRecord: true),
                         TextInput::make('website_url')
-                            ->label('Tīmekļvietne')
+                            ->label('Website')
                             ->url()
                             ->maxLength(2048),
                         FileUpload::make('logo_path')
-                            ->label('Logotips')
+                            ->label('Logo')
                             ->disk('public')
                             ->directory('retailers')
                             ->visibility('public')
@@ -78,7 +78,7 @@ class RetailerResource extends Resource
                             ->imageEditor()
                             ->maxSize(2048),
                         Toggle::make('active')
-                            ->label('Aktīvs')
+                            ->label('Active')
                             ->default(true),
                     ])
                     ->columns(2),
@@ -90,27 +90,27 @@ class RetailerResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('logo_path')
-                    ->label('Logotips')
+                    ->label('Logo')
                     ->disk('public')
                     ->height(32),
                 TextColumn::make('name')
-                    ->label('Nosaukums')
+                    ->label('Name')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('listings_count')
-                    ->label('Piedāvājumi')
+                    ->label('Listings')
                     ->counts('listings')
                     ->sortable(),
                 IconColumn::make('active')
-                    ->label('Aktīvs')
+                    ->label('Active')
                     ->boolean(),
                 TextColumn::make('updated_at')
-                    ->label('Atjaunināts')
-                    ->dateTime('d.m.Y H:i')
+                    ->label('Updated')
+                    ->dateTime('Y-m-d H:i')
                     ->sortable(),
             ])
             ->filters([
-                TernaryFilter::make('active')->label('Aktīvs'),
+                TernaryFilter::make('active')->label('Active'),
             ])
             ->recordActions([
                 EditAction::make(),

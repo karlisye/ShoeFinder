@@ -16,31 +16,31 @@ class EditFeedImport extends EditRecord
 
     public function getHeading(): string
     {
-        return 'Datu importa pārskats';
+        return 'Feed import review';
     }
 
     protected function getHeaderActions(): array
     {
         return [
             Action::make('apply')
-                ->label('Importēt')
+                ->label('Import')
                 ->color('success')
                 ->requiresConfirmation()
-                ->modalHeading('Importēt pārbaudītos ierakstus?')
-                ->modalDescription('Piedāvājumi un izmēri tiks atjaunināti vienā darbībā.')
-                ->modalSubmitActionLabel('Importēt')
+                ->modalHeading('Import reviewed records?')
+                ->modalDescription('Listings and sizes will be updated in one operation.')
+                ->modalSubmitActionLabel('Import')
                 ->visible(fn (): bool => $this->record->status === FeedImport::STATUS_READY)
                 ->disabled(fn (): bool => ! $this->record->canApply())
                 ->tooltip(fn (): ?string => $this->record->canApply()
                     ? null
-                    : 'Pārbaudi vai ignorē visus atzīmētos ierakstus.')
+                    : 'Review or ignore every record that needs a decision.')
                 ->action(function (): void {
                     try {
                         app(FeedImportWorkflow::class)->apply($this->record);
                     } catch (Throwable $exception) {
                         report($exception);
                         Notification::make()
-                            ->title('Importu neizdevās pabeigt')
+                            ->title('Import could not be completed')
                             ->body($exception->getMessage())
                             ->danger()
                             ->send();
@@ -49,7 +49,7 @@ class EditFeedImport extends EditRecord
                     }
 
                     Notification::make()
-                        ->title('Dati importēti')
+                        ->title('Data imported')
                         ->success()
                         ->send();
 

@@ -35,11 +35,11 @@ class ItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'items';
 
-    protected static ?string $title = 'Importa ieraksti';
+    protected static ?string $title = 'Import records';
 
-    protected static ?string $modelLabel = 'ieraksts';
+    protected static ?string $modelLabel = 'record';
 
-    protected static ?string $pluralModelLabel = 'ieraksti';
+    protected static ?string $pluralModelLabel = 'records';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
@@ -53,20 +53,20 @@ class ItemsRelationManager extends RelationManager
         return $table
             ->columns([
                 TextColumn::make('source_record')
-                    ->label('Rinda')
-                    ->placeholder('Nav'),
+                    ->label('Row')
+                    ->placeholder('None'),
                 TextColumn::make('identity')
-                    ->label('Identifikators')
+                    ->label('Identity')
                     ->searchable(),
                 TextColumn::make('normalized_payload.title')
-                    ->label('Nosaukums')
+                    ->label('Title')
                     ->limit(45)
-                    ->placeholder('Nav'),
+                    ->placeholder('None'),
                 TextColumn::make('normalized_payload.colour')
-                    ->label('Krāsa')
-                    ->placeholder('Nav'),
+                    ->label('Colour')
+                    ->placeholder('None'),
                 TextColumn::make('outcome')
-                    ->label('Rezultāts')
+                    ->label('Outcome')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => self::outcomeLabel($state))
                     ->color(fn (string $state): string => match ($state) {
@@ -76,30 +76,30 @@ class ItemsRelationManager extends RelationManager
                         default => 'gray',
                     }),
                 TextColumn::make('reason')
-                    ->label('Iemesls')
+                    ->label('Reason')
                     ->formatStateUsing(fn (string $state): string => self::reasonLabel($state))
                     ->wrap(),
                 TextColumn::make('resolution')
-                    ->label('Lēmums')
+                    ->label('Decision')
                     ->formatStateUsing(fn (?string $state): string => self::resolutionLabel($state))
-                    ->placeholder('Nav'),
+                    ->placeholder('None'),
             ])
             ->filters([
                 SelectFilter::make('outcome')
-                    ->label('Rezultāts')
+                    ->label('Outcome')
                     ->options([
-                        'created' => 'Jauns piedāvājums',
-                        'updated' => 'Izmaiņas',
-                        'unchanged' => 'Bez izmaiņām',
-                        'unavailable' => 'Nav pieejams',
-                        'manual_review' => 'Jāpārbauda',
-                        'invalid' => 'Nederīgs',
-                        'missing' => 'Nav failā',
+                        'created' => 'New listing',
+                        'updated' => 'Changes',
+                        'unchanged' => 'No changes',
+                        'unavailable' => 'Unavailable',
+                        'manual_review' => 'Needs review',
+                        'invalid' => 'Invalid',
+                        'missing' => 'Missing from file',
                     ]),
             ])
             ->recordActions([
                 Action::make('review')
-                    ->label('Pārbaudīt')
+                    ->label('Review')
                     ->icon('heroicon-o-check-circle')
                     ->visible(fn (FeedImportItem $record): bool => $record->outcome === 'manual_review'
                         && $record->feedImport->status === FeedImport::STATUS_READY)
@@ -132,26 +132,26 @@ class ItemsRelationManager extends RelationManager
                     ])
                     ->schema([
                         Placeholder::make('source_data')
-                            ->label('Avota dati')
+                            ->label('Source data')
                             ->content(fn (FeedImportItem $record): string => self::sourceSummary($record)),
                         Select::make('resolution')
-                            ->label('Lēmums')
+                            ->label('Decision')
                             ->options(fn (FeedImportItem $record): array => $record->canAttachToVariant()
                                 ? [
-                                    FeedImportItem::RESOLUTION_ATTACH => 'Piesaistīt esošam variantam',
-                                    FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT => 'Izveidot jaunu krāsas variantu',
-                                    FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT => 'Izveidot jaunu apavu modeli',
-                                    FeedImportItem::RESOLUTION_IGNORE => 'Ignorēt ierakstu',
+                                    FeedImportItem::RESOLUTION_ATTACH => 'Attach to existing variant',
+                                    FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT => 'Create a new colour variant',
+                                    FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT => 'Create a new shoe',
+                                    FeedImportItem::RESOLUTION_IGNORE => 'Ignore record',
                                 ]
                                 : [
-                                    FeedImportItem::RESOLUTION_IGNORE => 'Ignorēt ierakstu',
+                                    FeedImportItem::RESOLUTION_IGNORE => 'Ignore record',
                                 ])
                             ->live()
                             ->required(),
-                        Section::make('Jauns apavu modelis')
+                        Section::make('New shoe')
                             ->schema([
                                 Select::make('new_shoe_brand_id')
-                                    ->label('Zīmols')
+                                    ->label('Brand')
                                     ->options(fn () => Brand::query()
                                         ->where('active', true)
                                         ->orderBy('name')
@@ -159,16 +159,16 @@ class ItemsRelationManager extends RelationManager
                                     ->searchable()
                                     ->required(),
                                 Select::make('new_shoe_category_id')
-                                    ->label('Kategorija')
+                                    ->label('Category')
                                     ->options(fn () => Category::query()
                                         ->where('active', true)
                                         ->orderBy('sort_order')
-                                        ->pluck('name_lv', 'id'))
+                                        ->pluck('name_en', 'id'))
                                     ->searchable()
                                     ->required(),
                                 TextInput::make('new_shoe_name')
-                                    ->label('Apavu modeļa nosaukums')
-                                    ->helperText('Izmanto oficiālo ražotāja nosaukumu.')
+                                    ->label('Shoe name')
+                                    ->helperText('Use the official manufacturer name.')
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
@@ -179,8 +179,8 @@ class ItemsRelationManager extends RelationManager
                                         ),
                                     ),
                                 TextInput::make('new_shoe_slug')
-                                    ->label('Adrese')
-                                    ->helperText('Nemainīga daļa publiskajā adresē.')
+                                    ->label('Slug')
+                                    ->helperText('Stable part of the public URL.')
                                     ->required()
                                     ->maxLength(255)
                                     ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
@@ -190,16 +190,16 @@ class ItemsRelationManager extends RelationManager
                                         ignoreRecord: false,
                                     ),
                                 Select::make('new_shoe_audience')
-                                    ->label('Auditorija')
+                                    ->label('Audience')
                                     ->options([
-                                        Audience::Men->value => 'Vīriešiem',
-                                        Audience::Women->value => 'Sievietēm',
+                                        Audience::Men->value => 'Men',
+                                        Audience::Women->value => 'Women',
                                         Audience::Unisex->value => 'Unisex',
-                                        Audience::Kids->value => 'Bērniem',
+                                        Audience::Kids->value => 'Kids',
                                     ])
                                     ->required(),
                                 TextInput::make('new_shoe_style_code')
-                                    ->label('Ražotāja modeļa kods')
+                                    ->label('Manufacturer style code')
                                     ->maxLength(100),
                             ])
                             ->columns(2)
@@ -208,11 +208,11 @@ class ItemsRelationManager extends RelationManager
                         Select::make('selected_variant_id')
                             ->label(fn (Get $get): string => $get('resolution')
                                 === FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT
-                                    ? 'Esošs šī modeļa variants'
-                                    : 'Apavu variants')
+                                    ? 'Existing variant from this shoe'
+                                    : 'Shoe variant')
                             ->helperText(fn (Get $get): ?string => $get('resolution')
                                 === FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT
-                                    ? 'Izvēlētais variants nosaka apavu modeli. Piedāvājumam tiks izveidots atsevišķs krāsas variants.'
+                                    ? 'The selected variant identifies the shoe. A separate colour variant will be created for this listing.'
                                     : null)
                             ->options(function (FeedImportItem $record, Get $get) {
                                 $query = ShoeVariant::query()
@@ -237,7 +237,7 @@ class ItemsRelationManager extends RelationManager
                                             $variant->shoe->brand->name,
                                             $variant->shoe->name,
                                             $variant->colour->name,
-                                            $variant->manufacturer_variant_code ?? 'bez koda',
+                                            $variant->manufacturer_variant_code ?? 'no code',
                                         ),
                                     ]);
                             })
@@ -260,9 +260,9 @@ class ItemsRelationManager extends RelationManager
                                 true,
                             )),
                         Select::make('selected_colour_id')
-                            ->label('Esoša krāsa')
-                            ->helperText('Izvēlies saglabātu vai šajā importā jau piedāvātu krāsu. Atstāj tukšu, lai izveidotu jaunu.')
-                            ->placeholder('Izveidot jaunu krāsu')
+                            ->label('Existing colourway')
+                            ->helperText('Select a saved or pending colourway. Leave empty to create one.')
+                            ->placeholder('Create a new colourway')
                             ->options(
                                 fn (FeedImportItem $record, Get $get): array => self::colourOptions(
                                     $record,
@@ -280,8 +280,8 @@ class ItemsRelationManager extends RelationManager
                                 true,
                             )),
                         TextInput::make('new_colour_code')
-                            ->label('Jaunas krāsas kods')
-                            ->helperText('Mazie burti, cipari un defises. Pēc izveides kodu nemaini.')
+                            ->label('New colourway code')
+                            ->helperText('Use lowercase letters, numbers, and hyphens. Do not change the code after creation.')
                             ->required(fn (Get $get): bool => blank($get('selected_colour_id')))
                             ->maxLength(64)
                             ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
@@ -300,8 +300,8 @@ class ItemsRelationManager extends RelationManager
                                     true,
                                 )),
                         TextInput::make('new_colour_name')
-                            ->label('Jaunas krāsas nosaukums')
-                            ->helperText('Saglabā ražotāja vai veikala izmantoto nosaukumu. To netulko.')
+                            ->label('New colourway name')
+                            ->helperText('Use the manufacturer or retailer colourway name. Do not translate it.')
                             ->required(fn (Get $get): bool => blank($get('selected_colour_id')))
                             ->maxLength(255)
                             ->visible(fn (Get $get): bool => blank($get('selected_colour_id'))
@@ -314,12 +314,12 @@ class ItemsRelationManager extends RelationManager
                                     true,
                                 )),
                         CheckboxList::make('new_filter_colour_ids')
-                            ->label('Filtra krāsas')
-                            ->helperText('Izvēlies visas krāsas, kuras redzamas šajā variantā. Tās ietekmē tikai kataloga filtrus.')
+                            ->label('Filter colours')
+                            ->helperText('Select every visible colour. These values only affect catalogue filters.')
                             ->options(fn (): array => FilterColour::query()
                                 ->where('active', true)
                                 ->orderBy('sort_order')
-                                ->pluck('name_lv', 'id')
+                                ->pluck('name_en', 'id')
                                 ->all())
                             ->columns(3)
                             ->minItems(1)
@@ -334,7 +334,7 @@ class ItemsRelationManager extends RelationManager
                                     true,
                                 )),
                         TextInput::make('new_manufacturer_variant_code')
-                            ->label('Ražotāja varianta kods')
+                            ->label('Manufacturer variant code')
                             ->maxLength(100)
                             ->visible(fn (Get $get): bool => in_array(
                                 $get('resolution'),
@@ -345,8 +345,8 @@ class ItemsRelationManager extends RelationManager
                                 true,
                             )),
                     ])
-                    ->modalHeading('Pārbaudīt importa ierakstu')
-                    ->modalSubmitActionLabel('Saglabāt lēmumu')
+                    ->modalHeading('Review import record')
+                    ->modalSubmitActionLabel('Save decision')
                     ->action(function (FeedImportItem $record, array $data): void {
                         try {
                             $colourAttributes = self::colourAttributes(
@@ -374,7 +374,7 @@ class ItemsRelationManager extends RelationManager
                             );
                         } catch (Throwable $exception) {
                             Notification::make()
-                                ->title('Lēmumu neizdevās saglabāt')
+                                ->title('Decision could not be saved')
                                 ->body($exception->getMessage())
                                 ->danger()
                                 ->send();
@@ -383,7 +383,7 @@ class ItemsRelationManager extends RelationManager
                         }
 
                         Notification::make()
-                            ->title('Lēmums saglabāts')
+                            ->title('Decision saved')
                             ->success()
                             ->send();
 
@@ -444,7 +444,7 @@ class ItemsRelationManager extends RelationManager
             ->unique('new_colour_code')
             ->mapWithKeys(fn (FeedImportItem $item): array => [
                 "pending:{$item->getKey()}" => sprintf(
-                    '%s (%s, gaida importu)',
+                    '%s (%s, pending import)',
                     $item->new_colour_name,
                     $item->new_colour_code,
                 ),
@@ -470,7 +470,7 @@ class ItemsRelationManager extends RelationManager
 
         if (! str_starts_with((string) $selection, 'pending:')) {
             if (! ctype_digit((string) $selection)) {
-                throw new LogicException('Izvēlies derīgu krāsu.');
+                throw new LogicException('Select a valid colourway.');
             }
 
             return [
@@ -486,7 +486,7 @@ class ItemsRelationManager extends RelationManager
             ->toString();
 
         if (! ctype_digit($pendingId)) {
-            throw new LogicException('Izvēlies derīgu gaidošo krāsu.');
+            throw new LogicException('Select a valid pending colourway.');
         }
 
         $pendingColour = $record->feedImport->items()
@@ -501,7 +501,7 @@ class ItemsRelationManager extends RelationManager
             ->first();
 
         if ($pendingColour === null) {
-            throw new LogicException('Gaidošā krāsa vairs nav pieejama.');
+            throw new LogicException('The pending colourway is no longer available.');
         }
 
         return [
@@ -515,13 +515,13 @@ class ItemsRelationManager extends RelationManager
     private static function outcomeLabel(string $outcome): string
     {
         return match ($outcome) {
-            'created' => 'Jauns piedāvājums',
-            'updated' => 'Izmaiņas',
-            'unchanged' => 'Bez izmaiņām',
-            'unavailable' => 'Nav pieejams',
-            'manual_review' => 'Jāpārbauda',
-            'invalid' => 'Nederīgs',
-            'missing' => 'Nav failā',
+            'created' => 'New listing',
+            'updated' => 'Changes',
+            'unchanged' => 'No changes',
+            'unavailable' => 'Unavailable',
+            'manual_review' => 'Needs review',
+            'invalid' => 'Invalid',
+            'missing' => 'Missing from file',
             default => $outcome,
         };
     }
@@ -529,14 +529,14 @@ class ItemsRelationManager extends RelationManager
     private static function reasonLabel(string $reason): string
     {
         return match ($reason) {
-            'strong_variant_identity' => 'Atrasts drošs variants',
-            'retailer_identity' => 'Atrasts esošs piedāvājums',
-            'no_strong_match' => 'Nav drošas atbilstības',
-            'ambiguous_strong_match' => 'Atrasti vairāki varianti',
-            'retailer_identity_conflict' => 'Veikala identifikatori nesakrīt',
-            'strong_identity_conflict' => 'Produkta identifikatori nesakrīt',
-            'variant_listing_identity_conflict' => 'Variantam jau ir cits veikala piedāvājums',
-            'not_present_in_snapshot' => 'Piedāvājums nav šajā failā',
+            'strong_variant_identity' => 'Strong variant match',
+            'retailer_identity' => 'Existing listing found',
+            'no_strong_match' => 'No strong match',
+            'ambiguous_strong_match' => 'Multiple variants found',
+            'retailer_identity_conflict' => 'Retailer identities conflict',
+            'strong_identity_conflict' => 'Product identities conflict',
+            'variant_listing_identity_conflict' => 'Variant already has another listing from this retailer',
+            'not_present_in_snapshot' => 'Listing is missing from this file',
             default => $reason,
         };
     }
@@ -544,11 +544,11 @@ class ItemsRelationManager extends RelationManager
     private static function resolutionLabel(?string $resolution): string
     {
         return match ($resolution) {
-            FeedImportItem::RESOLUTION_ATTACH => 'Piesaistīts variantam',
-            FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT => 'Jauns krāsas variants',
-            FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT => 'Jauns apavu modelis',
-            FeedImportItem::RESOLUTION_IGNORE => 'Ignorēts',
-            default => 'Nav',
+            FeedImportItem::RESOLUTION_ATTACH => 'Attached to variant',
+            FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT => 'New colour variant',
+            FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT => 'New shoe',
+            FeedImportItem::RESOLUTION_IGNORE => 'Ignored',
+            default => 'None',
         };
     }
 
@@ -567,14 +567,14 @@ class ItemsRelationManager extends RelationManager
             ->implode(', ');
         $price = isset($data['current_price'])
             ? "{$data['current_price']} ".($data['currency'] ?? '')
-            : 'nav norādīta';
+            : 'not provided';
 
         return collect([
             $data['title'] ?? null,
-            filled($data['colour'] ?? null) ? "Krāsa: {$data['colour']}" : null,
-            $identifiers !== [] ? 'Kodi: '.implode(', ', $identifiers) : null,
-            "Cena: {$price}",
-            $sizes !== '' ? "Izmēri: {$sizes}" : null,
+            filled($data['colour'] ?? null) ? "Colour: {$data['colour']}" : null,
+            $identifiers !== [] ? 'Codes: '.implode(', ', $identifiers) : null,
+            "Price: {$price}",
+            $sizes !== '' ? "Sizes: {$sizes}" : null,
         ])->filter()->implode("\n");
     }
 
