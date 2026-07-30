@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['code', 'name_lv', 'name_en', 'sort_order', 'active'])]
+#[Fillable(['code', 'name', 'sort_order', 'active'])]
 class Colour extends Model
 {
     public function variants(): HasMany

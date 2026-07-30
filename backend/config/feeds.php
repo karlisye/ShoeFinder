@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'admin' => [
+        'max_records' => 5000,
+    ],
+
     'retailers' => [
         'sole-market' => [
             'format' => 'csv',

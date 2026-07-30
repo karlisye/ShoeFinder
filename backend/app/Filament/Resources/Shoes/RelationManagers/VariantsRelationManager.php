@@ -59,8 +59,8 @@ class VariantsRelationManager extends RelationManager
                                     ->schema([
                                         Select::make('colour_id')
                                             ->label('Krāsa')
-                                            ->helperText('Vairāku krāsu modelim izveido vienu kombinētu krāsu, piemēram, “Balta/melna” ar kodu “white-black”.')
-                                            ->relationship('colour', 'name_lv')
+                                            ->helperText('Vairāku krāsu modelim izmanto vienu ražotāja krāsas nosaukumu, piemēram, “White/Black”.')
+                                            ->relationship('colour', 'name')
                                             ->searchable()
                                             ->preload()
                                             ->createOptionForm([
@@ -71,12 +71,9 @@ class VariantsRelationManager extends RelationManager
                                                     ->maxLength(64)
                                                     ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                                                     ->unique(Colour::class, 'code'),
-                                                TextInput::make('name_lv')
-                                                    ->label('Nosaukums latviski')
-                                                    ->required()
-                                                    ->maxLength(255),
-                                                TextInput::make('name_en')
-                                                    ->label('Nosaukums angliski')
+                                                TextInput::make('name')
+                                                    ->label('Krāsas nosaukums')
+                                                    ->helperText('Saglabā ražotāja vai veikala izmantoto nosaukumu. To netulko.')
                                                     ->required()
                                                     ->maxLength(255),
                                             ])
@@ -430,7 +427,7 @@ class VariantsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('manufacturer_variant_code')
             ->columns([
-                TextColumn::make('colour.name_lv')
+                TextColumn::make('colour.name')
                     ->label('Krāsa')
                     ->searchable()
                     ->sortable(),

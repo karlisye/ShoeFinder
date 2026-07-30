@@ -29,8 +29,7 @@ trait CreatesCatalogueData
         ]);
         $colour = Colour::create([
             'code' => "colour-{$suffix}",
-            'name_lv' => "Krāsa {$suffix}",
-            'name_en' => "Colour {$suffix}",
+            'name' => "Colour {$suffix}",
         ]);
         $size = Size::create([
             'eu_size' => 42,
@@ -90,8 +89,7 @@ trait CreatesCatalogueData
     ): ShoeVariant {
         $colour = Colour::create([
             'code' => "colour-{$suffix}",
-            'name_lv' => "Krāsa {$suffix}",
-            'name_en' => "Colour {$suffix}",
+            'name' => "Colour {$suffix}",
         ]);
 
         return ShoeVariant::create([

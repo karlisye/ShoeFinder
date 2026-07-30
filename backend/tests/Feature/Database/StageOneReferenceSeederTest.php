@@ -18,7 +18,7 @@ class StageOneReferenceSeederTest extends TestCase
         DB::table('colours')
             ->where('code', 'black')
             ->update([
-                'name_lv' => 'Nepareiza',
+                'name' => 'Wrong',
                 'active' => false,
             ]);
 
@@ -48,14 +48,12 @@ class StageOneReferenceSeederTest extends TestCase
         ]);
         $this->assertDatabaseHas('colours', [
             'code' => 'black',
-            'name_lv' => 'Melna',
-            'name_en' => 'Black',
+            'name' => 'Black',
             'active' => true,
         ]);
         $this->assertDatabaseHas('colours', [
             'code' => 'multicolour',
-            'name_lv' => 'Daudzkrāsu',
-            'name_en' => 'Multicolour',
+            'name' => 'Multicolour',
         ]);
     }
 }

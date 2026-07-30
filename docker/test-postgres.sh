@@ -21,7 +21,7 @@ docker compose exec -T postgres sh -c \
     "createdb -U \"\$POSTGRES_USER\" \"$test_database\""
 run_backend php artisan migrate:fresh --seed --force --no-interaction
 run_backend php artisan db:seed --force --no-interaction
-run_backend php artisan migrate:rollback --step=4 --force --no-interaction
+run_backend php artisan migrate:rollback --step=9 --force --no-interaction
 run_backend php artisan tinker --execute="
     foreach ([
         'brands',
@@ -36,6 +36,8 @@ run_backend php artisan tinker --execute="
         'retailer_listing_sizes',
         'price_changes',
         'outbound_clicks',
+        'feed_imports',
+        'feed_import_items',
     ] as \$table) {
         if (Illuminate\\Support\\Facades\\Schema::hasTable(\$table)) {
             throw new RuntimeException(\"Stage 1 rollback left table: {\$table}\");

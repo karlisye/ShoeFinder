@@ -189,7 +189,7 @@ class FeedProductMatcher
             })
             ->whereHas('colour', function (Builder $query) use ($colour): void {
                 $query->whereRaw(
-                    "LOWER(REPLACE(name_en, ' ', '')) = ?",
+                    "LOWER(REPLACE(name, ' ', '')) = ?",
                     [$colour],
                 );
             })

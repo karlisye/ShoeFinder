@@ -31,6 +31,22 @@ class StageTwoValidationTest extends TestCase
         $this->assertTrue($validator->passes(), $validator->errors()->toJson());
     }
 
+    public function test_colour_uses_one_required_canonical_name(): void
+    {
+        $rules = app(CatalogueRules::class);
+
+        $this->assertTrue(Validator::make([
+            'code' => 'white-black',
+            'name' => 'White/Black',
+        ], $rules->colour())->passes());
+
+        $validator = Validator::make([
+            'code' => 'white-black',
+        ], $rules->colour());
+
+        $this->assertTrue($validator->errors()->has('name'));
+    }
+
     #[DataProvider('invalidListingData')]
     public function test_invalid_listing_data_is_rejected(
         array $overrides,

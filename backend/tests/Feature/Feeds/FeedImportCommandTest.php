@@ -150,8 +150,7 @@ class FeedImportCommandTest extends TestCase
             'manufacturer_style_code' => 'CW2288',
         ]);
         $context['colour']->update([
-            'name_lv' => 'Balta/balta',
-            'name_en' => 'White/White',
+            'name' => 'White/White',
         ]);
         $context['variant']->update([
             'manufacturer_variant_code' => 'CW2288-111',

@@ -132,8 +132,7 @@ class StageThreeAdminWorkflowTest extends TestCase
         ]);
         $colour = Colour::create([
             'code' => 'blue-test',
-            'name_lv' => 'Zila',
-            'name_en' => 'Blue',
+            'name' => 'Blue',
             'sort_order' => 1,
             'active' => true,
         ]);
@@ -250,8 +249,7 @@ class StageThreeAdminWorkflowTest extends TestCase
                 'createOption',
                 [
                     'code' => 'burgundy-test',
-                    'name_lv' => 'Bordo',
-                    'name_en' => 'Burgundy',
+                    'name' => 'Burgundy',
                 ],
                 formName: 'mountedActionSchema0',
             )
@@ -262,8 +260,7 @@ class StageThreeAdminWorkflowTest extends TestCase
 
         $this->assertDatabaseHas('colours', [
             'id' => $colour->id,
-            'name_lv' => 'Bordo',
-            'name_en' => 'Burgundy',
+            'name' => 'Burgundy',
             'sort_order' => 0,
             'active' => true,
         ]);

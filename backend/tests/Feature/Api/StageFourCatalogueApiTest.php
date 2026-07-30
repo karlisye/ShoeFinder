@@ -45,6 +45,7 @@ class StageFourCatalogueApiTest extends TestCase
             ->assertJsonCount(3, 'data')
             ->assertJsonPath('data.0.slug', 'alpha-runner')
             ->assertJsonPath('data.0.colour.code', 'red')
+            ->assertJsonPath('data.0.colour.name', 'Red')
             ->assertJsonPath('data.0.colours.0.code', 'red')
             ->assertJsonPath('data.0.colours.1.code', 'blue')
             ->assertJsonPath('data.0.category.name', 'Skriešanas apavi')
@@ -79,6 +80,7 @@ class StageFourCatalogueApiTest extends TestCase
 
         $this->getJson('/api/v1/shoes?locale=en&sort=name')
             ->assertOk()
+            ->assertJsonPath('data.0.colour.name', 'Red')
             ->assertJsonPath('data.0.category.name', 'Running shoes')
             ->assertJsonPath('data.0.description', 'Alpha description')
             ->assertJsonPath('data.0.primary_image.alt', 'Alpha in red')
@@ -307,15 +309,13 @@ class StageFourCatalogueApiTest extends TestCase
         ]);
         $red = Colour::create([
             'code' => 'red',
-            'name_lv' => 'Sarkana',
-            'name_en' => 'Red',
+            'name' => 'Red',
             'sort_order' => 1,
             'active' => true,
         ]);
         $blue = Colour::create([
             'code' => 'blue',
-            'name_lv' => 'Zila',
-            'name_en' => 'Blue',
+            'name' => 'Blue',
             'sort_order' => 2,
             'active' => true,
         ]);

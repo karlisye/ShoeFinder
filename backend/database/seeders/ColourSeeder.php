@@ -11,19 +11,19 @@ class ColourSeeder extends Seeder
     {
         $timestamp = now();
         $colours = [
-            ['code' => 'black', 'name_lv' => 'Melna', 'name_en' => 'Black'],
-            ['code' => 'white', 'name_lv' => 'Balta', 'name_en' => 'White'],
-            ['code' => 'grey', 'name_lv' => 'Pelēka', 'name_en' => 'Grey'],
-            ['code' => 'beige', 'name_lv' => 'Bēša', 'name_en' => 'Beige'],
-            ['code' => 'brown', 'name_lv' => 'Brūna', 'name_en' => 'Brown'],
-            ['code' => 'red', 'name_lv' => 'Sarkana', 'name_en' => 'Red'],
-            ['code' => 'orange', 'name_lv' => 'Oranža', 'name_en' => 'Orange'],
-            ['code' => 'yellow', 'name_lv' => 'Dzeltena', 'name_en' => 'Yellow'],
-            ['code' => 'green', 'name_lv' => 'Zaļa', 'name_en' => 'Green'],
-            ['code' => 'blue', 'name_lv' => 'Zila', 'name_en' => 'Blue'],
-            ['code' => 'purple', 'name_lv' => 'Violeta', 'name_en' => 'Purple'],
-            ['code' => 'pink', 'name_lv' => 'Rozā', 'name_en' => 'Pink'],
-            ['code' => 'multicolour', 'name_lv' => 'Daudzkrāsu', 'name_en' => 'Multicolour'],
+            ['code' => 'black', 'name' => 'Black'],
+            ['code' => 'white', 'name' => 'White'],
+            ['code' => 'grey', 'name' => 'Grey'],
+            ['code' => 'beige', 'name' => 'Beige'],
+            ['code' => 'brown', 'name' => 'Brown'],
+            ['code' => 'red', 'name' => 'Red'],
+            ['code' => 'orange', 'name' => 'Orange'],
+            ['code' => 'yellow', 'name' => 'Yellow'],
+            ['code' => 'green', 'name' => 'Green'],
+            ['code' => 'blue', 'name' => 'Blue'],
+            ['code' => 'purple', 'name' => 'Purple'],
+            ['code' => 'pink', 'name' => 'Pink'],
+            ['code' => 'multicolour', 'name' => 'Multicolour'],
         ];
 
         $rows = array_map(
@@ -41,7 +41,7 @@ class ColourSeeder extends Seeder
         DB::table('colours')->upsert(
             $rows,
             ['code'],
-            ['name_lv', 'name_en', 'sort_order', 'active', 'updated_at'],
+            ['name', 'sort_order', 'active', 'updated_at'],
         );
     }
 }

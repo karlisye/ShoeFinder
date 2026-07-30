@@ -294,11 +294,7 @@ final readonly class CatalogueReadService
             ->get()
             ->map(fn (Colour $colour): array => [
                 'code' => $colour->code,
-                'name' => $this->localized(
-                    $colour->name_lv,
-                    $colour->name_en,
-                    $options['locale'],
-                ),
+                'name' => $colour->name,
             ])
             ->all();
 
@@ -574,11 +570,7 @@ final readonly class CatalogueReadService
             ),
             'colour' => [
                 'code' => $variant->colour->code,
-                'name' => $this->localized(
-                    $variant->colour->name_lv,
-                    $variant->colour->name_en,
-                    $locale,
-                ),
+                'name' => $variant->colour->name,
             ],
             'colours' => $shoe->variants
                 ->sort(function (
@@ -595,11 +587,7 @@ final readonly class CatalogueReadService
                 ->map(fn (ShoeVariant $item): array => [
                     'variant_id' => $item->id,
                     'code' => $item->colour->code,
-                    'name' => $this->localized(
-                        $item->colour->name_lv,
-                        $item->colour->name_en,
-                        $locale,
-                    ),
+                    'name' => $item->colour->name,
                 ])
                 ->values()
                 ->all(),
@@ -714,11 +702,7 @@ final readonly class CatalogueReadService
             'manufacturer_variant_code' => $variant->manufacturer_variant_code,
             'colour' => [
                 'code' => $variant->colour->code,
-                'name' => $this->localized(
-                    $variant->colour->name_lv,
-                    $variant->colour->name_en,
-                    $locale,
-                ),
+                'name' => $variant->colour->name,
             ],
             'images' => $variant->images
                 ->map(fn (ShoeImage $image): array => $this->image(

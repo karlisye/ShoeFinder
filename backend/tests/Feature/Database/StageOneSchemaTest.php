@@ -34,6 +34,15 @@ class StageOneSchemaTest extends TestCase
             $this->assertTrue(Schema::hasTable($table), "Missing table: {$table}");
         }
 
+        $this->assertTrue(Schema::hasColumns('colours', [
+            'code',
+            'name',
+            'sort_order',
+            'active',
+        ]));
+        $this->assertFalse(Schema::hasColumn('colours', 'name_lv'));
+        $this->assertFalse(Schema::hasColumn('colours', 'name_en'));
+
         $this->assertTrue(Schema::hasColumns('retailer_listings', [
             'retailer_external_id',
             'retailer_sku',
@@ -316,8 +325,7 @@ class StageOneSchemaTest extends TestCase
         ]);
         $colourId = DB::table('colours')->insertGetId([
             'code' => 'black',
-            'name_lv' => 'Melna',
-            'name_en' => 'Black',
+            'name' => 'Black',
         ]);
         $sizeId = DB::table('sizes')->insertGetId([
             'eu_size' => 42.0,
@@ -357,8 +365,7 @@ class StageOneSchemaTest extends TestCase
     {
         $colourId = DB::table('colours')->insertGetId([
             'code' => 'blue',
-            'name_lv' => 'Zila',
-            'name_en' => 'Blue',
+            'name' => 'Blue',
         ]);
 
         return DB::table('shoe_variants')->insertGetId([

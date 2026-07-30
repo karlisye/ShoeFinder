@@ -67,8 +67,7 @@ final class CatalogueRules
                 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
                 $this->unique('colours', 'code', $colour),
             ],
-            'name_lv' => ['required', 'string', 'max:255'],
-            'name_en' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'sort_order' => ['sometimes', 'integer', 'min:0', 'max:32767'],
             'active' => ['sometimes', 'boolean'],
         ];

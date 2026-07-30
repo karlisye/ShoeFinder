@@ -9,8 +9,6 @@ use App\Domain\Feeds\Data\FeedRecord;
 use App\Enums\ListingSourceType;
 use App\Models\Retailer;
 use App\Models\RetailerListing;
-use App\Models\Size;
-use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
 class FeedImporter
@@ -19,6 +17,7 @@ class FeedImporter
         private readonly FeedAdapterRegistry $adapters,
         private readonly FeedRecordValidator $validator,
         private readonly FeedProductMatcher $matcher,
+        private readonly FeedListingSynchronizer $synchronizer,
     ) {}
 
     public function import(
@@ -68,6 +67,12 @@ class FeedImporter
                         $record->identity(),
                         'invalid',
                         $recordIssues[0]->code,
+                        $record->data,
+                        $record->raw,
+                        array_map(
+                            fn ($issue): array => $issue->toArray(),
+                            $recordIssues,
+                        ),
                     );
 
                     continue;
@@ -81,6 +86,10 @@ class FeedImporter
                         $record->identity(),
                         'manual_review',
                         $match->reason,
+                        $record->data,
+                        $record->raw,
+                        matchedListingId: $match->listing?->getKey(),
+                        matchedVariantId: $match->variant?->getKey(),
                     );
 
                     continue;
@@ -89,7 +98,12 @@ class FeedImporter
                 $outcome = $this->outcome($match, $record);
 
                 if ($canApply) {
-                    $this->persist($retailer, $match, $record);
+                    $this->synchronizer->sync(
+                        $retailer,
+                        $record,
+                        $match->listing,
+                        $match->variant,
+                    );
                 }
 
                 $items[] = new FeedImportItem(
@@ -97,6 +111,10 @@ class FeedImporter
                     $record->identity(),
                     $outcome,
                     $match->reason,
+                    $record->data,
+                    $record->raw,
+                    matchedListingId: $match->listing?->getKey(),
+                    matchedVariantId: $match->variant?->getKey(),
                 );
             }
 
@@ -114,6 +132,8 @@ class FeedImporter
                         ?? "listing-{$listing->getKey()}",
                     'missing',
                     'not_present_in_snapshot',
+                    matchedListingId: $listing->getKey(),
+                    matchedVariantId: $listing->shoe_variant_id,
                 );
             }
 
@@ -158,84 +178,11 @@ class FeedImporter
             : 'unchanged';
     }
 
-    private function persist(
-        Retailer $retailer,
-        FeedMatch $match,
-        FeedRecord $record,
-    ): RetailerListing {
-        $listing = $match->listing ?? new RetailerListing([
-            'shoe_variant_id' => $match->variant->getKey(),
-            'retailer_id' => $retailer->getKey(),
-        ]);
-
-        $listing->fill($this->listingAttributes($record));
-        $listing->save();
-        $this->syncSizes($listing, $record);
-
-        return $listing;
-    }
-
-    private function listingAttributes(FeedRecord $record): array
-    {
-        $data = $record->data;
-
-        return [
-            'retailer_external_id' => $data['retailer_external_id'] ?? null,
-            'retailer_sku' => $data['retailer_sku'] ?? null,
-            'gtin' => $data['gtin'] ?? null,
-            'manufacturer_style_code' => $data['manufacturer_style_code'] ?? null,
-            'raw_title' => $data['title'],
-            'raw_colour' => $data['colour'],
-            'product_url' => $data['product_url'],
-            'affiliate_url' => $data['affiliate_url'] ?? null,
-            'source_type' => ListingSourceType::Feed->value,
-            'raw_payload' => $record->raw,
-            'current_price' => $data['current_price'],
-            'original_price' => $data['original_price'] ?? null,
-            'currency' => $data['currency'],
-            'delivery_cost' => $data['delivery']['cost'] ?? null,
-            'delivery_min_days' => $data['delivery']['min_days'] ?? null,
-            'delivery_max_days' => $data['delivery']['max_days'] ?? null,
-            'delivery_note_lv' => $data['delivery']['note_lv'] ?? null,
-            'delivery_note_en' => $data['delivery']['note_en'] ?? null,
-            'active' => $data['active'],
-            'last_checked_at' => CarbonImmutable::parse($data['observed_at']),
-        ];
-    }
-
-    private function syncSizes(RetailerListing $listing, FeedRecord $record): void
-    {
-        $sizesByLabel = Size::query()
-            ->whereIn('label', array_column($record->data['sizes'], 'eu_size'))
-            ->pluck('id', 'label');
-        $keptIds = [];
-
-        foreach ($record->data['sizes'] as $sizeData) {
-            $sizeId = $sizesByLabel[$sizeData['eu_size']];
-            $keptIds[] = $sizeId;
-            $listing->listingSizes()->updateOrCreate(
-                ['size_id' => $sizeId],
-                [
-                    'in_stock' => $sizeData['in_stock'],
-                    'price' => $sizeData['price'],
-                ],
-            );
-        }
-
-        $removedSizes = $listing->listingSizes();
-
-        if ($keptIds !== []) {
-            $removedSizes->whereNotIn('size_id', $keptIds);
-        }
-
-        $removedSizes->delete();
-    }
-
     private function hasBusinessChanges(
         RetailerListing $listing,
         FeedRecord $record,
     ): bool {
-        $attributes = $this->listingAttributes($record);
+        $attributes = $this->synchronizer->listingAttributes($record);
         unset($attributes['raw_payload'], $attributes['last_checked_at']);
 
         foreach ($attributes as $field => $expected) {

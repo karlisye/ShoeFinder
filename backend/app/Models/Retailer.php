@@ -14,6 +14,11 @@ class Retailer extends Model
         return $this->hasMany(RetailerListing::class);
     }
 
+    public function feedImports(): HasMany
+    {
+        return $this->hasMany(FeedImport::class);
+    }
+
     protected function casts(): array
     {
         return [
