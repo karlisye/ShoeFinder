@@ -68,6 +68,14 @@ final class CatalogueRules
                 $this->unique('colours', 'code', $colour),
             ],
             'name' => ['required', 'string', 'max:255'],
+            'filter_colour_ids' => ['required', 'array', 'min:1', 'max:15'],
+            'filter_colour_ids.*' => [
+                'integer',
+                'distinct',
+                Rule::exists('filter_colours', 'id')
+                    ->where(fn (Builder $query): Builder => $query
+                        ->where('active', true)),
+            ],
             'sort_order' => ['sometimes', 'integer', 'min:0', 'max:32767'],
             'active' => ['sometimes', 'boolean'],
         ];

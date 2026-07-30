@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'selected_colour_id',
     'new_colour_code',
     'new_colour_name',
+    'new_filter_colour_ids',
     'new_manufacturer_variant_code',
     'created_variant_id',
     'new_shoe_brand_id',
@@ -119,6 +120,7 @@ class FeedImportItem extends Model
             'normalized_payload' => 'array',
             'raw_payload' => 'array',
             'issues' => 'array',
+            'new_filter_colour_ids' => 'array',
             'resolved_at' => 'immutable_datetime',
         ];
     }

@@ -26,6 +26,8 @@ class StageOneReferenceSeederTest extends TestCase
 
         $this->assertDatabaseCount('sizes', 79);
         $this->assertDatabaseCount('colours', 13);
+        $this->assertDatabaseCount('filter_colours', 15);
+        $this->assertDatabaseCount('colour_filter_colour', 13);
         $this->assertDatabaseCount('users', 0);
 
         $this->assertDatabaseHas('sizes', [
@@ -54,6 +56,19 @@ class StageOneReferenceSeederTest extends TestCase
         $this->assertDatabaseHas('colours', [
             'code' => 'multicolour',
             'name' => 'Multicolour',
+        ]);
+        $this->assertDatabaseHas('filter_colours', [
+            'code' => 'white',
+            'name_lv' => 'Balta',
+            'name_en' => 'White',
+        ]);
+        $this->assertDatabaseHas('colour_filter_colour', [
+            'colour_id' => DB::table('colours')
+                ->where('code', 'black')
+                ->value('id'),
+            'filter_colour_id' => DB::table('filter_colours')
+                ->where('code', 'black')
+                ->value('id'),
         ]);
     }
 }

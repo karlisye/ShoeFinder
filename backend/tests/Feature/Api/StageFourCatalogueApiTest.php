@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Colour;
+use App\Models\FilterColour;
 use App\Models\Retailer;
 use App\Models\RetailerListing;
 use App\Models\RetailerListingSize;
@@ -46,6 +47,8 @@ class StageFourCatalogueApiTest extends TestCase
             ->assertJsonPath('data.0.slug', 'alpha-runner')
             ->assertJsonPath('data.0.colour.code', 'red')
             ->assertJsonPath('data.0.colour.name', 'Red')
+            ->assertJsonPath('data.0.colour.filter_colours.0.code', 'white')
+            ->assertJsonPath('data.0.colour.filter_colours.1.code', 'red')
             ->assertJsonPath('data.0.colours.0.code', 'red')
             ->assertJsonPath('data.0.colours.1.code', 'blue')
             ->assertJsonPath('data.0.category.name', 'Skriešanas apavi')
@@ -120,6 +123,12 @@ class StageFourCatalogueApiTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.slug', 'alpha-runner')
             ->assertJsonPath('data.0.colour.code', 'blue');
+
+        $this->getJson('/api/v1/shoes?colour[]=white')
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.colour.code', 'red')
+            ->assertJsonPath('data.1.colour.code', 'red');
 
         $this->getJson('/api/v1/shoes?colour[]=blue&in_stock=1')
             ->assertOk()
@@ -232,11 +241,11 @@ class StageFourCatalogueApiTest extends TestCase
             ->assertJsonCount(2, 'data.brands')
             ->assertJsonCount(2, 'data.categories')
             ->assertJsonCount(2, 'data.audiences')
-            ->assertJsonCount(2, 'data.colours')
+            ->assertJsonCount(3, 'data.colours')
             ->assertJsonCount(3, 'data.sizes')
             ->assertJsonCount(2, 'data.retailers')
             ->assertJsonPath('data.categories.0.name', 'Running shoes')
-            ->assertJsonPath('data.colours.0.name', 'Red')
+            ->assertJsonPath('data.colours.0.name', 'White')
             ->assertJsonPath('data.sizes.0.label', '42')
             ->assertJsonPath('data.retailers.0.slug', 'shop-a')
             ->assertJsonPath('data.price_bounds.minimum', '90.00')
@@ -319,6 +328,13 @@ class StageFourCatalogueApiTest extends TestCase
             'sort_order' => 2,
             'active' => true,
         ]);
+        $red->filterColours()->attach([
+            FilterColour::query()->where('code', 'red')->value('id'),
+            FilterColour::query()->where('code', 'white')->value('id'),
+        ]);
+        $blue->filterColours()->attach(
+            FilterColour::query()->where('code', 'blue')->value('id'),
+        );
         $size42 = $this->createSize('42', 42, 1);
         $size43 = $this->createSize('43', 43, 2);
         $size44 = $this->createSize('44', 44, 3);

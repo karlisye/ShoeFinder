@@ -4,11 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['code', 'name', 'sort_order', 'active'])]
 class Colour extends Model
 {
+    public function filterColours(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            FilterColour::class,
+            'colour_filter_colour',
+        )
+            ->withTimestamps()
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
     public function variants(): HasMany
     {
         return $this->hasMany(ShoeVariant::class);

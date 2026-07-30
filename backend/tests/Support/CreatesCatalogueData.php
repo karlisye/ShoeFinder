@@ -5,6 +5,7 @@ namespace Tests\Support;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Colour;
+use App\Models\FilterColour;
 use App\Models\Retailer;
 use App\Models\RetailerListing;
 use App\Models\RetailerListingSize;
@@ -31,6 +32,10 @@ trait CreatesCatalogueData
             'code' => "colour-{$suffix}",
             'name' => "Colour {$suffix}",
         ]);
+        $filterColour = FilterColour::query()
+            ->where('code', 'multicolour')
+            ->firstOrFail();
+        $colour->filterColours()->attach($filterColour);
         $size = Size::create([
             'eu_size' => 42,
             'label' => '42',
@@ -55,6 +60,7 @@ trait CreatesCatalogueData
             'brand',
             'category',
             'colour',
+            'filterColour',
             'size',
             'shoe',
             'variant',
@@ -91,6 +97,11 @@ trait CreatesCatalogueData
             'code' => "colour-{$suffix}",
             'name' => "Colour {$suffix}",
         ]);
+        $colour->filterColours()->attach(
+            FilterColour::query()
+                ->where('code', 'multicolour')
+                ->firstOrFail(),
+        );
 
         return ShoeVariant::create([
             'shoe_id' => $shoe->id,

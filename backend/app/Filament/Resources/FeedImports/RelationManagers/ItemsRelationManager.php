@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FeedImports\RelationManagers;
 
+use App\Domain\Catalogue\Colours\FilterColourSuggester;
 use App\Domain\Feeds\FeedImportWorkflow;
 use App\Enums\Audience;
 use App\Models\Brand;
@@ -9,9 +10,11 @@ use App\Models\Category;
 use App\Models\Colour;
 use App\Models\FeedImport;
 use App\Models\FeedImportItem;
+use App\Models\FilterColour;
 use App\Models\Shoe;
 use App\Models\ShoeVariant;
 use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -110,6 +113,10 @@ class ItemsRelationManager extends RelationManager
                             ),
                         'new_colour_name' => $record->new_colour_name
                             ?? ($record->normalized_payload['colour'] ?? null),
+                        'new_filter_colour_ids' => $record->new_filter_colour_ids
+                            ?? app(FilterColourSuggester::class)->idsFor(
+                                $record->normalized_payload['colour'] ?? '',
+                            ),
                         'new_manufacturer_variant_code' => $record->new_manufacturer_variant_code
                             ?? ($record->normalized_payload['manufacturer_variant_code'] ?? null),
                         'new_shoe_brand_id' => $record->new_shoe_brand_id
@@ -306,6 +313,26 @@ class ItemsRelationManager extends RelationManager
                                     ],
                                     true,
                                 )),
+                        CheckboxList::make('new_filter_colour_ids')
+                            ->label('Filtra krāsas')
+                            ->helperText('Izvēlies visas krāsas, kuras redzamas šajā variantā. Tās ietekmē tikai kataloga filtrus.')
+                            ->options(fn (): array => FilterColour::query()
+                                ->where('active', true)
+                                ->orderBy('sort_order')
+                                ->pluck('name_lv', 'id')
+                                ->all())
+                            ->columns(3)
+                            ->minItems(1)
+                            ->required(fn (Get $get): bool => blank($get('selected_colour_id')))
+                            ->visible(fn (Get $get): bool => blank($get('selected_colour_id'))
+                                && in_array(
+                                    $get('resolution'),
+                                    [
+                                        FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT,
+                                        FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
+                                    ],
+                                    true,
+                                )),
                         TextInput::make('new_manufacturer_variant_code')
                             ->label('Ražotāja varianta kods')
                             ->maxLength(100)
@@ -437,6 +464,7 @@ class ItemsRelationManager extends RelationManager
                 'selected_colour_id' => null,
                 'new_colour_code' => $data['new_colour_code'] ?? null,
                 'new_colour_name' => $data['new_colour_name'] ?? null,
+                'new_filter_colour_ids' => $data['new_filter_colour_ids'] ?? [],
             ];
         }
 
@@ -449,6 +477,7 @@ class ItemsRelationManager extends RelationManager
                 'selected_colour_id' => (int) $selection,
                 'new_colour_code' => null,
                 'new_colour_name' => null,
+                'new_filter_colour_ids' => null,
             ];
         }
 
@@ -479,6 +508,7 @@ class ItemsRelationManager extends RelationManager
             'selected_colour_id' => null,
             'new_colour_code' => $pendingColour->new_colour_code,
             'new_colour_name' => $pendingColour->new_colour_name,
+            'new_filter_colour_ids' => $pendingColour->new_filter_colour_ids,
         ];
     }
 

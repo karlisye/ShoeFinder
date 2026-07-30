@@ -7,6 +7,7 @@ use App\Enums\Audience;
 use App\Models\Colour;
 use App\Models\FeedImport;
 use App\Models\FeedImportItem;
+use App\Models\FilterColour;
 use App\Models\Shoe;
 use Database\Seeders\SizeSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -143,6 +144,10 @@ class FeedImportWorkflowTest extends TestCase
             [
                 'new_colour_code' => 'imported-white-black',
                 'new_colour_name' => 'White/Black',
+                'new_filter_colour_ids' => $this->filterColourIds([
+                    'black',
+                    'white',
+                ]),
                 'new_manufacturer_variant_code' => 'DD1391-100',
             ],
         );
@@ -162,6 +167,13 @@ class FeedImportWorkflowTest extends TestCase
         $this->assertSame('imported-white-black', $newVariant->colour->code);
         $this->assertSame('White/Black', $newVariant->colour->name);
         $this->assertSame(
+            ['black', 'white'],
+            $newVariant->colour->filterColours()
+                ->orderBy('code')
+                ->pluck('code')
+                ->all(),
+        );
+        $this->assertSame(
             $newVariant->id,
             $context['retailer']->listings()->firstOrFail()->shoe_variant_id,
         );
@@ -178,6 +190,9 @@ class FeedImportWorkflowTest extends TestCase
             'code' => 'white-black',
             'name' => 'White/Black',
         ]);
+        $existingColour->filterColours()->attach(
+            $this->filterColourIds(['black', 'white']),
+        );
         $feedImport = $this->createImport($context, $this->singleCsvRecord(1));
         $workflow = app(FeedImportWorkflow::class);
 
@@ -260,6 +275,10 @@ class FeedImportWorkflowTest extends TestCase
                 'new_shoe_audience' => Audience::Men->value,
                 'new_colour_code' => 'imported-white-wolf-grey',
                 'new_colour_name' => 'White/Wolf Grey',
+                'new_filter_colour_ids' => $this->filterColourIds([
+                    'white',
+                    'grey',
+                ]),
                 'new_manufacturer_variant_code' => 'CN8490-100',
             ],
         );
@@ -307,6 +326,10 @@ class FeedImportWorkflowTest extends TestCase
         $sharedColour = [
             'new_colour_code' => 'shared-black-white',
             'new_colour_name' => 'Black/White',
+            'new_filter_colour_ids' => $this->filterColourIds([
+                'black',
+                'white',
+            ]),
         ];
 
         $workflow->resolve(
@@ -360,6 +383,13 @@ class FeedImportWorkflowTest extends TestCase
         $this->assertSame('Black/White', $colour->name);
         $this->assertCount(1, $colourIds);
         $this->assertSame($colour->id, $colourIds->first());
+        $this->assertSame(
+            ['black', 'white'],
+            $colour->filterColours()
+                ->orderBy('code')
+                ->pluck('code')
+                ->all(),
+        );
     }
 
     private function createImport(array $context, string $contents): FeedImport
@@ -419,5 +449,14 @@ class FeedImportWorkflowTest extends TestCase
         ]);
 
         return $context;
+    }
+
+    private function filterColourIds(array $codes): array
+    {
+        return FilterColour::query()
+            ->whereIn('code', $codes)
+            ->orderBy('id')
+            ->pluck('id')
+            ->all();
     }
 }

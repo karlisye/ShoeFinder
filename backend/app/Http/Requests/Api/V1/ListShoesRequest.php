@@ -63,7 +63,7 @@ class ListShoesRequest extends ApiRequest
             'colour.*' => [
                 'string',
                 'distinct',
-                Rule::exists('colours', 'code')
+                Rule::exists('filter_colours', 'code')
                     ->where(fn (Builder $query): Builder => $query->where('active', true)),
             ],
             'size' => ['sometimes', 'array', 'max:79'],

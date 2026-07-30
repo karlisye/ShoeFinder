@@ -3,6 +3,7 @@
 namespace Tests\Feature\Database;
 
 use App\Domain\Catalogue\Validation\CatalogueRules;
+use App\Models\FilterColour;
 use App\Models\ShoeImage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Validator;
@@ -34,17 +35,23 @@ class StageTwoValidationTest extends TestCase
     public function test_colour_uses_one_required_canonical_name(): void
     {
         $rules = app(CatalogueRules::class);
+        $filterColour = FilterColour::query()
+            ->where('code', 'white')
+            ->firstOrFail();
 
         $this->assertTrue(Validator::make([
             'code' => 'white-black',
             'name' => 'White/Black',
+            'filter_colour_ids' => [$filterColour->id],
         ], $rules->colour())->passes());
 
         $validator = Validator::make([
             'code' => 'white-black',
+            'filter_colour_ids' => [],
         ], $rules->colour());
 
         $this->assertTrue($validator->errors()->has('name'));
+        $this->assertTrue($validator->errors()->has('filter_colour_ids'));
     }
 
     #[DataProvider('invalidListingData')]

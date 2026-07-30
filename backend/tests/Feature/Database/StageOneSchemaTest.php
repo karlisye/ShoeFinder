@@ -19,6 +19,8 @@ class StageOneSchemaTest extends TestCase
             'brands',
             'categories',
             'colours',
+            'filter_colours',
+            'colour_filter_colour',
             'sizes',
             'retailers',
             'shoes',
@@ -42,6 +44,17 @@ class StageOneSchemaTest extends TestCase
         ]));
         $this->assertFalse(Schema::hasColumn('colours', 'name_lv'));
         $this->assertFalse(Schema::hasColumn('colours', 'name_en'));
+        $this->assertTrue(Schema::hasColumns('filter_colours', [
+            'code',
+            'name_lv',
+            'name_en',
+            'sort_order',
+            'active',
+        ]));
+        $this->assertTrue(Schema::hasColumns('colour_filter_colour', [
+            'colour_id',
+            'filter_colour_id',
+        ]));
 
         $this->assertTrue(Schema::hasColumns('retailer_listings', [
             'retailer_external_id',

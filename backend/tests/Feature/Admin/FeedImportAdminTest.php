@@ -10,6 +10,7 @@ use App\Filament\Resources\FeedImports\RelationManagers\ItemsRelationManager;
 use App\Models\Colour;
 use App\Models\FeedImport;
 use App\Models\FeedImportItem;
+use App\Models\FilterColour;
 use App\Models\User;
 use Database\Seeders\SizeSeeder;
 use Filament\Actions\Testing\TestAction;
@@ -191,6 +192,10 @@ class FeedImportAdminTest extends TestCase
                     'selected_variant_id' => $context['variant']->id,
                     'new_colour_code' => 'sail-black-review',
                     'new_colour_name' => 'Sail/Black',
+                    'new_filter_colour_ids' => $this->filterColourIds([
+                        'black',
+                        'beige',
+                    ]),
                     'new_manufacturer_variant_code' => 'REVIEW-200',
                 ],
             )
@@ -205,6 +210,10 @@ class FeedImportAdminTest extends TestCase
         $this->assertSame($context['variant']->id, $item->selected_variant_id);
         $this->assertSame('sail-black-review', $item->new_colour_code);
         $this->assertSame('Sail/Black', $item->new_colour_name);
+        $this->assertSame(
+            $this->filterColourIds(['black', 'beige']),
+            $item->new_filter_colour_ids,
+        );
         $this->assertSame('REVIEW-200', $item->new_manufacturer_variant_code);
         $this->assertSame(1, $context['shoe']->variants()->count());
     }
@@ -217,6 +226,9 @@ class FeedImportAdminTest extends TestCase
             'code' => 'white-black',
             'name' => 'White/Black',
         ]);
+        $existingColour->filterColours()->attach(
+            $this->filterColourIds(['black', 'white']),
+        );
         $feedImport = $this->createFeedImport($context);
         $item = $feedImport->items()->create([
             'source_record' => 2,
@@ -268,6 +280,10 @@ class FeedImportAdminTest extends TestCase
             'resolution' => FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
             'new_colour_code' => 'black-white',
             'new_colour_name' => 'Black/White',
+            'new_filter_colour_ids' => $this->filterColourIds([
+                'black',
+                'white',
+            ]),
             'resolved_at' => now(),
         ]);
         $item = $feedImport->items()->create([
@@ -315,6 +331,10 @@ class FeedImportAdminTest extends TestCase
         $this->assertNull($item->selected_colour_id);
         $this->assertSame('black-white', $item->new_colour_code);
         $this->assertSame('Black/White', $item->new_colour_name);
+        $this->assertSame(
+            $this->filterColourIds(['black', 'white']),
+            $item->new_filter_colour_ids,
+        );
     }
 
     public function test_apply_action_locks_the_import_after_completion(): void
@@ -371,6 +391,10 @@ class FeedImportAdminTest extends TestCase
                     'new_shoe_audience' => Audience::Unisex->value,
                     'new_colour_code' => 'blue-white-import',
                     'new_colour_name' => 'Blue/White',
+                    'new_filter_colour_ids' => $this->filterColourIds([
+                        'white',
+                        'blue',
+                    ]),
                     'new_manufacturer_variant_code' => 'NR100-400',
                 ],
             )
@@ -402,6 +426,15 @@ class FeedImportAdminTest extends TestCase
             'format' => 'csv',
             'status' => FeedImport::STATUS_READY,
         ]);
+    }
+
+    private function filterColourIds(array $codes): array
+    {
+        return FilterColour::query()
+            ->whereIn('code', $codes)
+            ->orderBy('id')
+            ->pluck('id')
+            ->all();
     }
 
     public static function supportedFeedUploads(): array

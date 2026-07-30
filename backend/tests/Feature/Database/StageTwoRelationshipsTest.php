@@ -48,6 +48,12 @@ class StageTwoRelationshipsTest extends TestCase
         $this->assertTrue($context['shoe']->category->is($context['category']));
         $this->assertTrue($context['shoe']->variants->first()->is($context['variant']));
         $this->assertTrue($context['colour']->variants->first()->is($context['variant']));
+        $this->assertTrue($context['colour']->filterColours->first()->is(
+            $context['filterColour'],
+        ));
+        $this->assertTrue($context['filterColour']->colourways->first()->is(
+            $context['colour'],
+        ));
         $this->assertTrue($context['variant']->shoe->is($context['shoe']));
         $this->assertTrue($context['variant']->colour->is($context['colour']));
         $this->assertTrue($context['variant']->images->first()->is($image));

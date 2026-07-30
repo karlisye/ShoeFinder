@@ -11,6 +11,7 @@ use App\Enums\ImageSourceType;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Colour;
+use App\Models\FilterColour;
 use App\Models\RetailerListing;
 use App\Models\RetailerListingSize;
 use App\Models\Shoe;
@@ -45,6 +46,7 @@ final readonly class CatalogueReadService
                             ->where('active', true),
                     ),
                 'variants.colour',
+                'variants.colour.filterColours',
                 'variants.images' => fn ($query) => $query
                     ->orderByDesc('is_primary')
                     ->orderBy('sort_order')
@@ -112,6 +114,7 @@ final readonly class CatalogueReadService
                             ->where('active', true),
                     ),
                 'variants.colour',
+                'variants.colour.filterColours',
                 'variants.images' => fn ($query) => $query
                     ->orderByDesc('is_primary')
                     ->orderBy('sort_order')
@@ -281,20 +284,29 @@ final readonly class CatalogueReadService
             ->values()
             ->all();
 
-        $colours = Colour::query()
+        $colours = FilterColour::query()
             ->where('active', true)
             ->whereHas(
-                'variants',
+                'colourways',
                 fn ($query) => $query
                     ->where('active', true)
-                    ->whereHas('shoe', $publicShoe),
+                    ->whereHas(
+                        'variants',
+                        fn ($variantQuery) => $variantQuery
+                            ->where('active', true)
+                            ->whereHas('shoe', $publicShoe),
+                    ),
             )
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get()
-            ->map(fn (Colour $colour): array => [
+            ->map(fn (FilterColour $colour): array => [
                 'code' => $colour->code,
-                'name' => $colour->name,
+                'name' => $this->localized(
+                    $colour->name_lv,
+                    $colour->name_en,
+                    $options['locale'],
+                ),
             ])
             ->all();
 
@@ -431,11 +443,10 @@ final readonly class CatalogueReadService
     ): bool {
         if (
             filled($filters['colour'] ?? [])
-            && ! in_array(
-                $variant->colour->code,
-                $filters['colour'],
-                true,
-            )
+            && ! $variant->colour->filterColours
+                ->pluck('code')
+                ->intersect($filters['colour'])
+                ->isNotEmpty()
         ) {
             return false;
         }
@@ -473,7 +484,26 @@ final readonly class CatalogueReadService
         $query = $this->qualifyingListingSizes->build($filters['currency']);
 
         if (filled($filters['colour'] ?? [])) {
-            $query->whereIn('qualified_colours.code', $filters['colour']);
+            $query->whereExists(
+                fn (QueryBuilder $filterQuery) => $filterQuery
+                    ->selectRaw('1')
+                    ->from('colour_filter_colour as selected_colour_filters')
+                    ->join(
+                        'filter_colours as selected_filter_colours',
+                        'selected_filter_colours.id',
+                        '=',
+                        'selected_colour_filters.filter_colour_id',
+                    )
+                    ->whereColumn(
+                        'selected_colour_filters.colour_id',
+                        'qualified_colours.id',
+                    )
+                    ->where('selected_filter_colours.active', true)
+                    ->whereIn(
+                        'selected_filter_colours.code',
+                        $filters['colour'],
+                    ),
+            );
         }
 
         if (filled($filters['size'] ?? [])) {
@@ -568,10 +598,7 @@ final readonly class CatalogueReadService
                 $shoe->description_en,
                 $locale,
             ),
-            'colour' => [
-                'code' => $variant->colour->code,
-                'name' => $variant->colour->name,
-            ],
+            'colour' => $this->colourData($variant->colour, $locale),
             'colours' => $shoe->variants
                 ->sort(function (
                     ShoeVariant $left,
@@ -586,8 +613,7 @@ final readonly class CatalogueReadService
                 })
                 ->map(fn (ShoeVariant $item): array => [
                     'variant_id' => $item->id,
-                    'code' => $item->colour->code,
-                    'name' => $item->colour->name,
+                    ...$this->colourData($item->colour, $locale),
                 ])
                 ->values()
                 ->all(),
@@ -700,10 +726,7 @@ final readonly class CatalogueReadService
         return [
             'id' => $variant->id,
             'manufacturer_variant_code' => $variant->manufacturer_variant_code,
-            'colour' => [
-                'code' => $variant->colour->code,
-                'name' => $variant->colour->name,
-            ],
+            'colour' => $this->colourData($variant->colour, $locale),
             'images' => $variant->images
                 ->map(fn (ShoeImage $image): array => $this->image(
                     $image,
@@ -839,6 +862,25 @@ final readonly class CatalogueReadService
                 $locale,
             ),
             'primary' => $image->is_primary,
+        ];
+    }
+
+    private function colourData(Colour $colour, string $locale): array
+    {
+        return [
+            'code' => $colour->code,
+            'name' => $colour->name,
+            'filter_colours' => $colour->filterColours
+                ->map(fn (FilterColour $filterColour): array => [
+                    'code' => $filterColour->code,
+                    'name' => $this->localized(
+                        $filterColour->name_lv,
+                        $filterColour->name_en,
+                        $locale,
+                    ),
+                ])
+                ->values()
+                ->all(),
         ];
     }
 

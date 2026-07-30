@@ -7,6 +7,7 @@ use App\Enums\ImageSourceType;
 use App\Enums\ListingSourceType;
 use App\Filament\Resources\Brands\Pages\CreateBrand;
 use App\Filament\Resources\Categories\Pages\CreateCategory;
+use App\Filament\Resources\Colours\Pages\CreateColour;
 use App\Filament\Resources\Retailers\Pages\CreateRetailer;
 use App\Filament\Resources\Shoes\Pages\CreateShoe;
 use App\Filament\Resources\Shoes\Pages\EditShoe;
@@ -14,6 +15,7 @@ use App\Filament\Resources\Shoes\RelationManagers\VariantsRelationManager;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Colour;
+use App\Models\FilterColour;
 use App\Models\OutboundClick;
 use App\Models\Retailer;
 use App\Models\Shoe;
@@ -79,6 +81,20 @@ class StageThreeAdminWorkflowTest extends TestCase
             ->call('create')
             ->assertHasNoFormErrors();
 
+        $white = FilterColour::query()->where('code', 'white')->firstOrFail();
+        $black = FilterColour::query()->where('code', 'black')->firstOrFail();
+
+        Livewire::test(CreateColour::class)
+            ->fillForm([
+                'name' => 'White/Black',
+                'code' => 'white-black-test',
+                'filterColours' => [$white->id, $black->id],
+                'sort_order' => 10,
+                'active' => true,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
         $brand = Brand::where('slug', 'new-balance')->firstOrFail();
         $category = Category::where('slug', 'skrienasanas-apavi')->firstOrFail();
 
@@ -105,6 +121,15 @@ class StageThreeAdminWorkflowTest extends TestCase
         ]);
         $this->assertDatabaseHas(Retailer::class, [
             'slug' => 'sporta-veikals',
+        ]);
+        $this->assertDatabaseHas(Colour::class, [
+            'code' => 'white-black-test',
+        ]);
+        $this->assertDatabaseHas('colour_filter_colour', [
+            'colour_id' => Colour::query()
+                ->where('code', 'white-black-test')
+                ->value('id'),
+            'filter_colour_id' => $white->id,
         ]);
         $this->assertDatabaseHas(Shoe::class, [
             'slug' => 'fresh-foam-1080v14',
@@ -250,6 +275,11 @@ class StageThreeAdminWorkflowTest extends TestCase
                 [
                     'code' => 'burgundy-test',
                     'name' => 'Burgundy',
+                    'filter_colour_ids' => [
+                        FilterColour::query()
+                            ->where('code', 'red')
+                            ->value('id'),
+                    ],
                 ],
                 formName: 'mountedActionSchema0',
             )
@@ -268,6 +298,11 @@ class StageThreeAdminWorkflowTest extends TestCase
             'shoe_id' => $context['shoe']->id,
             'colour_id' => $colour->id,
         ]);
+        $this->assertTrue(
+            $colour->filterColours()
+                ->where('code', 'red')
+                ->exists(),
+        );
     }
 
     public function test_duplicate_variant_colour_and_code_show_validation_errors(): void

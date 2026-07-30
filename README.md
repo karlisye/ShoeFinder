@@ -111,9 +111,11 @@ Administrators can also open **Importi** in Filament:
 
 Uploaded files use private Laravel storage. The UI accepts files up to 10 MB and previews up to 5,000 records. Identity conflicts can only be ignored in the first review workflow. Resolve the catalogue or source data and upload a corrected feed instead of overriding conflicting identifiers.
 
-Creating a colour variant requires selecting an existing variant from the correct shoe model. Select an existing shared colour when it already exists, or leave that field empty and enter a new stable colour code and canonical name. Colour names are shown unchanged in Latvian and English. The selected shoe cannot use the same colour twice. The colour, variant, and retailer offer are connected together only when the full import is applied.
+Creating a colour variant requires selecting an existing variant from the correct shoe model. Select an existing shared colourway when it already exists, or leave that field empty and enter a new stable code, canonical name, and filter colours. Colourway names are shown unchanged in Latvian and English. Filter colours are localized and affect only catalogue filtering. The selected shoe cannot use the same colourway twice. The colourway, variant, and retailer offer are connected together only when the full import is applied.
 
 Creating a new shoe model requires selecting an existing brand and category, then confirming the official shoe name, stable slug, audience, manufacturer codes, and colour details. Saving the review creates nothing. Applying the import creates the shoe, first colour variant, retailer offer, and sizes together. Add curated images later in the Shoe resource.
+
+Use **Krāsu varianti** in Filament to review each shared colourway and assign every visible filter colour. For example, `White/Black` should have both `Balta` and `Melna`.
 
 ## Code quality
 

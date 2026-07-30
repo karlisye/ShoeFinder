@@ -5,6 +5,7 @@ namespace Tests\Feature\Feeds;
 use App\Domain\Feeds\Data\FeedRecord;
 use App\Domain\Feeds\FeedProductMatcher;
 use App\Enums\ListingSourceType;
+use App\Models\FilterColour;
 use Database\Seeders\SizeSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\CreatesCatalogueData;
@@ -136,6 +137,32 @@ class FeedImportCommandTest extends TestCase
         $this->assertSame('manual_review', $match->action);
         $this->assertSame('strong_identity_conflict', $match->reason);
         $this->assertTrue($listing->is($match->listing));
+    }
+
+    public function test_filter_colours_never_match_a_different_official_colourway(): void
+    {
+        $context = $this->feedContext();
+        $context['variant']->update([
+            'manufacturer_variant_code' => null,
+        ]);
+        $context['colour']->filterColours()->sync(
+            FilterColour::query()
+                ->whereIn('code', ['black', 'white'])
+                ->pluck('id'),
+        );
+        $record = new FeedRecord(2, [
+            'brand' => 'Nike',
+            'manufacturer_style_code' => 'CW2288',
+            'colour' => 'White/Black',
+        ], []);
+
+        $match = app(FeedProductMatcher::class)->match(
+            $context['retailer'],
+            $record,
+        );
+
+        $this->assertSame('manual_review', $match->action);
+        $this->assertSame('no_strong_match', $match->reason);
     }
 
     private function feedContext(): array

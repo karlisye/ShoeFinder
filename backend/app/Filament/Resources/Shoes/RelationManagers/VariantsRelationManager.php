@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Shoes\RelationManagers;
 use App\Enums\ImageSourceType;
 use App\Enums\ListingSourceType;
 use App\Models\Colour;
+use App\Models\FilterColour;
 use App\Models\Retailer;
 use App\Models\RetailerListing;
 use App\Models\ShoeVariant;
@@ -58,8 +59,8 @@ class VariantsRelationManager extends RelationManager
                                 Section::make('Varianta dati')
                                     ->schema([
                                         Select::make('colour_id')
-                                            ->label('Krāsa')
-                                            ->helperText('Vairāku krāsu modelim izmanto vienu ražotāja krāsas nosaukumu, piemēram, “White/Black”.')
+                                            ->label('Krāsu variants')
+                                            ->helperText('Izvēlies oficiālo krāsu variantu. Tā filtra krāsas tiek pārvaldītas sadaļā “Krāsu varianti”.')
                                             ->relationship('colour', 'name')
                                             ->searchable()
                                             ->preload()
@@ -72,24 +73,40 @@ class VariantsRelationManager extends RelationManager
                                                     ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                                                     ->unique(Colour::class, 'code'),
                                                 TextInput::make('name')
-                                                    ->label('Krāsas nosaukums')
+                                                    ->label('Oficiālais nosaukums')
                                                     ->helperText('Saglabā ražotāja vai veikala izmantoto nosaukumu. To netulko.')
                                                     ->required()
                                                     ->maxLength(255),
+                                                CheckboxList::make('filter_colour_ids')
+                                                    ->label('Filtra krāsas')
+                                                    ->helperText('Izvēlies visas krāsas, kuras redzamas šajā variantā.')
+                                                    ->options(fn (): array => FilterColour::query()
+                                                        ->where('active', true)
+                                                        ->orderBy('sort_order')
+                                                        ->pluck('name_lv', 'id')
+                                                        ->all())
+                                                    ->columns(3)
+                                                    ->minItems(1)
+                                                    ->required(),
                                             ])
                                             ->createOptionUsing(
-                                                fn (array $data): int => Colour::query()
-                                                    ->create([
+                                                function (array $data): int {
+                                                    $filterColourIds = $data['filter_colour_ids'];
+                                                    unset($data['filter_colour_ids']);
+                                                    $colour = Colour::query()->create([
                                                         ...$data,
                                                         'sort_order' => 0,
                                                         'active' => true,
-                                                    ])
-                                                    ->getKey(),
+                                                    ]);
+                                                    $colour->filterColours()->sync($filterColourIds);
+
+                                                    return $colour->getKey();
+                                                },
                                             )
                                             ->createOptionAction(
                                                 fn (Action $action): Action => $action
-                                                    ->label('Izveidot jaunu krāsu')
-                                                    ->modalHeading('Jauna krāsa')
+                                                    ->label('Izveidot jaunu krāsu variantu')
+                                                    ->modalHeading('Jauns krāsu variants')
                                                     ->modalSubmitActionLabel('Izveidot'),
                                             )
                                             ->unique(
@@ -428,7 +445,7 @@ class VariantsRelationManager extends RelationManager
             ->recordTitleAttribute('manufacturer_variant_code')
             ->columns([
                 TextColumn::make('colour.name')
-                    ->label('Krāsa')
+                    ->label('Krāsu variants')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('manufacturer_variant_code')

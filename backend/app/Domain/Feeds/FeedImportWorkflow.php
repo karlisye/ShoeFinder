@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Colour;
 use App\Models\FeedImport;
 use App\Models\FeedImportItem;
+use App\Models\FilterColour;
 use App\Models\RetailerListing;
 use App\Models\Shoe;
 use App\Models\ShoeVariant;
@@ -386,6 +387,13 @@ class FeedImportWorkflow
             : null;
         $colourCode = trim((string) ($data['new_colour_code'] ?? ''));
         $name = trim((string) ($data['new_colour_name'] ?? ''));
+        $filterColourIds = collect($data['new_filter_colour_ids'] ?? [])
+            ->map(fn (mixed $id): int => (int) $id)
+            ->filter(fn (int $id): bool => $id > 0)
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
         $variantCode = filled($data['new_manufacturer_variant_code'] ?? null)
             ? trim((string) $data['new_manufacturer_variant_code'])
             : null;
@@ -405,6 +413,7 @@ class FeedImportWorkflow
                 'selected_colour_id' => $colour->getKey(),
                 'new_colour_code' => null,
                 'new_colour_name' => null,
+                'new_filter_colour_ids' => null,
                 'new_manufacturer_variant_code' => $variantCode,
             ];
         }
@@ -415,6 +424,22 @@ class FeedImportWorkflow
 
         if ($name === '') {
             throw new LogicException('Norādi krāsas nosaukumu.');
+        }
+
+        if ($filterColourIds === []) {
+            throw new LogicException('Izvēlies vismaz vienu filtra krāsu.');
+        }
+
+        $validFilterColourIds = FilterColour::query()
+            ->where('active', true)
+            ->whereKey($filterColourIds)
+            ->pluck('id')
+            ->sort()
+            ->values()
+            ->all();
+
+        if ($validFilterColourIds !== $filterColourIds) {
+            throw new LogicException('Izvēlies tikai aktīvas filtra krāsas.');
         }
 
         if (
@@ -448,10 +473,22 @@ class FeedImportWorkflow
             throw new LogicException('Gaidošajai krāsai ar šo kodu ir cits nosaukums.');
         }
 
+        if (
+            $pendingColour !== null
+            && collect($pendingColour->new_filter_colour_ids ?? [])
+                ->map(fn (mixed $id): int => (int) $id)
+                ->sort()
+                ->values()
+                ->all() !== $filterColourIds
+        ) {
+            throw new LogicException('Gaidošajai krāsai ar šo kodu ir citas filtra krāsas.');
+        }
+
         return [
             'selected_colour_id' => null,
             'new_colour_code' => $colourCode,
             'new_colour_name' => $name,
+            'new_filter_colour_ids' => $filterColourIds,
             'new_manufacturer_variant_code' => $variantCode,
         ];
     }
@@ -517,6 +554,10 @@ class FeedImportWorkflow
             throw new LogicException('Krāsas kodam un nosaukumam ir pretrunīgi dati.');
         }
 
+        $colour->filterColours()->syncWithoutDetaching(
+            $item->new_filter_colour_ids ?? [],
+        );
+
         return $colour;
     }
 
@@ -526,6 +567,7 @@ class FeedImportWorkflow
             'selected_colour_id' => null,
             'new_colour_code' => null,
             'new_colour_name' => null,
+            'new_filter_colour_ids' => null,
             'new_manufacturer_variant_code' => null,
             ...$this->emptyNewShoeAttributes(),
         ];

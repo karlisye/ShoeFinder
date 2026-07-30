@@ -43,5 +43,30 @@ class ColourSeeder extends Seeder
             ['code'],
             ['name', 'sort_order', 'active', 'updated_at'],
         );
+
+        $colourIds = DB::table('colours')
+            ->whereIn('code', array_column($colours, 'code'))
+            ->pluck('id', 'code');
+        $filterColourIds = DB::table('filter_colours')
+            ->whereIn('code', array_column($colours, 'code'))
+            ->pluck('id', 'code');
+        $pivotRows = collect($colours)
+            ->filter(fn (array $colour): bool => isset(
+                $colourIds[$colour['code']],
+                $filterColourIds[$colour['code']],
+            ))
+            ->map(fn (array $colour): array => [
+                'colour_id' => $colourIds[$colour['code']],
+                'filter_colour_id' => $filterColourIds[$colour['code']],
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ])
+            ->all();
+
+        DB::table('colour_filter_colour')->upsert(
+            $pivotRows,
+            ['colour_id', 'filter_colour_id'],
+            ['updated_at'],
+        );
     }
 }
