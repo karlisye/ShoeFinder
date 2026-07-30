@@ -18,6 +18,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Support\CreatesCatalogueData;
 use Tests\TestCase;
 
@@ -122,6 +123,41 @@ class FeedImportAdminTest extends TestCase
         $this->assertSame('sole-market.csv', $feedImport->original_filename);
         $this->assertSame(1, $feedImport->total_count);
         $this->assertSame(0, $context['retailer']->listings()->count());
+        Storage::disk('local')->assertExists($feedImport->stored_path);
+    }
+
+    #[DataProvider('supportedFeedUploads')]
+    public function test_upload_accepts_every_supported_feed_format(
+        string $retailerSlug,
+        string $fixture,
+        string $mimeType,
+        string $expectedFormat,
+    ): void {
+        $context = $this->createCatalogueContext(
+            'feed-admin-format-'.$expectedFormat,
+        );
+        $context['size']->update(['sort_order' => 1000]);
+        $this->seed(SizeSeeder::class);
+        $context['retailer']->update(['slug' => $retailerSlug]);
+        $file = UploadedFile::fake()->createWithContent(
+            $fixture,
+            file_get_contents(
+                base_path("tests/Fixtures/ProductFeeds/clean/{$fixture}"),
+            ),
+        )->mimeType($mimeType);
+
+        Livewire::test(CreateFeedImport::class)
+            ->fillForm([
+                'retailer_id' => $context['retailer']->id,
+                'stored_path' => $file,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $feedImport = FeedImport::query()->firstOrFail();
+
+        $this->assertSame($expectedFormat, $feedImport->format);
+        $this->assertSame(FeedImport::STATUS_READY, $feedImport->status);
         Storage::disk('local')->assertExists($feedImport->stored_path);
     }
 
@@ -301,5 +337,35 @@ class FeedImportAdminTest extends TestCase
             'format' => 'csv',
             'status' => FeedImport::STATUS_READY,
         ]);
+    }
+
+    public static function supportedFeedUploads(): array
+    {
+        return [
+            'CSV' => [
+                'sole-market',
+                'sole-market.csv',
+                'text/csv',
+                'csv',
+            ],
+            'JSON' => [
+                'urban-step',
+                'urban-step.json',
+                'application/json',
+                'json',
+            ],
+            'JSON Lines' => [
+                'sneaker-point',
+                'sneaker-point.jsonl',
+                'application/x-ndjson',
+                'jsonl',
+            ],
+            'XML' => [
+                'apavu-nams',
+                'apavu-nams.xml',
+                'application/xml',
+                'xml',
+            ],
+        ];
     }
 }

@@ -66,9 +66,21 @@ class FeedImportResource extends Resource
                                 'text/csv',
                                 'text/plain',
                                 'application/csv',
+                                'application/vnd.ms-excel',
                                 'application/json',
+                                'text/json',
+                                'application/x-ndjson',
+                                'application/ndjson',
+                                'application/jsonl',
+                                'text/jsonl',
                                 'application/xml',
                                 'text/xml',
+                            ])
+                            ->mimeTypeMap([
+                                'csv' => 'text/csv',
+                                'json' => 'application/json',
+                                'jsonl' => 'application/x-ndjson',
+                                'xml' => 'application/xml',
                             ])
                             ->maxSize(10240)
                             ->required()
