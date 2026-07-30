@@ -5,6 +5,7 @@ import {
   selectedVariant,
   validSelectedSize
 } from '~/utils/productComparison'
+import { listenForCatalogueRefresh } from '~/utils/catalogueRefresh'
 import { breadcrumbJsonLd, localizedPath, productJsonLd } from '~/utils/seo'
 
 const config = useRuntimeConfig()
@@ -14,6 +15,7 @@ const { locale, t } = useI18n()
 const localePath = useLocalePath()
 const catalogue = useCatalogueApi()
 const { formatMoney } = useMoney()
+let stopProductRefresh = () => {}
 
 const slug = computed(() => String(route.params.slug))
 const requestQuery = computed(() => ({
@@ -42,6 +44,14 @@ if (error.value?.statusCode === 404) {
     fatal: true
   })
 }
+
+onMounted(() => {
+  stopProductRefresh = listenForCatalogueRefresh(window, refresh)
+})
+
+onBeforeUnmount(() => {
+  stopProductRefresh()
+})
 
 const shoe = computed(() => response.value?.data ?? null)
 const variant = computed(() => selectedVariant(shoe.value?.variants ?? [], route.query.colour))

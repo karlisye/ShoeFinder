@@ -277,6 +277,20 @@ class FeedImportWorkflow
             if ($colourExists || $pendingColourExists) {
                 throw new LogicException('Šim apavu modelim šāds krāsas variants jau pastāv.');
             }
+        } elseif ($attributes['new_colour_code'] !== null) {
+            $pendingColourExists = $item->feedImport->items()
+                ->whereKeyNot($item->getKey())
+                ->where('resolution', FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT)
+                ->where('new_colour_code', $attributes['new_colour_code'])
+                ->whereHas(
+                    'selectedVariant',
+                    fn ($query) => $query->where('shoe_id', $baseVariant->shoe_id),
+                )
+                ->exists();
+
+            if ($pendingColourExists) {
+                throw new LogicException('Šim apavu modelim šāds krāsas variants jau pastāv.');
+            }
         }
 
         if ($variantCode !== null) {
@@ -414,17 +428,24 @@ class FeedImportWorkflow
         $colourExists = Colour::query()
             ->where('code', $colourCode)
             ->exists();
-        $pendingColourExists = $item->feedImport->items()
+        $pendingColour = $item->feedImport->items()
             ->whereKeyNot($item->getKey())
             ->whereIn('resolution', [
                 FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT,
                 FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
             ])
             ->where('new_colour_code', $colourCode)
-            ->exists();
+            ->first();
 
-        if ($colourExists || $pendingColourExists) {
+        if ($colourExists) {
             throw new LogicException('Šāds krāsas kods jau tiek izmantots.');
+        }
+
+        if (
+            $pendingColour !== null
+            && $pendingColour->new_colour_name !== $name
+        ) {
+            throw new LogicException('Gaidošajai krāsai ar šo kodu ir cits nosaukums.');
         }
 
         return [
@@ -484,12 +505,19 @@ class FeedImportWorkflow
             return Colour::query()->findOrFail($item->selected_colour_id);
         }
 
-        return Colour::query()->create([
+        $colour = Colour::query()->firstOrCreate([
             'code' => $item->new_colour_code,
+        ], [
             'name' => $item->new_colour_name,
             'sort_order' => 0,
             'active' => true,
         ]);
+
+        if ($colour->name !== $item->new_colour_name) {
+            throw new LogicException('Krāsas kodam un nosaukumam ir pretrunīgi dati.');
+        }
+
+        return $colour;
     }
 
     private function emptyNewCatalogueAttributes(): array

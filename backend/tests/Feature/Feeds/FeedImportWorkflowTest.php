@@ -289,6 +289,79 @@ class FeedImportWorkflowTest extends TestCase
         $this->assertSame($variant->id, $item->created_variant_id);
     }
 
+    public function test_review_reuses_one_pending_colour_for_multiple_new_shoes(): void
+    {
+        $context = $this->feedContext();
+        $feedImport = $this->createImport(
+            $context,
+            $this->csvRecords([2, 3]),
+        );
+        $workflow = app(FeedImportWorkflow::class);
+
+        $workflow->preview($feedImport);
+
+        [$firstItem, $secondItem] = $feedImport->items()
+            ->orderBy('source_record')
+            ->get()
+            ->all();
+        $sharedColour = [
+            'new_colour_code' => 'shared-black-white',
+            'new_colour_name' => 'Black/White',
+        ];
+
+        $workflow->resolve(
+            $firstItem,
+            FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
+            null,
+            null,
+            [
+                'new_shoe_brand_id' => $context['brand']->id,
+                'new_shoe_category_id' => $context['category']->id,
+                'new_shoe_name' => 'Shared Colour One',
+                'new_shoe_slug' => 'shared-colour-one',
+                'new_shoe_audience' => Audience::Unisex->value,
+                'new_manufacturer_variant_code' => 'SHARED-ONE',
+                ...$sharedColour,
+            ],
+        );
+        $workflow->resolve(
+            $secondItem,
+            FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
+            null,
+            null,
+            [
+                'new_shoe_brand_id' => $context['brand']->id,
+                'new_shoe_category_id' => $context['category']->id,
+                'new_shoe_name' => 'Shared Colour Two',
+                'new_shoe_slug' => 'shared-colour-two',
+                'new_shoe_audience' => Audience::Unisex->value,
+                'new_manufacturer_variant_code' => 'SHARED-TWO',
+                ...$sharedColour,
+            ],
+        );
+
+        $this->assertDatabaseMissing('colours', [
+            'code' => 'shared-black-white',
+        ]);
+
+        $workflow->apply($feedImport);
+
+        $colour = Colour::query()
+            ->where('code', 'shared-black-white')
+            ->firstOrFail();
+        $colourIds = Shoe::query()
+            ->whereIn('slug', ['shared-colour-one', 'shared-colour-two'])
+            ->with('variants')
+            ->get()
+            ->flatMap->variants
+            ->pluck('colour_id')
+            ->unique();
+
+        $this->assertSame('Black/White', $colour->name);
+        $this->assertCount(1, $colourIds);
+        $this->assertSame($colour->id, $colourIds->first());
+    }
+
     private function createImport(array $context, string $contents): FeedImport
     {
         Storage::disk('local')->put('feed-imports/test.csv', $contents);
@@ -304,12 +377,23 @@ class FeedImportWorkflowTest extends TestCase
 
     private function singleCsvRecord(int $recordIndex): string
     {
+        return $this->csvRecords([$recordIndex]);
+    }
+
+    private function csvRecords(array $recordIndexes): string
+    {
         $lines = file(
             base_path('tests/Fixtures/ProductFeeds/clean/sole-market.csv'),
             FILE_IGNORE_NEW_LINES,
         );
 
-        return implode("\n", [$lines[0], $lines[$recordIndex + 1]])."\n";
+        return implode("\n", [
+            $lines[0],
+            ...array_map(
+                fn (int $recordIndex): string => $lines[$recordIndex + 1],
+                $recordIndexes,
+            ),
+        ])."\n";
     }
 
     private function feedContext(): array

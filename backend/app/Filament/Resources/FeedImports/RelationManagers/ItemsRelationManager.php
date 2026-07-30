@@ -25,6 +25,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use LogicException;
 use Throwable;
 
 class ItemsRelationManager extends RelationManager
@@ -253,44 +254,14 @@ class ItemsRelationManager extends RelationManager
                             )),
                         Select::make('selected_colour_id')
                             ->label('Esoša krāsa')
-                            ->helperText('Izvēlies esošu krāsu vai atstāj tukšu, lai izveidotu jaunu.')
+                            ->helperText('Izvēlies saglabātu vai šajā importā jau piedāvātu krāsu. Atstāj tukšu, lai izveidotu jaunu.')
                             ->placeholder('Izveidot jaunu krāsu')
-                            ->options(function (Get $get) {
-                                $query = Colour::query()
-                                    ->where('active', true)
-                                    ->orderBy('sort_order')
-                                    ->orderBy('name');
-
-                                if (
-                                    $get('resolution')
-                                    === FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT
-                                    && filled($get('selected_variant_id'))
-                                ) {
-                                    $shoeId = ShoeVariant::query()
-                                        ->whereKey($get('selected_variant_id'))
-                                        ->value('shoe_id');
-
-                                    if ($shoeId !== null) {
-                                        $query->whereDoesntHave(
-                                            'variants',
-                                            fn ($variantQuery) => $variantQuery->where(
-                                                'shoe_id',
-                                                $shoeId,
-                                            ),
-                                        );
-                                    }
-                                }
-
-                                return $query
-                                    ->get()
-                                    ->mapWithKeys(fn (Colour $colour): array => [
-                                        $colour->getKey() => sprintf(
-                                            '%s (%s)',
-                                            $colour->name,
-                                            $colour->code,
-                                        ),
-                                    ]);
-                            })
+                            ->options(
+                                fn (FeedImportItem $record, Get $get): array => self::colourOptions(
+                                    $record,
+                                    $get,
+                                ),
+                            )
                             ->searchable()
                             ->live()
                             ->visible(fn (Get $get): bool => in_array(
@@ -351,6 +322,11 @@ class ItemsRelationManager extends RelationManager
                     ->modalSubmitActionLabel('Saglabāt lēmumu')
                     ->action(function (FeedImportItem $record, array $data): void {
                         try {
+                            $colourAttributes = self::colourAttributes(
+                                $record,
+                                $data,
+                            );
+
                             app(FeedImportWorkflow::class)->resolve(
                                 $record,
                                 $data['resolution'],
@@ -359,9 +335,7 @@ class ItemsRelationManager extends RelationManager
                                     : null,
                                 auth()->id(),
                                 [
-                                    'selected_colour_id' => $data['selected_colour_id'] ?? null,
-                                    'new_colour_code' => $data['new_colour_code'] ?? null,
-                                    'new_colour_name' => $data['new_colour_name'] ?? null,
+                                    ...$colourAttributes,
                                     'new_manufacturer_variant_code' => $data['new_manufacturer_variant_code'] ?? null,
                                     'new_shoe_brand_id' => $data['new_shoe_brand_id'] ?? null,
                                     'new_shoe_category_id' => $data['new_shoe_category_id'] ?? null,
@@ -390,6 +364,122 @@ class ItemsRelationManager extends RelationManager
                     }),
             ])
             ->defaultSort('source_record');
+    }
+
+    private static function colourOptions(
+        FeedImportItem $record,
+        Get $get,
+    ): array {
+        $query = Colour::query()
+            ->where('active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name');
+
+        if (
+            $get('resolution')
+            === FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT
+            && filled($get('selected_variant_id'))
+        ) {
+            $shoeId = ShoeVariant::query()
+                ->whereKey($get('selected_variant_id'))
+                ->value('shoe_id');
+
+            if ($shoeId !== null) {
+                $query->whereDoesntHave(
+                    'variants',
+                    fn ($variantQuery) => $variantQuery->where(
+                        'shoe_id',
+                        $shoeId,
+                    ),
+                );
+            }
+        }
+
+        $storedColours = $query
+            ->get()
+            ->mapWithKeys(fn (Colour $colour): array => [
+                $colour->getKey() => sprintf(
+                    '%s (%s)',
+                    $colour->name,
+                    $colour->code,
+                ),
+            ]);
+        $pendingColours = $record->feedImport->items()
+            ->whereKeyNot($record->getKey())
+            ->whereIn('resolution', [
+                FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT,
+                FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
+            ])
+            ->whereNotNull('new_colour_code')
+            ->whereNotNull('new_colour_name')
+            ->orderBy('id')
+            ->get()
+            ->unique('new_colour_code')
+            ->mapWithKeys(fn (FeedImportItem $item): array => [
+                "pending:{$item->getKey()}" => sprintf(
+                    '%s (%s, gaida importu)',
+                    $item->new_colour_name,
+                    $item->new_colour_code,
+                ),
+            ]);
+
+        return $storedColours->union($pendingColours)->all();
+    }
+
+    private static function colourAttributes(
+        FeedImportItem $record,
+        array $data,
+    ): array {
+        $selection = $data['selected_colour_id'] ?? null;
+
+        if (blank($selection)) {
+            return [
+                'selected_colour_id' => null,
+                'new_colour_code' => $data['new_colour_code'] ?? null,
+                'new_colour_name' => $data['new_colour_name'] ?? null,
+            ];
+        }
+
+        if (! str_starts_with((string) $selection, 'pending:')) {
+            if (! ctype_digit((string) $selection)) {
+                throw new LogicException('Izvēlies derīgu krāsu.');
+            }
+
+            return [
+                'selected_colour_id' => (int) $selection,
+                'new_colour_code' => null,
+                'new_colour_name' => null,
+            ];
+        }
+
+        $pendingId = str((string) $selection)
+            ->after('pending:')
+            ->toString();
+
+        if (! ctype_digit($pendingId)) {
+            throw new LogicException('Izvēlies derīgu gaidošo krāsu.');
+        }
+
+        $pendingColour = $record->feedImport->items()
+            ->whereKeyNot($record->getKey())
+            ->whereKey((int) $pendingId)
+            ->whereIn('resolution', [
+                FeedImportItem::RESOLUTION_CREATE_COLOUR_VARIANT,
+                FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
+            ])
+            ->whereNotNull('new_colour_code')
+            ->whereNotNull('new_colour_name')
+            ->first();
+
+        if ($pendingColour === null) {
+            throw new LogicException('Gaidošā krāsa vairs nav pieejama.');
+        }
+
+        return [
+            'selected_colour_id' => null,
+            'new_colour_code' => $pendingColour->new_colour_code,
+            'new_colour_name' => $pendingColour->new_colour_name,
+        ];
     }
 
     private static function outcomeLabel(string $outcome): string

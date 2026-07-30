@@ -14,6 +14,7 @@ use App\Models\User;
 use Database\Seeders\SizeSeeder;
 use Filament\Actions\Testing\TestAction;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -250,6 +251,70 @@ class FeedImportAdminTest extends TestCase
         $this->assertSame($existingColour->id, $item->selected_colour_id);
         $this->assertNull($item->new_colour_code);
         $this->assertSame(1, $context['shoe']->variants()->count());
+    }
+
+    public function test_review_action_can_select_a_pending_shared_colour(): void
+    {
+        $context = $this->createCatalogueContext('feed-admin-pending-colour');
+        $context['retailer']->update(['slug' => 'sole-market']);
+        $feedImport = $this->createFeedImport($context);
+        $pendingItem = $feedImport->items()->create([
+            'source_record' => 2,
+            'identity' => 'PENDING-COLOUR-1',
+            'outcome' => 'manual_review',
+            'reason' => 'no_strong_match',
+            'normalized_payload' => ['title' => 'Puma Suede XL'],
+            'raw_payload' => ['title' => 'Puma Suede XL'],
+            'resolution' => FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
+            'new_colour_code' => 'black-white',
+            'new_colour_name' => 'Black/White',
+            'resolved_at' => now(),
+        ]);
+        $item = $feedImport->items()->create([
+            'source_record' => 3,
+            'identity' => 'PENDING-COLOUR-2',
+            'outcome' => 'manual_review',
+            'reason' => 'no_strong_match',
+            'normalized_payload' => ['title' => 'Vans Old Skool'],
+            'raw_payload' => ['title' => 'Vans Old Skool'],
+        ]);
+        $pendingOption = "pending:{$pendingItem->id}";
+
+        Livewire::test(ItemsRelationManager::class, [
+            'ownerRecord' => $feedImport,
+            'pageClass' => EditFeedImport::class,
+        ])
+            ->mountAction(TestAction::make('review')->table($item))
+            ->assertFormFieldExists(
+                'selected_colour_id',
+                'mountedActionSchema0',
+                fn (Select $field): bool => $field->getOptions()[$pendingOption]
+                    === 'Black/White (black-white, gaida importu)',
+            );
+
+        Livewire::test(ItemsRelationManager::class, [
+            'ownerRecord' => $feedImport,
+            'pageClass' => EditFeedImport::class,
+        ])
+            ->callAction(
+                TestAction::make('review')->table($item),
+                [
+                    'resolution' => FeedImportItem::RESOLUTION_CREATE_SHOE_VARIANT,
+                    'selected_colour_id' => $pendingOption,
+                    'new_shoe_brand_id' => $context['brand']->id,
+                    'new_shoe_category_id' => $context['category']->id,
+                    'new_shoe_name' => 'Old Skool',
+                    'new_shoe_slug' => 'old-skool-pending-colour',
+                    'new_shoe_audience' => Audience::Unisex->value,
+                ],
+            )
+            ->assertHasNoActionErrors();
+
+        $item->refresh();
+
+        $this->assertNull($item->selected_colour_id);
+        $this->assertSame('black-white', $item->new_colour_code);
+        $this->assertSame('Black/White', $item->new_colour_name);
     }
 
     public function test_apply_action_locks_the_import_after_completion(): void

@@ -5,6 +5,7 @@ import {
   catalogueFiltersFromQuery,
   catalogueRouteQuery
 } from '~/utils/catalogueQuery'
+import { listenForCatalogueRefresh } from '~/utils/catalogueRefresh'
 import { breadcrumbJsonLd, hasRouteQuery, localizedPath } from '~/utils/seo'
 
 const config = useRuntimeConfig()
@@ -16,6 +17,7 @@ const filterDrawerOpen = ref(false)
 const filterButton = ref(null)
 const filterDrawer = ref(null)
 const filterDrawerClose = ref(null)
+let stopCatalogueRefresh = () => {}
 const focusableSelector = [
   'button:not([disabled])',
   'input:not([disabled])',
@@ -68,6 +70,7 @@ onBeforeUnmount(() => {
   if (import.meta.client) {
     document.body.style.overflow = ''
     document.querySelector('.app-shell').inert = false
+    stopCatalogueRefresh()
   }
 })
 
@@ -121,6 +124,14 @@ const meta = computed(
     }
 )
 const isInitialLoading = computed(() => shoeStatus.value === 'pending' && !shoeResponse.value)
+
+onMounted(() => {
+  stopCatalogueRefresh = listenForCatalogueRefresh(window, refreshCatalogueData)
+})
+
+function refreshCatalogueData() {
+  return Promise.all([refreshFilters(), refreshShoes()])
+}
 
 function updateRoute(filters) {
   return router.push({
