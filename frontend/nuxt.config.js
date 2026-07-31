@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     backendApiUrl: process.env.NUXT_BACKEND_API_URL || 'http://backend-web/api/v1',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:8080',
+      contactEmail: process.env.NUXT_PUBLIC_CONTACT_EMAIL || '',
       apiBase: '/api/v1'
     }
   },

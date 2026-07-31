@@ -215,7 +215,7 @@
   }
 
   .footer-links {
-    @apply flex items-center gap-5;
+    @apply flex flex-wrap items-center gap-x-5 gap-y-2;
   }
 
   .footer-link {
@@ -262,6 +262,85 @@
   .section-eyebrow,
   .home-eyebrow {
     @apply text-xs font-bold tracking-[0.14em] text-secondary uppercase;
+  }
+}
+
+@layer components {
+  /* Public information pages */
+
+  .content-page-inner {
+    @apply py-12;
+  }
+
+  .content-page-article {
+    @apply mx-auto max-w-3xl;
+  }
+
+  .content-page-header {
+    @apply max-w-2xl;
+  }
+
+  .content-page-title {
+    @apply mt-3 text-3xl font-bold tracking-tight text-primary-dark;
+
+    text-wrap: balance;
+  }
+
+  .content-page-intro {
+    @apply mt-4 text-base leading-7 text-secondary;
+  }
+
+  .content-page-updated {
+    @apply mt-3 text-sm font-semibold text-secondary;
+  }
+
+  .content-page-notice {
+    @apply mt-8 border-l-4 border-info bg-info-light px-4 py-3 text-sm leading-6 text-info-dark;
+  }
+
+  .content-page-section {
+    @apply mt-8 border-t border-secondary-light/15 pt-7;
+  }
+
+  .content-page-heading {
+    @apply text-xl font-bold tracking-tight text-primary-dark;
+  }
+
+  .content-page-copy,
+  .content-page-list {
+    @apply mt-3 text-sm leading-7 text-secondary;
+  }
+
+  .content-page-list {
+    @apply grid list-disc gap-2 pl-5;
+  }
+
+  .content-page-link {
+    @apply rounded-md font-semibold text-primary underline decoration-secondary-light/60 underline-offset-4;
+  }
+
+  .content-page-link:hover {
+    @apply text-primary-dark decoration-primary-dark;
+  }
+
+  .content-email-link {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (width >= 40rem) {
+  .content-page-inner {
+    padding-block: 4.5rem;
+  }
+
+  .content-page-title {
+    font-size: 2.5rem;
+    line-height: 1.1;
+  }
+
+  .content-page-intro {
+    font-size: 1.125rem;
+    line-height: 2rem;
   }
 }
 

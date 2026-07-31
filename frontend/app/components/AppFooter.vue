@@ -15,6 +15,15 @@ const localePath = useLocalePath()
         <NuxtLink :to="localePath('/catalogue')" class="footer-link">
           {{ t('nav.catalogue') }}
         </NuxtLink>
+        <NuxtLink :to="localePath('/contact')" class="footer-link">
+          {{ t('footer.contact') }}
+        </NuxtLink>
+        <NuxtLink :to="localePath('/privacy')" class="footer-link">
+          {{ t('footer.privacy') }}
+        </NuxtLink>
+        <NuxtLink :to="localePath('/affiliate-disclosure')" class="footer-link">
+          {{ t('footer.affiliateDisclosure') }}
+        </NuxtLink>
         <a href="/admin" class="footer-link">
           {{ t('footer.admin') }}
         </a>

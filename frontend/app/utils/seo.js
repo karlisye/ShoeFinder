@@ -204,7 +204,7 @@ function sitemapUrl(siteUrl, path, locale) {
 }
 
 export function sitemapXml(siteUrl, slugs) {
-  const paths = ['/', '/catalogue']
+  const paths = ['/', '/catalogue', '/contact', '/privacy', '/affiliate-disclosure']
 
   for (const slug of [...new Set(slugs)].sort()) {
     paths.push(`/shoes/${slug}`)

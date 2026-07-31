@@ -133,11 +133,14 @@ test('sitemap contains only clean bilingual public routes', () => {
 
   assert.match(xml, /<loc>https:\/\/shoes\.example\/catalogue<\/loc>/)
   assert.match(xml, /<loc>https:\/\/shoes\.example\/en\/catalogue<\/loc>/)
+  assert.match(xml, /<loc>https:\/\/shoes\.example\/contact<\/loc>/)
+  assert.match(xml, /<loc>https:\/\/shoes\.example\/en\/privacy<\/loc>/)
+  assert.match(xml, /<loc>https:\/\/shoes\.example\/affiliate-disclosure<\/loc>/)
   assert.match(xml, /<loc>https:\/\/shoes\.example\/shoes\/a-shoe<\/loc>/)
   assert.match(xml, /hreflang="x-default"/)
   assert.doesNotMatch(xml, /\/en\/en\//)
   assert.doesNotMatch(xml, /<loc>[^<]*\?/)
-  assert.equal((xml.match(/<url>/g) ?? []).length, 8)
+  assert.equal((xml.match(/<url>/g) ?? []).length, 14)
 })
 
 test('robots allows public pages and identifies private route groups', () => {

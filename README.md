@@ -26,6 +26,9 @@ Open:
 - English application: <http://localhost:8080/en/>
 - Catalogue: <http://localhost:8080/catalogue>
 - English catalogue: <http://localhost:8080/en/catalogue>
+- Contact: <http://localhost:8080/contact>
+- Privacy policy: <http://localhost:8080/privacy>
+- Affiliate disclosure: <http://localhost:8080/affiliate-disclosure>
 - Sitemap: <http://localhost:8080/sitemap.xml>
 - Robots rules: <http://localhost:8080/robots.txt>
 - Laravel health: <http://localhost:8080/up>
@@ -66,6 +69,8 @@ The default test suite uses in-memory SQLite. `./docker/test-postgres.sh` create
 `docker compose down` keeps the database, dependency, and media volumes. Do not use `docker compose down -v` unless intentionally deleting all local project data.
 
 `OFFER_STALE_AFTER_HOURS` controls how long a checked retailer listing can define a lowest price. It defaults to 168 hours.
+
+`CONTACT_EMAIL` sets the public address shown on the localized contact page. When it is empty, the page shows a pre-launch fallback instead of a non-working email link. Set it before public launch.
 
 The public API supports:
 
@@ -160,7 +165,7 @@ Pint formats PHP. ESLint checks Vue, JavaScript, and TypeScript. Stylelint check
 
 ## Production build and migrations
 
-Create a protected production environment file outside version control. Set a strong `POSTGRES_PASSWORD`, a persistent generated `APP_KEY`, the final HTTPS `APP_URL`, and the exact `FILAMENT_ADMIN_EMAIL`. Production Compose rejects missing values.
+Create a protected production environment file outside version control. Set a strong `POSTGRES_PASSWORD`, a persistent generated `APP_KEY`, the final HTTPS `APP_URL`, the public `CONTACT_EMAIL`, and the exact `FILAMENT_ADMIN_EMAIL`. Production Compose rejects missing required values. `CONTACT_EMAIL` remains optional at the Compose level so isolated builds can run, but it is required before public launch.
 
 Keep the same `APP_KEY` between deployments. Changing it invalidates encrypted application data and active sessions.
 

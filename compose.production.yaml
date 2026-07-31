@@ -175,6 +175,7 @@ services:
       NUXT_BACKEND_HEALTH_URL: http://backend-web/up
       NUXT_BACKEND_API_URL: http://backend-web/api/v1
       NUXT_PUBLIC_SITE_URL: ${APP_URL:?Set APP_URL}
+      NUXT_PUBLIC_CONTACT_EMAIL: ${CONTACT_EMAIL:-}
     depends_on:
       backend-web:
         condition: service_healthy
