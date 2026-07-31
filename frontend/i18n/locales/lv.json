@@ -27,10 +27,13 @@
   },
   "footer": {
     "description": "Apavu cenu salīdzinājums Latvijas veikalos.",
+    "browse": "Pārlūkot",
+    "browseLabel": "Kājenes galvenā navigācija",
+    "information": "Informācija",
+    "informationLabel": "Kājenes informācijas navigācija",
     "contact": "Kontakti",
     "privacy": "Privātuma politika",
-    "affiliateDisclosure": "Partneru saites",
-    "admin": "Administrācija"
+    "affiliateDisclosure": "Partneru saites"
   },
   "contact": {
     "eyebrow": "Saziņa",

@@ -27,10 +27,13 @@
   },
   "footer": {
     "description": "Compare shoe prices from Latvian retailers.",
+    "browse": "Browse",
+    "browseLabel": "Footer main navigation",
+    "information": "Information",
+    "informationLabel": "Footer information navigation",
     "contact": "Contact",
     "privacy": "Privacy policy",
-    "affiliateDisclosure": "Affiliate disclosure",
-    "admin": "Admin"
+    "affiliateDisclosure": "Affiliate disclosure"
   },
   "contact": {
     "eyebrow": "Contact",

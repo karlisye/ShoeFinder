@@ -203,7 +203,11 @@
   }
 
   .footer-inner {
-    @apply flex flex-col gap-5 py-8 text-sm text-secondary;
+    @apply grid gap-8 py-10 text-sm text-secondary;
+  }
+
+  .footer-summary {
+    @apply max-w-sm;
   }
 
   .footer-brand {
@@ -214,12 +218,20 @@
     @apply mt-1;
   }
 
-  .footer-links {
-    @apply flex flex-wrap items-center gap-x-5 gap-y-2;
+  .footer-navigation {
+    @apply grid grid-cols-2 gap-8;
+  }
+
+  .footer-heading {
+    @apply text-xs font-bold tracking-[0.12em] text-primary-dark uppercase;
+  }
+
+  .footer-link-list {
+    @apply mt-3 grid gap-2.5;
   }
 
   .footer-link {
-    @apply font-semibold;
+    @apply w-fit rounded-md font-semibold;
   }
 
   .footer-link:hover {
@@ -360,9 +372,12 @@
   }
 
   .footer-inner {
-    align-items: center;
-    flex-direction: row;
-    justify-content: space-between;
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .footer-navigation {
+    gap: 4rem;
   }
 }
 
