@@ -181,12 +181,9 @@ function keepFocusInDrawer(event) {
   }
 }
 
-function resetFilters() {
-  draftFilters.value = {
-    ...catalogueFiltersFromQuery({}),
-    search: activeFilters.value.search,
-    sort: activeFilters.value.sort
-  }
+async function resetFilters() {
+  await clearAppliedFilters()
+  filterDrawerOpen.value = false
 }
 
 function clearAppliedFilters() {

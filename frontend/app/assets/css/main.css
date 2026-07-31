@@ -672,7 +672,7 @@
   }
 
   .filter-panel {
-    @apply sticky top-24 p-5;
+    @apply p-5;
   }
 
   .filter-panel-header {
@@ -1139,7 +1139,15 @@
   }
 
   .desktop-filters {
+    align-self: start;
     display: block;
+  }
+
+  .desktop-filters .filter-options,
+  .desktop-filters .filter-size-grid {
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
   }
 
   .catalogue-grid {
