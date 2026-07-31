@@ -76,7 +76,11 @@ class FeedImportChangePreview
             ];
         }
 
-        if ($item->feedImport->status !== FeedImport::STATUS_READY) {
+        if (! in_array($item->feedImport->status, [
+            FeedImport::STATUS_READY,
+            FeedImport::STATUS_APPLY_QUEUED,
+            FeedImport::STATUS_APPLYING,
+        ], true)) {
             return [
                 'will_apply' => false,
                 'summary' => 'No catalogue changes are currently planned for this row.',

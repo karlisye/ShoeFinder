@@ -3,6 +3,7 @@
 return [
     'admin' => [
         'max_records' => 5000,
+        'queue' => env('FEED_IMPORT_QUEUE', 'imports'),
     ],
 
     'retailers' => [

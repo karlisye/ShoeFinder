@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\FeedImports\Pages;
 
-use App\Domain\Feeds\FeedImportWorkflow;
+use App\Domain\Feeds\FeedImportQueue;
 use App\Filament\Resources\FeedImports\FeedImportResource;
 use App\Models\FeedImport;
 use App\Models\Retailer;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Throwable;
 
 class CreateFeedImport extends CreateRecord
 {
@@ -36,20 +37,38 @@ class CreateFeedImport extends CreateRecord
 
     protected function afterCreate(): void
     {
-        app(FeedImportWorkflow::class)->preview($this->record);
+        try {
+            $this->record = app(FeedImportQueue::class)->preview($this->record);
+        } catch (Throwable $exception) {
+            report($exception);
 
-        Notification::make()
-            ->title($this->record->status === FeedImport::STATUS_READY
-                ? 'Preview created'
-                : 'File could not be prepared')
-            ->status($this->record->status === FeedImport::STATUS_READY
-                ? 'success'
-                : 'danger')
-            ->send();
+            Notification::make()
+                ->title('Preview could not be queued')
+                ->body($exception->getMessage())
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        match ($this->record->status) {
+            FeedImport::STATUS_READY => Notification::make()
+                ->title('Preview created')
+                ->success()
+                ->send(),
+            FeedImport::STATUS_FAILED => Notification::make()
+                ->title('File could not be prepared')
+                ->danger()
+                ->send(),
+            default => Notification::make()
+                ->title('Preview queued')
+                ->info()
+                ->send(),
+        };
     }
 
     protected function getRedirectUrl(): string
     {
-        return FeedImportResource::getUrl('edit', ['record' => $this->record]);
+        return FeedImportResource::getUrl('index');
     }
 }

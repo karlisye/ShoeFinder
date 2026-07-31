@@ -2,6 +2,7 @@ FROM php:8.4-fpm-bookworm AS base
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        $PHPIZE_DEPS \
         git \
         libfreetype6-dev \
         libicu-dev \
@@ -23,6 +24,9 @@ RUN apt-get update \
         opcache \
         pdo_pgsql \
         zip \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apt-get purge -y --auto-remove $PHPIZE_DEPS \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -50,5 +54,5 @@ RUN composer install \
         --no-interaction \
         --prefer-dist \
         --optimize-autoloader \
-    && mkdir -p storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && mkdir -p storage/app/private/feed-imports storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache

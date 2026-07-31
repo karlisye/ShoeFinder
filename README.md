@@ -53,6 +53,7 @@ Useful commands:
 ```sh
 docker compose ps
 docker compose logs -f
+docker compose logs -f backend-worker
 docker compose exec -T backend-php php artisan test
 docker compose exec -T frontend npm run test
 ./docker/test-postgres.sh
@@ -77,7 +78,7 @@ Latvian is the default API language. Pass `locale=en` for English localized fiel
 
 ## Product-feed imports
 
-Feed imports run synchronously. Create the matching retailer in Filament before importing. Its slug must match one configured feed:
+The command-line feed importer runs synchronously. Administrator uploads and Apply actions run on the Redis-backed `imports` queue. Create the matching retailer in Filament before importing. Its slug must match one configured feed:
 
 - `sole-market`
 - `urban-step`
@@ -105,12 +106,25 @@ Invalid input prevents the entire apply operation. A listing missing from one sn
 Administrators can also open **Imports** in Filament:
 
 1. Select a configured retailer and upload a feed file.
-2. Review the preview. No catalogue data changes during upload.
+2. Wait for the background preview to reach **Ready for review**. The list refreshes automatically.
 3. Select **View changes** on any row to compare current and incoming listing fields and sizes.
 4. Link safe unmatched records to an existing variant, create catalogue data after review, confirm a matched-listing identity update, or ignore the row.
 5. Select **Import** after every review item has a decision.
+6. Wait for the queued import to reach **Imported**.
 
-Uploaded files use private Laravel storage. The UI accepts files up to 10 MB and previews up to 5,000 records. When exactly one listing was matched, the review modal compares stored and incoming identities and can confirm an update. If external ID and SKU point to two different listings, correct the catalogue or source data and upload a new file.
+Uploaded files use private Laravel storage. Development shares them through the backend bind mount. Production shares them with workers through a named volume. The UI accepts files up to 10 MB and previews up to 5,000 records. When exactly one listing was matched, the review modal compares stored and incoming identities and can confirm an update. If external ID and SKU point to two different listings, correct the catalogue or source data and upload a new file.
+
+Queue operations:
+
+```sh
+docker compose logs -f backend-worker
+docker compose exec -T backend-php php artisan queue:monitor redis:imports --max=1000
+docker compose exec -T backend-php php artisan queue:failed
+docker compose exec -T backend-php php artisan queue:retry all
+docker compose exec -T backend-php php artisan queue:restart
+```
+
+`queue:retry all` retries every failed job. Use a failed job ID instead when other queues are added. A failed feed job also marks its import as **Failed** in Filament.
 
 Creating a colour variant requires selecting an existing variant from the correct shoe model. Select an existing shared colourway when it already exists, or leave that field empty and enter a new stable code, canonical name, and filter colours. Colourway names are shown unchanged in Latvian and English. Filter colours are localized and affect only catalogue filtering. The selected shoe cannot use the same colourway twice. The colourway, variant, and retailer offer are connected together only when the full import is applied.
 
@@ -155,7 +169,7 @@ Before each deployment:
 1. Back up PostgreSQL and the media volume through the hosting platform.
 2. Validate the resolved Compose configuration.
 3. Build the new images.
-4. Start PostgreSQL.
+4. Start PostgreSQL and Redis.
 5. Run migrations as an explicit deployment step.
 6. Seed reference data.
 7. Start or replace the application services.
@@ -164,7 +178,7 @@ Before each deployment:
 ```sh
 docker compose --env-file .env.production -f compose.production.yaml config --quiet
 docker compose --env-file .env.production -f compose.production.yaml build
-docker compose --env-file .env.production -f compose.production.yaml up -d postgres
+docker compose --env-file .env.production -f compose.production.yaml up -d postgres redis
 docker compose --env-file .env.production -f compose.production.yaml run --rm backend-php php artisan migrate --force --no-interaction
 docker compose --env-file .env.production -f compose.production.yaml run --rm backend-php php artisan db:seed --force --no-interaction
 docker compose --env-file .env.production -f compose.production.yaml up -d
@@ -194,7 +208,7 @@ It builds production images, starts fresh isolated volumes, confirms startup did
 
 Do not run `migrate:rollback` automatically during a failed deployment. Stop the rollout and restore the previous application image only when it is compatible with the migrated schema. Restore the database backup when a migration is not backward-compatible.
 
-Uploaded media uses a named Docker volume for the prototype. A production deployment should later move media to S3-compatible object storage through Laravel’s filesystem abstraction.
+Uploaded media and private feed files use named Docker volumes for the prototype. A production deployment should later move both to S3-compatible object storage through Laravel’s filesystem abstraction.
 
 ## Project memory
 

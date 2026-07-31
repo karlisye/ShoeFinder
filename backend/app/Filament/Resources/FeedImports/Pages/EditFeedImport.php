@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\FeedImports\Pages;
 
-use App\Domain\Feeds\FeedImportWorkflow;
+use App\Domain\Feeds\FeedImportQueue;
 use App\Filament\Resources\FeedImports\FeedImportResource;
 use App\Models\FeedImport;
 use Filament\Actions\Action;
@@ -22,6 +22,19 @@ class EditFeedImport extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('refreshStatus')
+                ->label('Refresh status')
+                ->visible(fn (): bool => in_array($this->record->status, [
+                    FeedImport::STATUS_PREVIEW_QUEUED,
+                    FeedImport::STATUS_PREVIEWING,
+                    FeedImport::STATUS_APPLY_QUEUED,
+                    FeedImport::STATUS_APPLYING,
+                ], true))
+                ->action(fn () => $this->redirect(
+                    FeedImportResource::getUrl('edit', [
+                        'record' => $this->record,
+                    ]),
+                )),
             Action::make('apply')
                 ->label('Import')
                 ->color('success')
@@ -36,7 +49,8 @@ class EditFeedImport extends EditRecord
                     : 'Review or ignore every record that needs a decision.')
                 ->action(function (): void {
                     try {
-                        app(FeedImportWorkflow::class)->apply($this->record);
+                        $this->record = app(FeedImportQueue::class)
+                            ->apply($this->record);
                     } catch (Throwable $exception) {
                         report($exception);
                         Notification::make()
@@ -48,14 +62,17 @@ class EditFeedImport extends EditRecord
                         return;
                     }
 
-                    Notification::make()
-                        ->title('Data imported')
-                        ->success()
-                        ->send();
+                    $this->record->status === FeedImport::STATUS_APPLIED
+                        ? Notification::make()
+                            ->title('Data imported')
+                            ->success()
+                            ->send()
+                        : Notification::make()
+                            ->title('Import queued')
+                            ->info()
+                            ->send();
 
-                    $this->redirect(FeedImportResource::getUrl('edit', [
-                        'record' => $this->record,
-                    ]));
+                    $this->redirect(FeedImportResource::getUrl('index'));
                 }),
         ];
     }

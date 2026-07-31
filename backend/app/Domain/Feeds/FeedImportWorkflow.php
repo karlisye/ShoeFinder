@@ -196,7 +196,7 @@ class FeedImportWorkflow
     {
         $feedImport->refresh();
 
-        if (! $feedImport->canApply()) {
+        if (! $feedImport->canRunApply()) {
             throw new LogicException('The import is not ready to apply.');
         }
 

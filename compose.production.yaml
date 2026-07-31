@@ -24,6 +24,20 @@ services:
     logging: *default-logging
     restart: unless-stopped
 
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    logging: *default-logging
+    restart: unless-stopped
+
   backend-php:
     build:
       context: .
@@ -45,14 +59,23 @@ services:
       DB_DATABASE: ${POSTGRES_DB:-shoe_finder}
       DB_USERNAME: ${POSTGRES_USER:-shoe_finder}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
-      CACHE_STORE: file
-      QUEUE_CONNECTION: sync
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_QUEUE: imports
+      REDIS_QUEUE_RETRY_AFTER: 360
+      REDIS_QUEUE_BLOCK_FOR: 5
+      FEED_IMPORT_QUEUE: imports
       SESSION_DRIVER: database
       FILESYSTEM_DISK: public
     volumes:
+      - feed_data:/var/www/html/storage/app/private/feed-imports
       - media_data:/var/www/html/storage/app/public
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "php-fpm", "-t"]
@@ -60,6 +83,66 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    init: true
+    logging: *default-logging
+    restart: unless-stopped
+
+  backend-worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: production
+    environment:
+      APP_NAME: ShoeFinder
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: ${APP_URL:?Set APP_URL}
+      APP_KEY: ${APP_KEY:?Set APP_KEY}
+      FILAMENT_ADMIN_EMAIL: ${FILAMENT_ADMIN_EMAIL:?Set FILAMENT_ADMIN_EMAIL}
+      APP_LOCALE: lv
+      APP_FALLBACK_LOCALE: lv
+      OFFER_STALE_AFTER_HOURS: ${OFFER_STALE_AFTER_HOURS:-168}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-shoe_finder}
+      DB_USERNAME: ${POSTGRES_USER:-shoe_finder}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_QUEUE: imports
+      REDIS_QUEUE_RETRY_AFTER: 360
+      REDIS_QUEUE_BLOCK_FOR: 5
+      FEED_IMPORT_QUEUE: imports
+      SESSION_DRIVER: database
+      FILESYSTEM_DISK: public
+    volumes:
+      - feed_data:/var/www/html/storage/app/private/feed-imports
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command:
+      [
+        "php",
+        "artisan",
+        "queue:work",
+        "redis",
+        "--queue=imports",
+        "--sleep=1",
+        "--tries=3",
+        "--timeout=300",
+        "--max-time=3600",
+      ]
+    healthcheck:
+      test: ["CMD", "php", "artisan", "queue:monitor", "redis:imports", "--max=1000"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
     init: true
     logging: *default-logging
     restart: unless-stopped
@@ -127,4 +210,6 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
+  feed_data:
   media_data:

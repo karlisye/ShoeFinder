@@ -145,6 +145,10 @@ class FeedImportResource extends Resource
                         FeedImport::STATUS_READY => 'warning',
                         FeedImport::STATUS_APPLIED => 'success',
                         FeedImport::STATUS_FAILED => 'danger',
+                        FeedImport::STATUS_PREVIEW_QUEUED,
+                        FeedImport::STATUS_PREVIEWING,
+                        FeedImport::STATUS_APPLY_QUEUED,
+                        FeedImport::STATUS_APPLYING => 'info',
                         default => 'gray',
                     }),
                 TextColumn::make('ready_count')
@@ -165,11 +169,16 @@ class FeedImportResource extends Resource
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options([
+                        FeedImport::STATUS_PREVIEW_QUEUED => 'Preview queued',
+                        FeedImport::STATUS_PREVIEWING => 'Preparing preview',
                         FeedImport::STATUS_READY => 'Ready for review',
+                        FeedImport::STATUS_APPLY_QUEUED => 'Import queued',
+                        FeedImport::STATUS_APPLYING => 'Importing',
                         FeedImport::STATUS_APPLIED => 'Imported',
                         FeedImport::STATUS_FAILED => 'Failed',
                     ]),
             ])
+            ->poll('3s')
             ->recordActions([
                 EditAction::make()->label('Open'),
             ])
@@ -196,7 +205,11 @@ class FeedImportResource extends Resource
     {
         return match ($status) {
             FeedImport::STATUS_UPLOADED => 'File uploaded',
+            FeedImport::STATUS_PREVIEW_QUEUED => 'Preview queued',
+            FeedImport::STATUS_PREVIEWING => 'Preparing preview',
             FeedImport::STATUS_READY => 'Ready for review',
+            FeedImport::STATUS_APPLY_QUEUED => 'Import queued',
+            FeedImport::STATUS_APPLYING => 'Importing',
             FeedImport::STATUS_FAILED => 'Failed',
             FeedImport::STATUS_APPLIED => 'Imported',
             default => 'Unknown',

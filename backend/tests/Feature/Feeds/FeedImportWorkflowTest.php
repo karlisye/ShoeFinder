@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\Feeds;
 
+use App\Domain\Feeds\FeedImportQueue;
 use App\Domain\Feeds\FeedImportWorkflow;
 use App\Enums\Audience;
+use App\Jobs\ApplyFeedImport;
+use App\Jobs\PreviewFeedImport;
 use App\Models\Colour;
 use App\Models\FeedImport;
 use App\Models\FeedImportItem;
@@ -11,6 +14,7 @@ use App\Models\FilterColour;
 use App\Models\Shoe;
 use Database\Seeders\SizeSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use LogicException;
 use Tests\Support\CreatesCatalogueData;
@@ -41,6 +45,105 @@ class FeedImportWorkflowTest extends TestCase
             'outcome' => 'created',
             'matched_variant_id' => $context['variant']->id,
         ]);
+    }
+
+    public function test_preview_and_apply_can_be_dispatched_to_the_imports_queue(): void
+    {
+        Queue::fake();
+        $context = $this->feedContext();
+        $feedImport = $this->createImport($context, $this->singleCsvRecord(0));
+        $queue = app(FeedImportQueue::class);
+
+        $queue->preview($feedImport);
+
+        $this->assertSame(
+            FeedImport::STATUS_PREVIEW_QUEUED,
+            $feedImport->refresh()->status,
+        );
+        Queue::assertPushedOn(
+            'imports',
+            PreviewFeedImport::class,
+            fn (PreviewFeedImport $job): bool => $job->feedImportId
+                === $feedImport->id,
+        );
+
+        app(FeedImportWorkflow::class)->preview($feedImport);
+        $queue->apply($feedImport);
+
+        $this->assertSame(
+            FeedImport::STATUS_APPLY_QUEUED,
+            $feedImport->refresh()->status,
+        );
+        Queue::assertPushedOn(
+            'imports',
+            ApplyFeedImport::class,
+            fn (ApplyFeedImport $job): bool => $job->feedImportId
+                === $feedImport->id,
+        );
+    }
+
+    public function test_import_jobs_complete_the_queued_workflow(): void
+    {
+        $context = $this->feedContext();
+        $feedImport = $this->createImport($context, $this->singleCsvRecord(0));
+        $feedImport->update([
+            'status' => FeedImport::STATUS_PREVIEW_QUEUED,
+        ]);
+
+        app()->call([
+            new PreviewFeedImport($feedImport->id),
+            'handle',
+        ]);
+
+        $this->assertSame(
+            FeedImport::STATUS_READY,
+            $feedImport->refresh()->status,
+        );
+
+        $feedImport->update([
+            'status' => FeedImport::STATUS_APPLY_QUEUED,
+        ]);
+
+        app()->call([
+            new ApplyFeedImport($feedImport->id),
+            'handle',
+        ]);
+
+        $this->assertSame(
+            FeedImport::STATUS_APPLIED,
+            $feedImport->refresh()->status,
+        );
+        $this->assertSame(1, $context['retailer']->listings()->count());
+    }
+
+    public function test_failed_queue_job_marks_the_import_for_attention(): void
+    {
+        $context = $this->feedContext();
+        $feedImport = $this->createImport($context, $this->singleCsvRecord(0));
+        $feedImport->update([
+            'status' => FeedImport::STATUS_PREVIEWING,
+        ]);
+
+        (new PreviewFeedImport($feedImport->id))
+            ->failed(new LogicException('Worker stopped.'));
+
+        $feedImport->refresh();
+
+        $this->assertSame(FeedImport::STATUS_FAILED, $feedImport->status);
+        $this->assertSame(
+            'preview_job_failed',
+            $feedImport->errors[0]['code'],
+        );
+
+        app()->call([
+            new PreviewFeedImport($feedImport->id),
+            'handle',
+        ]);
+
+        $this->assertSame(
+            FeedImport::STATUS_READY,
+            $feedImport->refresh()->status,
+        );
     }
 
     public function test_ready_preview_can_be_applied_once(): void

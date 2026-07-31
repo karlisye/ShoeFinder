@@ -4,7 +4,7 @@ set -eu
 repository_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 project_name=shoe_finder_production_verify
 environment_file=$(mktemp "${TMPDIR:-/tmp}/shoe-finder-production.XXXXXX")
-services="postgres backend-php backend-web frontend proxy"
+services="postgres redis backend-php backend-worker backend-web frontend proxy"
 
 compose() {
     docker compose \
@@ -101,6 +101,53 @@ compose exec --no-TTY backend-php php artisan tinker --execute='
     }
 '
 
+compose exec --no-TTY backend-php cp \
+    tests/Fixtures/ProductFeeds/clean/sole-market.csv \
+    storage/app/private/feed-imports/queue-probe.csv
+queue_probe_id=$(
+    compose exec --no-TTY backend-php php artisan tinker --execute='
+        $retailer = App\Models\Retailer::create([
+            "name" => "Queue probe",
+            "slug" => "sole-market",
+            "website_url" => "https://queue-probe.example",
+        ]);
+        $import = App\Models\FeedImport::create([
+            "retailer_id" => $retailer->id,
+            "original_filename" => "queue-probe.csv",
+            "stored_path" => "feed-imports/queue-probe.csv",
+            "format" => "csv",
+            "status" => App\Models\FeedImport::STATUS_UPLOADED,
+        ]);
+        app(App\Domain\Feeds\FeedImportQueue::class)->preview($import);
+        echo $import->id;
+    '
+)
+
+queue_attempt=0
+while [ "$queue_attempt" -lt 30 ]; do
+    queue_status=$(
+        compose exec --no-TTY backend-php php artisan tinker --execute="
+            echo App\\Models\\FeedImport::findOrFail($queue_probe_id)->status;
+        "
+    )
+
+    if [ "$queue_status" = "ready" ]; then
+        break
+    fi
+
+    queue_attempt=$((queue_attempt + 1))
+    sleep 1
+done
+
+if [ "$queue_status" != "ready" ]; then
+    printf '%s\n' "The production imports worker did not process its queue." >&2
+    exit 1
+fi
+
+compose exec --no-TTY backend-php php artisan tinker --execute='
+    Illuminate\Support\Facades\Cache::put("production-verification", "persistent", 120);
+'
+
 if [ "$(compose exec --no-TTY frontend id -u)" = "0" ]; then
     printf '%s\n' "The production frontend must not run as root." >&2
     exit 1
@@ -118,6 +165,8 @@ compose exec --no-TTY proxy wget -q -O /dev/null http://127.0.0.1/catalogue
 compose exec --no-TTY proxy wget -q -O /dev/null http://127.0.0.1/admin
 compose exec --no-TTY proxy wget -q -O - http://127.0.0.1/up |
     grep -q '"database":"connected"'
+compose exec --no-TTY proxy wget -q -O - http://127.0.0.1/up |
+    grep -q '"redis":"connected"'
 response_headers=$(compose exec --no-TTY proxy wget -S -O /dev/null http://127.0.0.1/ 2>&1)
 printf '%s\n' "$response_headers" | grep -qi 'X-Content-Type-Options: nosniff'
 printf '%s\n' "$response_headers" | grep -qi 'X-Frame-Options: SAMEORIGIN'
@@ -129,5 +178,12 @@ wait_for_health
 compose exec --no-TTY proxy wget -q -O /dev/null http://127.0.0.1/
 compose exec --no-TTY proxy wget -q -O - http://127.0.0.1/up |
     grep -q '"database":"connected"'
+compose exec --no-TTY proxy wget -q -O - http://127.0.0.1/up |
+    grep -q '"redis":"connected"'
+compose exec --no-TTY backend-php php artisan tinker --execute='
+    if (Illuminate\Support\Facades\Cache::get("production-verification") !== "persistent") {
+        throw new RuntimeException("Redis data did not survive container restart.");
+    }
+'
 
 printf '%s\n' "Production verification passed."

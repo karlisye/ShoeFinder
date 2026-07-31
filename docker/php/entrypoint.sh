@@ -2,6 +2,7 @@
 set -eu
 
 mkdir -p \
+    storage/app/private/feed-imports \
     storage/app/public \
     storage/framework/cache \
     storage/framework/sessions \

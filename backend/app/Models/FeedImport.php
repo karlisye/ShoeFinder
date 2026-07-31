@@ -25,7 +25,15 @@ class FeedImport extends Model
 {
     public const STATUS_UPLOADED = 'uploaded';
 
+    public const STATUS_PREVIEW_QUEUED = 'preview_queued';
+
+    public const STATUS_PREVIEWING = 'previewing';
+
     public const STATUS_READY = 'ready';
+
+    public const STATUS_APPLY_QUEUED = 'apply_queued';
+
+    public const STATUS_APPLYING = 'applying';
 
     public const STATUS_FAILED = 'failed';
 
@@ -57,7 +65,22 @@ class FeedImport extends Model
     public function canApply(): bool
     {
         return $this->status === self::STATUS_READY
-            && $this->invalid_count === 0
+            && $this->hasResolvedApplyData();
+    }
+
+    public function canRunApply(): bool
+    {
+        return in_array($this->status, [
+            self::STATUS_READY,
+            self::STATUS_APPLY_QUEUED,
+            self::STATUS_APPLYING,
+        ], true)
+            && $this->hasResolvedApplyData();
+    }
+
+    private function hasResolvedApplyData(): bool
+    {
+        return $this->invalid_count === 0
             && $this->unresolvedReviewCount() === 0;
     }
 
