@@ -179,7 +179,7 @@ Keep the same `APP_KEY` between deployments. Changing it invalidates encrypted a
 
 Before each deployment:
 
-1. Back up PostgreSQL and the media volume through the hosting platform.
+1. Create and verify an application backup.
 2. Validate the resolved Compose configuration.
 3. Build the new images.
 4. Start PostgreSQL and Redis.
@@ -190,6 +190,7 @@ Before each deployment:
 
 ```sh
 docker compose --env-file .env.production -f compose.production.yaml config --quiet
+./docker/backup.sh --tier daily
 docker compose --env-file .env.production -f compose.production.yaml build
 docker compose --env-file .env.production -f compose.production.yaml up -d postgres redis
 docker compose --env-file .env.production -f compose.production.yaml run --rm backend-php php artisan migrate --force --no-interaction
@@ -200,6 +201,14 @@ docker compose --env-file .env.production -f compose.production.yaml exec -T pro
 ```
 
 Production containers never run migrations during startup. The migration command is a separate deployment step.
+
+`docker/backup.sh` creates a PostgreSQL custom-format dump, a public-media archive, metadata, and SHA-256 checksums. Daily, weekly, and monthly tiers have independent local retention. Optional `rclone` upload sends completed sets to private remote storage. Verify any set without touching the live database:
+
+```sh
+./docker/verify-backup.sh /var/backups/shoe-finder/daily/shoe-finder-YYYYMMDDTHHMMSSZ
+```
+
+The systemd templates, remote-storage settings, secret handling, and recovery procedure are documented in [docker/systemd/README.md](docker/systemd/README.md). Store `.env.production` and the persistent `APP_KEY` separately in an encrypted secrets store. They are intentionally excluded from application backups.
 
 Create the first administrator only after migrations succeed:
 

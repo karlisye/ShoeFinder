@@ -15,3 +15,5 @@ notes
 /frontend/node_modules/
 
 *.log
+
+/backups/

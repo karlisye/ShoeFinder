@@ -1,0 +1,11 @@
+[Unit]
+Description=Monthly ShoeFinder backup
+
+[Timer]
+OnCalendar=*-*-01 04:15:00
+Persistent=true
+RandomizedDelaySec=15m
+Unit=shoe-finder-backup@monthly.service
+
+[Install]
+WantedBy=timers.target

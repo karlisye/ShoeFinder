@@ -4,6 +4,7 @@ set -eu
 repository_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 project_name=shoe_finder_production_verify
 environment_file=$(mktemp "${TMPDIR:-/tmp}/shoe-finder-production.XXXXXX")
+backup_root=$(mktemp -d "${TMPDIR:-/tmp}/shoe-finder-backups.XXXXXX")
 services="postgres redis backend-php backend-worker backend-web frontend proxy"
 
 compose() {
@@ -17,6 +18,7 @@ compose() {
 cleanup() {
     compose down --volumes --remove-orphans >/dev/null 2>&1 || true
     rm -f "$environment_file"
+    rm -rf -- "$backup_root"
 }
 
 wait_for_health() {
@@ -100,6 +102,30 @@ compose exec --no-TTY backend-php php artisan tinker --execute='
         throw new RuntimeException("Colour reference data is incomplete.");
     }
 '
+
+compose exec --no-TTY backend-php php artisan tinker --execute='
+    Illuminate\Support\Facades\Storage::disk("public")->put(
+        "production-verification/backup-probe.txt",
+        "backup-media-probe",
+    );
+'
+
+"$repository_root/docker/backup.sh" \
+    --compose-file "$repository_root/compose.production.yaml" \
+    --env-file "$environment_file" \
+    --output-dir "$backup_root" \
+    --tier daily
+backup_set=$(
+    find "$backup_root/daily" \
+        -mindepth 1 \
+        -maxdepth 1 \
+        -type d \
+        -name 'shoe-finder-*' \
+        -print | sort -r | head -n 1
+)
+"$repository_root/docker/verify-backup.sh" "$backup_set"
+tar -tzf "$backup_set/media.tar.gz" |
+    grep -q '^\./production-verification/backup-probe.txt$'
 
 compose exec --no-TTY backend-php cp \
     tests/Fixtures/ProductFeeds/clean/sole-market.csv \

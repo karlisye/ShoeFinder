@@ -1,0 +1,14 @@
+[Unit]
+Description=ShoeFinder %i backup
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/shoe-finder
+EnvironmentFile=/etc/shoe-finder/backup.env
+ExecStart=/opt/shoe-finder/docker/backup.sh --tier %i
+
+[Install]
+WantedBy=multi-user.target
