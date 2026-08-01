@@ -34,9 +34,11 @@ class FeedImportAdminTest extends TestCase
         parent::setUp();
 
         config(['app.admin_email' => 'admin@example.test']);
-        $this->actingAs(User::factory()->create([
+        $user = User::factory()->create([
             'email' => 'admin@example.test',
-        ]));
+        ]);
+        $user->saveAppAuthenticationSecret('test-totp-secret');
+        $this->actingAs($user);
         Filament::setCurrentPanel(Filament::getPanel('admin'));
         Storage::fake('local');
     }

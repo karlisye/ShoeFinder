@@ -51,6 +51,14 @@ Create the first administrator interactively:
 docker compose run --rm backend-php php artisan make:filament-user
 ```
 
+Two-factor authentication is required for every administrator. On the first sign-in, scan the QR code with a TOTP-compatible authenticator app, verify the temporary code, and store the generated recovery codes outside the application. Two-factor settings and recovery-code regeneration are available from the administrator profile. The profile email is read-only because production panel access uses the configured `FILAMENT_ADMIN_EMAIL` allowlist.
+
+If an administrator loses both the authenticator and every recovery code, reset enrollment from a trusted shell. Replace the example email before running the command. The next password sign-in will require fresh enrollment:
+
+```sh
+docker compose exec -T backend-php php artisan tinker --execute="\$user = App\\Models\\User::where('email', 'admin@example.com')->firstOrFail(); \$user->saveAppAuthenticationSecret(null); \$user->saveAppAuthenticationRecoveryCodes(null);"
+```
+
 Useful commands:
 
 ```sh
@@ -198,6 +206,8 @@ Create the first administrator only after migrations succeed:
 ```sh
 docker compose --env-file .env.production -f compose.production.yaml run --rm backend-php php artisan make:filament-user
 ```
+
+The administrator must complete mandatory authenticator-app enrollment on the first production sign-in and store the recovery codes securely.
 
 The public Compose proxy listens for plain HTTP. Terminate HTTPS at the hosting platform or an external load balancer. Set HSTS there, where the TLS connection is known. Forward the original host, port, and protocol headers to the application.
 
