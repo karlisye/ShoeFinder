@@ -37,6 +37,8 @@ class CatalogueHealthMetricsTest extends TestCase
 
     public function test_metrics_report_catalogue_coverage_and_issues(): void
     {
+        $metrics = app(CatalogueHealthMetrics::class);
+
         $this->assertSame([
             'public_shoes' => 2,
             'public_variants' => 2,
@@ -47,7 +49,22 @@ class CatalogueHealthMetricsTest extends TestCase
             'variants_without_primary_image' => 1,
             'shoes_without_qualifying_listing' => 1,
             'stale_after_hours' => 168,
-        ], app(CatalogueHealthMetrics::class)->summary($this->now));
+        ], $metrics->summary($this->now));
+
+        $variants = $metrics
+            ->variantsNeedingAttentionQuery($this->now)
+            ->get()
+            ->keyBy('manufacturer_variant_code');
+
+        $this->assertCount(2, $variants);
+        $this->assertTrue((bool) $variants['VARIANT-health-live']->has_primary_image);
+        $this->assertSame(1, $variants['VARIANT-health-live']->qualifying_listings_count);
+        $this->assertSame(1, $variants['VARIANT-health-live']->stale_listings_count);
+        $this->assertSame(1, $variants['VARIANT-health-live']->fresh_listings_without_stock_count);
+        $this->assertFalse((bool) $variants['VARIANT-health-unavailable']->has_primary_image);
+        $this->assertSame(0, $variants['VARIANT-health-unavailable']->qualifying_listings_count);
+        $this->assertSame(0, $variants['VARIANT-health-unavailable']->stale_listings_count);
+        $this->assertSame(0, $variants['VARIANT-health-unavailable']->fresh_listings_without_stock_count);
     }
 
     private function createCatalogueHealthData(): void

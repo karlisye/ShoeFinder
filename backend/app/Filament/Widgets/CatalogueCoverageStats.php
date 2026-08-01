@@ -11,7 +11,7 @@ class CatalogueCoverageStats extends StatsOverviewWidget
 {
     protected static bool $isLazy = false;
 
-    protected static ?int $sort = -5;
+    protected static ?int $sort = -6;
 
     protected ?string $heading = 'Catalogue coverage';
 

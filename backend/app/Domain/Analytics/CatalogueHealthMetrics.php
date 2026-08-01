@@ -98,6 +98,117 @@ final readonly class CatalogueHealthMetrics
     }
 
     /**
+     * @return EloquentBuilder<ShoeVariant>
+     */
+    public function variantsNeedingAttentionQuery(
+        ?CarbonInterface $at = null,
+    ): EloquentBuilder {
+        $activeListing = function (EloquentBuilder $query): void {
+            $query
+                ->where('active', true)
+                ->whereHas(
+                    'retailer',
+                    fn (EloquentBuilder $query) => $query
+                        ->where('active', true),
+                );
+        };
+        $staleListing = function (EloquentBuilder $query) use (
+            $activeListing,
+            $at,
+        ): void {
+            $activeListing($query);
+            $query->where(function (EloquentBuilder $query) use ($at): void {
+                $query
+                    ->whereNull('last_checked_at')
+                    ->orWhere(
+                        'last_checked_at',
+                        '<',
+                        $this->freshness->cutoff($at),
+                    );
+            });
+        };
+        $freshListingWithoutStock = function (
+            EloquentBuilder $query,
+        ) use ($activeListing, $at): void {
+            $activeListing($query);
+            $query
+                ->where(
+                    'last_checked_at',
+                    '>=',
+                    $this->freshness->cutoff($at),
+                )
+                ->whereDoesntHave(
+                    'listingSizes',
+                    fn (EloquentBuilder $query) => $query
+                        ->where('in_stock', true)
+                        ->whereHas(
+                            'size',
+                            fn (EloquentBuilder $query) => $query
+                                ->where('active', true),
+                        ),
+                );
+        };
+        $qualifyingListing = function (EloquentBuilder $query) use (
+            $activeListing,
+            $at,
+        ): void {
+            $activeListing($query);
+            $query
+                ->where('currency', 'EUR')
+                ->where(
+                    'last_checked_at',
+                    '>=',
+                    $this->freshness->cutoff($at),
+                )
+                ->whereHas(
+                    'listingSizes',
+                    fn (EloquentBuilder $query) => $query
+                        ->where('in_stock', true)
+                        ->whereHas(
+                            'size',
+                            fn (EloquentBuilder $query) => $query
+                                ->where('active', true),
+                        ),
+                );
+        };
+
+        return $this->publicVariantsQuery()
+            ->with(['shoe.brand', 'colour'])
+            ->withExists([
+                'images as has_primary_image' => fn (EloquentBuilder $query) => $query
+                    ->where('is_primary', true),
+            ])
+            ->withCount([
+                'retailerListings as qualifying_listings_count' => $qualifyingListing,
+                'retailerListings as stale_listings_count' => $staleListing,
+                'retailerListings as fresh_listings_without_stock_count' => $freshListingWithoutStock,
+            ])
+            ->where(function (EloquentBuilder $query) use (
+                $qualifyingListing,
+                $staleListing,
+                $freshListingWithoutStock,
+            ): void {
+                $query
+                    ->whereDoesntHave(
+                        'images',
+                        fn (EloquentBuilder $query) => $query
+                            ->where('is_primary', true),
+                    )
+                    ->orWhereDoesntHave(
+                        'retailerListings',
+                        $qualifyingListing,
+                    )
+                    ->orWhereHas('retailerListings', $staleListing)
+                    ->orWhereHas(
+                        'retailerListings',
+                        $freshListingWithoutStock,
+                    );
+            })
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id');
+    }
+
+    /**
      * @return EloquentBuilder<Shoe>
      */
     private function publicShoesQuery(): EloquentBuilder
