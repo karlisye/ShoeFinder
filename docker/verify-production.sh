@@ -208,6 +208,17 @@ if [ "$scrape_queue_status" != "failed" ]; then
     exit 1
 fi
 
+scrape_queue_error=$(
+    compose exec --no-TTY backend-php php artisan tinker --execute="
+        echo App\\Models\\ScrapeRun::findOrFail($scrape_queue_probe_id)->errors[0]['code'];
+    "
+)
+
+if [ "$scrape_queue_error" != "no_successful_items" ]; then
+    printf '%s\n' "The production scraper worker failed its workflow probe." >&2
+    exit 1
+fi
+
 compose exec --no-TTY backend-php php artisan tinker --execute='
     Illuminate\Support\Facades\Cache::put("production-verification", "persistent", 120);
 '

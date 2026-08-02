@@ -119,8 +119,9 @@ class ScrapeApplyWorkflowTest extends TestCase
             'sku' => 'STYLE_100_9_CNF',
             'sizes' => $sizes,
         ];
-        Process::fake(['*' => Process::result(output: json_encode($payload))]);
         $run = app(ScrapeRunQueue::class)->start($context['retailer']);
+        $payload['request_id'] = (string) $run->items()->value('id');
+        Process::fake(['*' => Process::result(output: json_encode($payload))]);
 
         return app(ScrapeRunWorkflow::class)->preview($run);
     }

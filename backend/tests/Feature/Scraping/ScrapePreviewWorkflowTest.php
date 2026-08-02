@@ -8,7 +8,9 @@ use App\Jobs\PreviewScrapeRun;
 use App\Models\ScrapeRun;
 use App\Models\ScrapeRunItem;
 use App\Models\User;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Queue;
 use Tests\Support\CreatesCatalogueData;
@@ -50,16 +52,24 @@ class ScrapePreviewWorkflowTest extends TestCase
     public function test_preview_stores_changes_without_writing_to_the_catalogue(): void
     {
         Queue::fake();
-        Process::fake([
-            '*' => Process::result(output: json_encode($this->successPayload())),
-        ])->preventStrayProcesses();
+        $payload = $this->successPayload();
         $context = $this->ballzyContext('scrape-preview');
         $listing = $this->createListing($context['variant'], $context['retailer'], [
-            'product_url' => $this->successPayload()['requested_url'],
+            'product_url' => $payload['requested_url'],
         ]);
         $this->createListingSize($listing, $context['size']);
         $historyCount = $listing->priceChanges()->count();
         $run = app(ScrapeRunQueue::class)->start($context['retailer']);
+        $payload['request_id'] = (string) $run->items()->value('id');
+        Process::fake([
+            '*' => Process::result(output: json_encode($payload)),
+        ])->preventStrayProcesses();
+        $aggregateSql = null;
+        DB::listen(function (QueryExecuted $query) use (&$aggregateSql): void {
+            if (str_contains($query->sql, 'count(*) as aggregate')) {
+                $aggregateSql = $query->sql;
+            }
+        });
 
         app(ScrapeRunWorkflow::class)->preview($run);
 
@@ -70,6 +80,8 @@ class ScrapePreviewWorkflowTest extends TestCase
         $this->assertSame('89.99', $item->result_payload['current_price']);
         $this->assertSame('99.99', $listing->refresh()->current_price);
         $this->assertSame($historyCount, $listing->priceChanges()->count());
+        $this->assertNotNull($aggregateSql);
+        $this->assertStringNotContainsString('order by', strtolower($aggregateSql));
     }
 
     public function test_invalid_scraper_results_fail_safely(): void
@@ -77,12 +89,13 @@ class ScrapePreviewWorkflowTest extends TestCase
         Queue::fake();
         $payload = $this->successPayload();
         $payload['sizes'][0]['eu_size'] = '99';
-        Process::fake(['*' => Process::result(output: json_encode($payload))]);
         $context = $this->ballzyContext('scrape-invalid');
         $listing = $this->createListing($context['variant'], $context['retailer'], [
             'product_url' => $payload['requested_url'],
         ]);
         $run = app(ScrapeRunQueue::class)->start($context['retailer']);
+        $payload['request_id'] = (string) $run->items()->value('id');
+        Process::fake(['*' => Process::result(output: json_encode($payload))]);
 
         app(ScrapeRunWorkflow::class)->preview($run);
 

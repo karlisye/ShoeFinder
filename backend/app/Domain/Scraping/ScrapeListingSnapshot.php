@@ -39,4 +39,29 @@ class ScrapeListingSnapshot
                 ->all(),
         ];
     }
+
+    /** @param array<string, mixed> $baseline */
+    public function matches(RetailerListing $listing, array $baseline): bool
+    {
+        return $this->canonicalize($this->baseline($listing))
+            === $this->canonicalize($baseline);
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     * @return array<mixed>
+     */
+    private function canonicalize(array $value): array
+    {
+        if (! array_is_list($value)) {
+            ksort($value);
+        }
+
+        return array_map(
+            fn (mixed $item): mixed => is_array($item)
+                ? $this->canonicalize($item)
+                : $item,
+            $value,
+        );
+    }
 }

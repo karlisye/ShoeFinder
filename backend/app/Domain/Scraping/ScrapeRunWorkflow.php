@@ -51,6 +51,7 @@ class ScrapeRunWorkflow
         }
 
         $counts = $run->items()
+            ->reorder()
             ->selectRaw('status, count(*) as aggregate')
             ->groupBy('status')
             ->pluck('aggregate', 'status');
@@ -117,7 +118,7 @@ class ScrapeRunWorkflow
                         );
                     }
 
-                    if ($listing === null || $this->snapshot->baseline($listing) !== $item->baseline) {
+                    if ($listing === null || ! $this->snapshot->matches($listing, $item->baseline)) {
                         throw new StaleScrapeRunException(
                             "The listing '{$item->listing_label}' changed after the preview was created.",
                         );

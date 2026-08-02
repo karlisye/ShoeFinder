@@ -40,6 +40,8 @@ run_backend php artisan tinker --execute="
         'outbound_clicks',
         'feed_imports',
         'feed_import_items',
+        'scrape_runs',
+        'scrape_run_items',
     ] as \$table) {
         if (Illuminate\\Support\\Facades\\Schema::hasTable(\$table)) {
             throw new RuntimeException(\"Stage 1 rollback left table: {\$table}\");
