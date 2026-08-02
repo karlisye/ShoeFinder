@@ -40,7 +40,7 @@ class ScrapeResultNormalizer
             'original_price' => ['nullable', 'numeric', 'min:0', 'gte:current_price'],
             'currency' => ['nullable', 'required_if:availability,available', Rule::in(['EUR'])],
             'sku' => ['nullable', 'string', 'max:191'],
-            'sizes' => ['required', 'array'],
+            'sizes' => ['present', 'array'],
             'sizes.*.eu_size' => ['required', 'string', 'distinct'],
             'sizes.*.in_stock' => ['required', 'boolean'],
         ]);

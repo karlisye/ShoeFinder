@@ -3,6 +3,7 @@
 namespace App\Domain\Scraping;
 
 use App\Enums\ListingSourceType;
+use App\Jobs\ApplyScrapeRun;
 use App\Jobs\PreviewScrapeRun;
 use App\Models\Retailer;
 use App\Models\RetailerListing;
@@ -15,6 +16,8 @@ use LogicException;
 
 class ScrapeRunQueue
 {
+    public function __construct(private readonly ScrapeListingSnapshot $snapshot) {}
+
     public function start(?Retailer $retailer = null, ?User $user = null): ScrapeRun
     {
         if (! config('scraper.enabled', true)) {
@@ -51,8 +54,8 @@ class ScrapeRunQueue
                         'position' => $index + 1,
                         'status' => 'pending',
                         'product_url' => $listing->product_url,
-                        'listing_label' => $this->listingLabel($listing),
-                        'baseline' => $this->baseline($listing),
+                        'listing_label' => $this->snapshot->label($listing),
+                        'baseline' => $this->snapshot->baseline($listing),
                     ]);
                 }
 
@@ -61,6 +64,30 @@ class ScrapeRunQueue
         });
 
         PreviewScrapeRun::dispatch($run->getKey())
+            ->onQueue($this->queue())
+            ->afterCommit();
+
+        return $run->refresh();
+    }
+
+    public function apply(ScrapeRun $run): ScrapeRun
+    {
+        $run = DB::transaction(function () use ($run): ScrapeRun {
+            $lockedRun = ScrapeRun::query()->lockForUpdate()->findOrFail($run->getKey());
+
+            if (! $lockedRun->canApply()) {
+                throw new LogicException('This scrape run is not ready to apply.');
+            }
+
+            $lockedRun->update([
+                'status' => ScrapeRun::STATUS_APPLY_QUEUED,
+                'errors' => null,
+            ]);
+
+            return $lockedRun;
+        });
+
+        ApplyScrapeRun::dispatch($run->getKey())
             ->onQueue($this->queue())
             ->afterCommit();
 
@@ -95,36 +122,6 @@ class ScrapeRunQueue
                 ->where('retailer_id', $retailer->getKey()))
             ->orderBy('retailer_id')
             ->orderBy('id');
-    }
-
-    private function listingLabel(RetailerListing $listing): string
-    {
-        return implode(' / ', [
-            $listing->retailer->name,
-            $listing->variant->shoe->name,
-            $listing->variant->colour->name,
-        ]);
-    }
-
-    /** @return array<string, mixed> */
-    private function baseline(RetailerListing $listing): array
-    {
-        return [
-            'current_price' => $listing->current_price,
-            'original_price' => $listing->original_price,
-            'currency' => $listing->currency,
-            'active' => $listing->active,
-            'last_checked_at' => $listing->last_checked_at?->toIso8601String(),
-            'sizes' => $listing->listingSizes
-                ->sortBy(fn ($listingSize): int => $listingSize->size->sort_order)
-                ->values()
-                ->map(fn ($listingSize): array => [
-                    'eu_size' => $listingSize->size->label,
-                    'in_stock' => $listingSize->in_stock,
-                    'price' => $listingSize->price,
-                ])
-                ->all(),
-        ];
     }
 
     private function queue(): string
