@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'enabled' => (bool) env('SCRAPER_ENABLED', true),
+    'enabled' => filter_var(env('SCRAPER_ENABLED', true), FILTER_VALIDATE_BOOL),
     'queue' => env('SCRAPE_QUEUE', 'scrapes'),
     'python_binary' => env('SCRAPER_PYTHON_BINARY', 'python3'),
     'timeout_seconds' => max(5, (int) env('SCRAPER_TIMEOUT_SECONDS', 30)),

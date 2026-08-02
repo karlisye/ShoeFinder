@@ -65,6 +65,7 @@ Useful commands:
 docker compose ps
 docker compose logs -f
 docker compose logs -f backend-worker
+docker compose logs -f backend-scraper-worker
 docker compose exec -T backend-php php artisan test
 docker compose exec -T frontend npm run test
 ./docker/test-postgres.sh
@@ -127,11 +128,17 @@ Administrators can also open **Imports** in Filament:
 
 Uploaded files use private Laravel storage. Development shares them through the backend bind mount. Production shares them with workers through a named volume. The UI accepts files up to 10 MB and previews up to 5,000 records. When exactly one listing was matched, the review modal compares stored and incoming identities and can confirm an update. If external ID and SKU point to two different listings, correct the catalogue or source data and upload a new file.
 
+Administrators can start a Ballzy product-page check from the **Product-page scraper** dashboard table or the **Scrape runs** section. The dedicated scraper worker processes manual Ballzy listing URLs sequentially on the `scrapes` queue. A completed run shows price, availability, and size differences without changing the catalogue. Select **Apply preview** to apply every successful result together; failed pages remain unchanged. The workflow includes inactive Ballzy listings so returned stock can reactivate an offer.
+
+Set `SCRAPER_USER_AGENT` to an identifiable value containing the production URL or contact address. `SCRAPER_CRAWL_DELAY_MS` defaults to 2,000 milliseconds to respect Ballzy's crawl delay. The scraper accepts only allowlisted HTTPS Ballzy product URLs and does not store downloaded page HTML.
+
 Queue operations:
 
 ```sh
 docker compose logs -f backend-worker
+docker compose logs -f backend-scraper-worker
 docker compose exec -T backend-php php artisan queue:monitor redis:imports --max=1000
+docker compose exec -T backend-php php artisan queue:monitor redis:scrapes --max=1000
 docker compose exec -T backend-php php artisan queue:failed
 docker compose exec -T backend-php php artisan queue:retry all
 docker compose exec -T backend-php php artisan queue:restart
