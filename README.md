@@ -169,6 +169,26 @@ docker compose exec -T frontend npm run lint:css:fix
 docker compose exec -T frontend npm run format
 ```
 
+## GitLab CI/CD
+
+The GitLab pipeline runs the Laravel and Nuxt tests, Pint, ESLint, Stylelint, and Prettier on every branch and merge request. Commits on the default branch and tags also build and push commit-addressed PHP, backend-web, frontend, and gateway images to the GitLab Container Registry.
+
+The image jobs use Docker-in-Docker, so their GitLab runner must allow privileged Docker services.
+
+Production deployment is a protected manual action on the default branch. It is omitted from the pipeline until all of these protected GitLab CI/CD variables exist:
+
+- `PRODUCTION_HOST`: VPS hostname or IP address.
+- `PRODUCTION_SSH_USER`: unprivileged SSH deployment user with Docker access.
+- `PRODUCTION_SSH_PRIVATE_KEY`: private deployment key, preferably a GitLab file-type variable.
+- `PRODUCTION_KNOWN_HOSTS`: the VPS host key captured and verified outside CI, preferably a file-type variable.
+- `PRODUCTION_DEPLOY_PATH`: absolute remote directory containing the production deployment.
+
+The VPS must already contain `$PRODUCTION_DEPLOY_PATH/.env.production` with the application secrets documented below. CI uploads only the production Compose file, release helper, and non-secret immutable image references. It never replaces `.env.production`.
+
+After the manual deployment starts the new containers, a separate `migrate:production` job runs migrations and reference-data seeders. A final `health:production` job waits for every container health check and verifies that Laravel can reach PostgreSQL and Redis through `/up`. Set the optional `PRODUCTION_HEALTHCHECK_URL` to the public `/up` URL to add an outside-the-VPS HTTP check.
+
+Production containers never migrate during startup. Do not combine `deploy:production` and `migrate:production`; keeping the schema change visible as its own pipeline job makes failures and recovery decisions explicit.
+
 Pint formats PHP. ESLint checks Vue, JavaScript, and TypeScript. Stylelint checks and orders public CSS. Prettier formats frontend source and sorts Tailwind classes.
 
 ## Production build and migrations

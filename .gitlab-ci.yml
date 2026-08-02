@@ -1,0 +1,230 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+stages:
+  - quality
+  - test
+  - build
+  - deploy
+  - migrate
+  - verify
+
+default:
+  interruptible: true
+
+variables:
+  BACKEND_PHP_IMAGE: '$CI_REGISTRY_IMAGE/backend-php:$CI_COMMIT_SHA'
+  BACKEND_WEB_IMAGE: '$CI_REGISTRY_IMAGE/backend-web:$CI_COMMIT_SHA'
+  FRONTEND_IMAGE: '$CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA'
+  GATEWAY_IMAGE: '$CI_REGISTRY_IMAGE/gateway:$CI_COMMIT_SHA'
+
+.backend-job:
+  image: php:8.4-cli-alpine
+  cache:
+    key:
+      files:
+        - backend/composer.lock
+    paths:
+      - .cache/composer/
+  variables:
+    COMPOSER_CACHE_DIR: '$CI_PROJECT_DIR/.cache/composer'
+  before_script:
+    - apk add --no-cache $PHPIZE_DEPS curl freetype-dev git icu-dev libjpeg-turbo-dev libpng-dev libxml2-dev libzip-dev oniguruma-dev sqlite-dev unzip
+    - docker-php-ext-configure gd --with-freetype --with-jpeg
+    - docker-php-ext-install -j"$(nproc)" bcmath dom gd intl mbstring pdo_sqlite zip
+    - curl --fail --silent --show-error --location https://getcomposer.org/download/latest-stable/composer.phar --output /usr/local/bin/composer
+    - chmod +x /usr/local/bin/composer
+    - cd backend
+    - composer install --no-interaction --prefer-dist
+
+.frontend-job:
+  image: node:24-alpine
+  cache:
+    key:
+      files:
+        - frontend/package-lock.json
+    paths:
+      - .cache/npm/
+  variables:
+    npm_config_cache: '$CI_PROJECT_DIR/.cache/npm'
+  before_script:
+    - cd frontend
+    - npm ci
+
+# QUALITY CHECKS
+pint:
+  extends: .backend-job
+  stage: quality
+  script:
+    - composer format:check
+
+eslint:
+  extends: .frontend-job
+  stage: quality
+  script:
+    - npm run lint
+
+stylelint:
+  extends: .frontend-job
+  stage: quality
+  script:
+    - npm run lint:css
+
+prettier:
+  extends: .frontend-job
+  stage: quality
+  script:
+    - npm run format:check
+
+# TESTING STAGE
+backend-tests:
+  extends: .backend-job
+  stage: test
+  script:
+    - cp .env.example .env
+    - php artisan key:generate
+    - composer test
+
+frontend-tests:
+  extends: .frontend-job
+  stage: test
+  script:
+    - npm run test
+
+# BUILD STAGE
+.docker-build:
+  stage: build
+  image: docker:28-cli
+  services:
+    - name: docker:28-dind
+      command: ['--tls=false']
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ''
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+build:backend-php:
+  extends: .docker-build
+  script:
+    - docker build --pull --target production --file docker/php/Dockerfile --tag "$BACKEND_PHP_IMAGE" .
+    - docker push "$BACKEND_PHP_IMAGE"
+
+build:backend-web:
+  extends: .docker-build
+  script:
+    - docker build --pull --file docker/backend-web/Dockerfile --tag "$BACKEND_WEB_IMAGE" .
+    - docker push "$BACKEND_WEB_IMAGE"
+
+build:frontend:
+  extends: .docker-build
+  script:
+    - docker build --pull --target production --file docker/frontend/Dockerfile --tag "$FRONTEND_IMAGE" .
+    - docker push "$FRONTEND_IMAGE"
+
+build:gateway:
+  extends: .docker-build
+  script:
+    - docker build --pull --file docker/gateway/Dockerfile --tag "$GATEWAY_IMAGE" .
+    - docker push "$GATEWAY_IMAGE"
+
+.production-job:
+  image: alpine:3.22
+  resource_group: production
+  interruptible: false
+  before_script:
+    - apk add --no-cache openssh-client
+    - install -d -m 700 "$HOME/.ssh"
+    - |
+      if [ -f "$PRODUCTION_SSH_PRIVATE_KEY" ]; then
+        cp "$PRODUCTION_SSH_PRIVATE_KEY" "$HOME/.ssh/id_deploy"
+      else
+        printf '%s\n' "$PRODUCTION_SSH_PRIVATE_KEY" | tr -d '\r' > "$HOME/.ssh/id_deploy"
+      fi
+    - chmod 600 "$HOME/.ssh/id_deploy"
+    - |
+      if [ -f "$PRODUCTION_KNOWN_HOSTS" ]; then
+        cp "$PRODUCTION_KNOWN_HOSTS" "$HOME/.ssh/known_hosts"
+      else
+        printf '%s\n' "$PRODUCTION_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+      fi
+    - chmod 600 "$HOME/.ssh/known_hosts"
+    - |
+      {
+        printf '%s\n' "Host production-vps"
+        printf '%s\n' "  HostName $PRODUCTION_HOST"
+        printf '%s\n' "  User $PRODUCTION_SSH_USER"
+        printf '%s\n' "  IdentityFile $HOME/.ssh/id_deploy"
+        printf '%s\n' "  IdentitiesOnly yes"
+        printf '%s\n' "  StrictHostKeyChecking yes"
+      } > "$HOME/.ssh/config"
+    - chmod 600 "$HOME/.ssh/config"
+    - export DEPLOY_TARGET=production-vps
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $PRODUCTION_HOST && $PRODUCTION_SSH_USER && $PRODUCTION_SSH_PRIVATE_KEY && $PRODUCTION_KNOWN_HOSTS && $PRODUCTION_DEPLOY_PATH
+    - when: never
+
+# DEPLOY STAGE
+deploy:production:
+  extends: .production-job
+  stage: deploy
+  needs:
+    - build:backend-php
+    - build:backend-web
+    - build:frontend
+    - build:gateway
+  environment:
+    name: production
+    deployment_tier: production
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $PRODUCTION_HOST && $PRODUCTION_SSH_USER && $PRODUCTION_SSH_PRIVATE_KEY && $PRODUCTION_KNOWN_HOSTS && $PRODUCTION_DEPLOY_PATH
+      when: manual
+    - when: never
+  script:
+    - ssh "$DEPLOY_TARGET" "mkdir -p '$PRODUCTION_DEPLOY_PATH/docker'"
+    - scp compose.production.yaml "$DEPLOY_TARGET:$PRODUCTION_DEPLOY_PATH/compose.production.yaml"
+    - scp docker/production-release.sh "$DEPLOY_TARGET:$PRODUCTION_DEPLOY_PATH/docker/production-release.sh"
+    - |
+      image_environment=$(mktemp)
+      trap 'rm -f "$image_environment"' EXIT
+      umask 077
+      {
+        printf '%s\n' "BACKEND_PHP_IMAGE=$BACKEND_PHP_IMAGE"
+        printf '%s\n' "BACKEND_WEB_IMAGE=$BACKEND_WEB_IMAGE"
+        printf '%s\n' "FRONTEND_IMAGE=$FRONTEND_IMAGE"
+        printf '%s\n' "GATEWAY_IMAGE=$GATEWAY_IMAGE"
+      } > "$image_environment"
+      scp "$image_environment" "$DEPLOY_TARGET:$PRODUCTION_DEPLOY_PATH/.env.images"
+    - printf '%s' "$CI_REGISTRY_PASSWORD" | ssh "$DEPLOY_TARGET" "docker login --username '$CI_REGISTRY_USER' --password-stdin '$CI_REGISTRY'"
+    - ssh "$DEPLOY_TARGET" "chmod 700 '$PRODUCTION_DEPLOY_PATH/docker/production-release.sh' && '$PRODUCTION_DEPLOY_PATH/docker/production-release.sh' deploy"
+
+# MIGRATE STAGE
+migrate:production:
+  extends: .production-job
+  stage: migrate
+  needs:
+    - deploy:production
+  script:
+    - ssh "$DEPLOY_TARGET" "'$PRODUCTION_DEPLOY_PATH/docker/production-release.sh' migrate"
+
+# VERIFY
+health:production:
+  extends: .production-job
+  stage: verify
+  needs:
+    - migrate:production
+  script:
+    - ssh "$DEPLOY_TARGET" "'$PRODUCTION_DEPLOY_PATH/docker/production-release.sh' health"
+    - |
+      if [ -n "${PRODUCTION_HEALTHCHECK_URL:-}" ]; then
+        apk add --no-cache curl
+        curl --fail --show-error --silent \
+          --retry 12 --retry-delay 5 --retry-all-errors \
+          "$PRODUCTION_HEALTHCHECK_URL"
+      fi

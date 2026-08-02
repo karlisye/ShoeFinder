@@ -39,6 +39,7 @@ services:
     restart: unless-stopped
 
   backend-php:
+    image: ${BACKEND_PHP_IMAGE:-shoe-finder-backend-php:latest}
     build:
       context: .
       dockerfile: docker/php/Dockerfile
@@ -88,10 +89,7 @@ services:
     restart: unless-stopped
 
   backend-worker:
-    build:
-      context: .
-      dockerfile: docker/php/Dockerfile
-      target: production
+    image: ${BACKEND_PHP_IMAGE:-shoe-finder-backend-php:latest}
     environment:
       APP_NAME: ShoeFinder
       APP_ENV: production
@@ -148,6 +146,7 @@ services:
     restart: unless-stopped
 
   backend-web:
+    image: ${BACKEND_WEB_IMAGE:-shoe-finder-backend-web:latest}
     build:
       context: .
       dockerfile: docker/backend-web/Dockerfile
@@ -166,6 +165,7 @@ services:
     restart: unless-stopped
 
   frontend:
+    image: ${FRONTEND_IMAGE:-shoe-finder-frontend:latest}
     build:
       context: .
       dockerfile: docker/frontend/Dockerfile
@@ -190,6 +190,7 @@ services:
     restart: unless-stopped
 
   proxy:
+    image: ${GATEWAY_IMAGE:-shoe-finder-gateway:latest}
     build:
       context: .
       dockerfile: docker/gateway/Dockerfile
