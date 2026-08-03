@@ -62,6 +62,36 @@ class ViewScrapeRun extends ViewRecord
                     $action->success();
                     $action->redirect(ScrapeRunResource::getUrl('view', ['record' => $this->record]));
                 }),
+            Action::make('cancel')
+                ->label('Cancel preview')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Cancel this preview?')
+                ->modalDescription('No catalogue changes will be applied. The scrape results will remain available in the run history.')
+                ->modalSubmitActionLabel('Cancel preview')
+                ->visible(fn (): bool => $this->record->canCancel())
+                ->action(function (Action $action): void {
+                    try {
+                        $this->record = app(ScrapeRunQueue::class)->cancel($this->record);
+                    } catch (Throwable $exception) {
+                        report($exception);
+                        Notification::make()
+                            ->title('Preview could not be cancelled')
+                            ->body($exception->getMessage())
+                            ->danger()
+                            ->send();
+                        $action->failure();
+
+                        return;
+                    }
+
+                    Notification::make()
+                        ->title('Preview cancelled')
+                        ->success()
+                        ->send();
+                    $action->success();
+                    $action->redirect(ScrapeRunResource::getUrl('view', ['record' => $this->record]));
+                }),
         ];
     }
 }

@@ -15,9 +15,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'successful_count',
     'failed_count',
     'changed_count',
+    'cancellation_reason',
     'errors',
     'started_at',
     'finished_at',
+    'cancelled_at',
     'applied_at',
 ])]
 class ScrapeRun extends Model
@@ -37,6 +39,12 @@ class ScrapeRun extends Model
     public const STATUS_FAILED = 'failed';
 
     public const STATUS_STALE = 'stale';
+
+    public const STATUS_CANCELLED = 'cancelled';
+
+    public const CANCELLATION_MANUAL = 'manual';
+
+    public const CANCELLATION_SUPERSEDED = 'superseded';
 
     public function user(): BelongsTo
     {
@@ -59,6 +67,11 @@ class ScrapeRun extends Model
             && $this->successful_count > 0;
     }
 
+    public function canCancel(): bool
+    {
+        return $this->status === self::STATUS_READY;
+    }
+
     protected function casts(): array
     {
         return [
@@ -69,6 +82,7 @@ class ScrapeRun extends Model
             'errors' => 'array',
             'started_at' => 'immutable_datetime',
             'finished_at' => 'immutable_datetime',
+            'cancelled_at' => 'immutable_datetime',
             'applied_at' => 'immutable_datetime',
         ];
     }

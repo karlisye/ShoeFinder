@@ -60,6 +60,18 @@ class ScrapeRunResource extends Resource
                         ->label('Applied')
                         ->dateTime('Y-m-d H:i:s')
                         ->placeholder('Not applied'),
+                    TextEntry::make('cancelled_at')
+                        ->label('Cancelled')
+                        ->dateTime('Y-m-d H:i:s')
+                        ->visible(fn (?ScrapeRun $record): bool => $record?->status === ScrapeRun::STATUS_CANCELLED),
+                    TextEntry::make('cancellation_reason')
+                        ->label('Cancellation')
+                        ->formatStateUsing(fn (?string $state): string => match ($state) {
+                            ScrapeRun::CANCELLATION_MANUAL => 'Cancelled by an administrator',
+                            ScrapeRun::CANCELLATION_SUPERSEDED => 'Replaced by a newer scrape for the same scope',
+                            default => 'Cancelled',
+                        })
+                        ->visible(fn (?ScrapeRun $record): bool => $record?->status === ScrapeRun::STATUS_CANCELLED),
                     TextEntry::make('errors')
                         ->label('Run errors')
                         ->formatStateUsing(fn (?array $state): string => collect($state)
@@ -149,6 +161,7 @@ class ScrapeRunResource extends Resource
             ScrapeRun::STATUS_APPLIED => 'Applied',
             ScrapeRun::STATUS_FAILED => 'Failed',
             ScrapeRun::STATUS_STALE => 'Preview is stale',
+            ScrapeRun::STATUS_CANCELLED => 'Cancelled',
         ];
     }
 }

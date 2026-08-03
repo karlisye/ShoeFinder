@@ -151,6 +151,33 @@ class ScrapePreviewWorkflowTest extends TestCase
         $this->assertSame('https://ballzy.eu/en/product/manual-shoe', $run->items->first()->product_url);
     }
 
+    public function test_starting_a_new_run_cancels_an_older_ready_run_for_the_same_scope(): void
+    {
+        Queue::fake();
+        $context = $this->ballzyContext('scrape-superseded');
+        $this->createListing($context['variant'], $context['retailer'], [
+            'product_url' => 'https://ballzy.eu/en/product/superseded-shoe',
+        ]);
+        $olderRun = app(ScrapeRunQueue::class)->start($context['retailer']);
+        $olderRun->update([
+            'status' => ScrapeRun::STATUS_READY,
+            'successful_count' => 1,
+        ]);
+        $differentScopeRun = ScrapeRun::query()->create([
+            'status' => ScrapeRun::STATUS_READY,
+            'successful_count' => 1,
+        ]);
+
+        $newerRun = app(ScrapeRunQueue::class)->start($context['retailer']);
+
+        $olderRun->refresh();
+        $this->assertSame(ScrapeRun::STATUS_CANCELLED, $olderRun->status);
+        $this->assertSame(ScrapeRun::CANCELLATION_SUPERSEDED, $olderRun->cancellation_reason);
+        $this->assertNotNull($olderRun->cancelled_at);
+        $this->assertSame(ScrapeRun::STATUS_READY, $differentScopeRun->refresh()->status);
+        $this->assertSame(ScrapeRun::STATUS_QUEUED, $newerRun->status);
+    }
+
     private function ballzyContext(string $suffix): array
     {
         $context = $this->createCatalogueContext($suffix);

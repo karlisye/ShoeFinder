@@ -104,4 +104,24 @@ class ScrapeRunAdminTest extends TestCase
         $this->assertSame(ScrapeRun::STATUS_APPLY_QUEUED, $run->refresh()->status);
         Queue::assertPushedOn('scrapes', ApplyScrapeRun::class);
     }
+
+    public function test_ready_preview_can_be_cancelled_without_applying_changes(): void
+    {
+        $run = ScrapeRun::query()->create([
+            'status' => ScrapeRun::STATUS_READY,
+            'total_count' => 1,
+            'successful_count' => 1,
+            'changed_count' => 1,
+        ]);
+
+        Livewire::test(ViewScrapeRun::class, ['record' => $run->getRouteKey()])
+            ->callAction('cancel')
+            ->assertHasNoActionErrors();
+
+        $run->refresh();
+        $this->assertSame(ScrapeRun::STATUS_CANCELLED, $run->status);
+        $this->assertSame(ScrapeRun::CANCELLATION_MANUAL, $run->cancellation_reason);
+        $this->assertNotNull($run->cancelled_at);
+        Queue::assertNotPushed(ApplyScrapeRun::class);
+    }
 }

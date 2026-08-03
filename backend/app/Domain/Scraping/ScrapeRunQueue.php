@@ -41,6 +41,8 @@ class ScrapeRunQueue
                     throw new LogicException('No eligible manual listings were found.');
                 }
 
+                $this->cancelReadyRunsForScope($retailer);
+
                 $run = ScrapeRun::query()->create([
                     'user_id' => $user?->getKey(),
                     'retailer_id' => $retailer?->getKey(),
@@ -68,6 +70,25 @@ class ScrapeRunQueue
             ->afterCommit();
 
         return $run->refresh();
+    }
+
+    public function cancel(ScrapeRun $run): ScrapeRun
+    {
+        return DB::transaction(function () use ($run): ScrapeRun {
+            $lockedRun = ScrapeRun::query()->lockForUpdate()->findOrFail($run->getKey());
+
+            if (! $lockedRun->canCancel()) {
+                throw new LogicException('This scrape run cannot be cancelled.');
+            }
+
+            $lockedRun->update([
+                'status' => ScrapeRun::STATUS_CANCELLED,
+                'cancellation_reason' => ScrapeRun::CANCELLATION_MANUAL,
+                'cancelled_at' => now(),
+            ]);
+
+            return $lockedRun->refresh();
+        });
     }
 
     public function apply(ScrapeRun $run): ScrapeRun
@@ -127,5 +148,23 @@ class ScrapeRunQueue
     private function queue(): string
     {
         return (string) config('scraper.queue', 'scrapes');
+    }
+
+    private function cancelReadyRunsForScope(?Retailer $retailer): void
+    {
+        ScrapeRun::query()
+            ->where('status', ScrapeRun::STATUS_READY)
+            ->when(
+                $retailer === null,
+                fn (Builder $query): Builder => $query->whereNull('retailer_id'),
+                fn (Builder $query): Builder => $query->where('retailer_id', $retailer->getKey()),
+            )
+            ->lockForUpdate()
+            ->get()
+            ->each(fn (ScrapeRun $run) => $run->update([
+                'status' => ScrapeRun::STATUS_CANCELLED,
+                'cancellation_reason' => ScrapeRun::CANCELLATION_SUPERSEDED,
+                'cancelled_at' => now(),
+            ]));
     }
 }
