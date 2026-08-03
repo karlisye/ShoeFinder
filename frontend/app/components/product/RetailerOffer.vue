@@ -49,15 +49,6 @@ const outboundHref = computed(() => {
       <span v-else class="retailer-offer-logo-placeholder" aria-hidden="true" />
       <div>
         <h3 class="retailer-offer-name">{{ offer.retailer.name }}</h3>
-        <p v-if="offer.stale" class="retailer-offer-warning">
-          {{ t('productDetail.staleOffer') }}
-        </p>
-        <p v-else-if="selectedSize && !offer.available" class="retailer-offer-unavailable">
-          {{ t('productDetail.sizeUnavailable', { size: selectedSize }) }}
-        </p>
-        <p v-else class="retailer-offer-stock">
-          {{ t('productDetail.inStock') }}
-        </p>
         <p v-if="lastUpdated" class="retailer-offer-updated">
           <span>{{ t('productDetail.lastUpdated') }}</span>
           <time :datetime="offer.last_checked_at">{{ lastUpdated }}</time>
@@ -66,8 +57,19 @@ const outboundHref = computed(() => {
     </div>
 
     <div class="retailer-offer-delivery">
-      <p>{{ delivery.cost }}</p>
-      <p v-if="delivery.timeframe">{{ delivery.timeframe }}</p>
+      <p v-if="offer.stale" class="retailer-offer-warning">
+        {{ t('productDetail.staleOffer') }}
+      </p>
+      <p v-else-if="selectedSize && !offer.available" class="retailer-offer-unavailable">
+        {{ t('productDetail.sizeUnavailable', { size: selectedSize }) }}
+      </p>
+      <p v-else class="retailer-offer-stock">
+        {{ t('productDetail.inStock') }}
+      </p>
+      <div class="retailer-offer-delivery-details">
+        <p>{{ delivery.cost }}</p>
+        <p v-if="delivery.timeframe">{{ delivery.timeframe }}</p>
+      </div>
     </div>
 
     <div class="retailer-offer-price">
