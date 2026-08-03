@@ -54,9 +54,29 @@ class ScrapeChangeSet
 
     private function canonicalSizes(array $sizes): array
     {
-        return collect($sizes)
+        $sortedSizes = collect($sizes)
             ->sortBy(fn (array $size): float => (float) $size['eu_size'])
             ->values()
             ->all();
+
+        return $this->canonicalize($sortedSizes);
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     * @return array<mixed>
+     */
+    private function canonicalize(array $value): array
+    {
+        if (! array_is_list($value)) {
+            ksort($value);
+        }
+
+        return array_map(
+            fn (mixed $item): mixed => is_array($item)
+                ? $this->canonicalize($item)
+                : $item,
+            $value,
+        );
     }
 }

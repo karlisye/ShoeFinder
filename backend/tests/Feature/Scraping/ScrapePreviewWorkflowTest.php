@@ -84,6 +84,32 @@ class ScrapePreviewWorkflowTest extends TestCase
         $this->assertStringNotContainsString('order by', strtolower($aggregateSql));
     }
 
+    public function test_identical_sizes_remain_unchanged_when_json_object_keys_are_reordered(): void
+    {
+        Queue::fake();
+        $payload = $this->successPayload();
+        $context = $this->ballzyContext('scrape-unchanged-sizes');
+        $listing = $this->createListing($context['variant'], $context['retailer'], [
+            'product_url' => $payload['requested_url'],
+            'current_price' => $payload['current_price'],
+            'original_price' => $payload['original_price'],
+        ]);
+        $this->createListingSize($listing, $context['size']);
+        $run = app(ScrapeRunQueue::class)->start($context['retailer']);
+        $payload['request_id'] = (string) $run->items()->value('id');
+        Process::fake([
+            '*' => Process::result(output: json_encode($payload)),
+        ])->preventStrayProcesses();
+
+        app(ScrapeRunWorkflow::class)->preview($run);
+
+        $item = $run->items()->firstOrFail();
+        $this->assertSame(ScrapeRun::STATUS_READY, $run->refresh()->status);
+        $this->assertSame(0, $run->changed_count);
+        $this->assertSame(ScrapeRunItem::STATUS_UNCHANGED, $item->status);
+        $this->assertNull($item->changes);
+    }
+
     public function test_invalid_scraper_results_fail_safely(): void
     {
         Queue::fake();
