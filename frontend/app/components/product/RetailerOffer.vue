@@ -1,5 +1,6 @@
 <script setup>
 import { deliveryText, offerPreviousPrice } from '~/utils/productComparison'
+import { formatListingUpdatedAt } from '~/utils/dateTime'
 
 const props = defineProps({
   offer: {
@@ -23,6 +24,9 @@ const delivery = computed(() =>
   deliveryText(props.offer.delivery, locale.value, formatMoney, props.offer.currency)
 )
 const previousPrice = computed(() => offerPreviousPrice(props.offer))
+const lastUpdated = computed(() =>
+  formatListingUpdatedAt(props.offer.last_checked_at, locale.value)
+)
 const outboundHref = computed(() => {
   const query = new URLSearchParams({
     locale: locale.value,
@@ -54,15 +58,16 @@ const outboundHref = computed(() => {
         <p v-else class="retailer-offer-stock">
           {{ t('productDetail.inStock') }}
         </p>
+        <p v-if="lastUpdated" class="retailer-offer-updated">
+          <span>{{ t('productDetail.lastUpdated') }}</span>
+          <time :datetime="offer.last_checked_at">{{ lastUpdated }}</time>
+        </p>
       </div>
     </div>
 
     <div class="retailer-offer-delivery">
       <p>{{ delivery.cost }}</p>
       <p v-if="delivery.timeframe">{{ delivery.timeframe }}</p>
-      <p v-if="offer.delivery.note" class="retailer-offer-note">
-        {{ offer.delivery.note }}
-      </p>
     </div>
 
     <div class="retailer-offer-price">

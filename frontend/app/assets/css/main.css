@@ -1411,12 +1411,12 @@
     @apply mt-1 text-xs font-semibold text-danger-dark;
   }
 
-  .retailer-offer-delivery {
-    @apply text-sm leading-6 text-secondary;
+  .retailer-offer-updated {
+    @apply mt-1 flex flex-wrap gap-x-1 text-xs text-secondary-light;
   }
 
-  .retailer-offer-note {
-    @apply mt-1 text-xs;
+  .retailer-offer-delivery {
+    @apply text-sm leading-6 text-secondary;
   }
 
   .retailer-offer-price {
@@ -1495,6 +1495,10 @@
     grid-column: 2;
     grid-row: 1;
     text-align: right;
+  }
+
+  .retailer-offer-price-values {
+    justify-content: flex-end;
   }
 
   .retailer-offer-action {
