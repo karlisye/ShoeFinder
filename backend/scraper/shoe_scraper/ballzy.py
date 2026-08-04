@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import re
 import time
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 from html.parser import HTMLParser
@@ -12,42 +11,11 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
+from .contract import ScrapeError, ScrapeResult
+
 ALLOWED_HOSTS = {"ballzy.eu"}
 MAX_RESPONSE_BYTES = 5 * 1024 * 1024
 RETRYABLE_STATUSES = {429, 500, 502, 503, 504}
-
-
-class ScrapeError(Exception):
-    def __init__(self, code: str, message: str, *, retryable: bool = False) -> None:
-        super().__init__(message)
-        self.code = code
-        self.retryable = retryable
-
-
-@dataclass(frozen=True)
-class ScrapeResult:
-    requested_url: str
-    final_url: str
-    observed_at: str
-    availability: str
-    current_price: str | None
-    original_price: str | None
-    currency: str | None
-    sku: str | None
-    sizes: list[dict[str, Any]]
-
-    def as_dict(self) -> dict[str, Any]:
-        return {
-            "requested_url": self.requested_url,
-            "final_url": self.final_url,
-            "observed_at": self.observed_at,
-            "availability": self.availability,
-            "current_price": self.current_price,
-            "original_price": self.original_price,
-            "currency": self.currency,
-            "sku": self.sku,
-            "sizes": self.sizes,
-        }
 
 
 class _SafeRedirectHandler(HTTPRedirectHandler):

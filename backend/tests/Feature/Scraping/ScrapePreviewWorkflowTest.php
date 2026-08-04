@@ -178,6 +178,34 @@ class ScrapePreviewWorkflowTest extends TestCase
         $this->assertSame(ScrapeRun::STATUS_QUEUED, $newerRun->status);
     }
 
+    public function test_sportland_results_accept_the_configured_product_url(): void
+    {
+        Queue::fake();
+        $context = $this->createCatalogueContext('scrape-sportland');
+        $context['retailer']->update([
+            'name' => 'Sportland',
+            'slug' => 'sportland',
+            'website_url' => 'https://sportland.lv',
+        ]);
+        $context['variant']->update(['manufacturer_variant_code' => null]);
+        $url = 'https://sportland.lv/product/nike_air_force_1_07_mens_shoes_cw2288_111';
+        $this->createListing($context['variant'], $context['retailer'], [
+            'product_url' => $url,
+        ]);
+        $run = app(ScrapeRunQueue::class)->start($context['retailer']);
+        $payload = $this->successPayload();
+        $payload['request_id'] = (string) $run->items()->value('id');
+        $payload['requested_url'] = $url;
+        $payload['final_url'] = $url;
+        $payload['sku'] = 'CW2288_111';
+        Process::fake(['*' => Process::result(output: json_encode($payload))]);
+
+        app(ScrapeRunWorkflow::class)->preview($run);
+
+        $this->assertSame(ScrapeRun::STATUS_READY, $run->refresh()->status);
+        $this->assertSame(ScrapeRunItem::STATUS_CHANGED, $run->items()->firstOrFail()->status);
+    }
+
     private function ballzyContext(string $suffix): array
     {
         $context = $this->createCatalogueContext($suffix);

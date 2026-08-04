@@ -54,7 +54,7 @@ class ScrapeResultNormalizer
             );
         }
 
-        $this->validateFinalUrl($validated['final_url']);
+        $this->validateFinalUrl($item, $validated['final_url']);
         $this->validateSku($item, $validated['sku'] ?? null);
         $this->validateSizes($validated['sizes'], $validated['availability']);
 
@@ -81,15 +81,25 @@ class ScrapeResultNormalizer
         ];
     }
 
-    private function validateFinalUrl(string $url): void
+    private function validateFinalUrl(ScrapeRunItem $item, string $url): void
     {
         $parts = parse_url($url);
         $path = (string) ($parts['path'] ?? '');
+        $retailerSlug = $item->retailerListing?->retailer?->slug;
+        $retailerConfig = is_string($retailerSlug)
+            ? config("scraper.retailers.{$retailerSlug}")
+            : null;
+        $hosts = is_array($retailerConfig) ? ($retailerConfig['hosts'] ?? []) : [];
+        $pathPrefixes = is_array($retailerConfig) ? ($retailerConfig['path_prefixes'] ?? []) : [];
+        $hostAllowed = is_string($parts['host'] ?? null)
+            && in_array(strtolower($parts['host']), $hosts, true);
+        $pathAllowed = collect($pathPrefixes)
+            ->contains(fn (mixed $prefix): bool => is_string($prefix) && str_starts_with($path, $prefix));
 
         if (($parts['scheme'] ?? null) !== 'https'
-            || ($parts['host'] ?? null) !== 'ballzy.eu'
+            || ! $hostAllowed
             || isset($parts['port'])
-            || ! str_starts_with($path, '/en/product/') && ! str_starts_with($path, '/lv/product/')) {
+            || ! $pathAllowed) {
             throw new ScrapeResultException('url_not_allowed', 'The scraper followed an unsupported product URL.');
         }
     }

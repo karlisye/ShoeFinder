@@ -5,7 +5,14 @@ import sys
 from typing import Any
 
 from . import SCHEMA_VERSION
-from .ballzy import ScrapeError, scrape
+from .ballzy import scrape as scrape_ballzy
+from .contract import ScrapeError
+from .sportland import scrape as scrape_sportland
+
+ADAPTERS = {
+    "ballzy": scrape_ballzy,
+    "sportland": scrape_sportland,
+}
 
 
 def main() -> int:
@@ -20,7 +27,7 @@ def main() -> int:
         return 2
 
     try:
-        result = scrape(
+        result = ADAPTERS[request["adapter"]](
             request["url"],
             timeout_seconds=float(request.get("timeout_seconds", 20)),
             user_agent=str(request.get("user_agent", "ShoeFinderScraper/1.0")),
@@ -47,7 +54,7 @@ def _read_request() -> dict[str, Any]:
     request = json.loads(sys.stdin.read())
     if not isinstance(request, dict):
         raise ValueError("The scraper request must be a JSON object.")
-    if request.get("adapter") != "ballzy":
+    if request.get("adapter") not in ADAPTERS:
         raise ValueError("The scraper adapter is not supported.")
     if not isinstance(request.get("url"), str) or not request["url"]:
         raise ValueError("The scraper request requires a URL.")

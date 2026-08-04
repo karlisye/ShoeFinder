@@ -16,5 +16,10 @@ return [
             'hosts' => ['ballzy.eu'],
             'path_prefixes' => ['/en/product/', '/lv/product/'],
         ],
+        'sportland' => [
+            'adapter' => 'sportland',
+            'hosts' => ['sportland.lv'],
+            'path_prefixes' => ['/product/'],
+        ],
     ],
 ];

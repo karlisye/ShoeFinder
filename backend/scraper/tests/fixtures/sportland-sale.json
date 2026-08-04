@@ -1,0 +1,34 @@
+{
+  "data": {
+    "products": {
+      "items": [
+        {
+          "sku": "AH8050_005",
+          "url_key": "nike_air_max_270_ah8050_005",
+          "stock_status": "IN_STOCK",
+          "price_range": {
+            "minimum_price": {
+              "regular_price": {"value": 174.99, "currency": "EUR"},
+              "final_price": {"value": 104.99, "currency": "EUR"}
+            }
+          },
+          "configurable_options": [
+            {
+              "attribute_code": "footwear_size",
+              "values": [
+                {"value_index": 6371, "label": "41"},
+                {"value_index": 6372, "label": "42"},
+                {"value_index": 6374, "label": "43"}
+              ]
+            }
+          ],
+          "variants": [
+            {"product": {"stock_status": "IN_STOCK", "footwear_size": "6371"}},
+            {"product": {"stock_status": "IN_STOCK", "footwear_size": "6372"}},
+            {"product": {"stock_status": "OUT_OF_STOCK", "footwear_size": "6374"}}
+          ]
+        }
+      ]
+    }
+  }
+}
