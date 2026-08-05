@@ -19,6 +19,11 @@ class Retailer extends Model
         return $this->hasMany(FeedImport::class);
     }
 
+    public function scrapeRuns(): HasMany
+    {
+        return $this->hasMany(ScrapeRun::class);
+    }
+
     protected function casts(): array
     {
         return [

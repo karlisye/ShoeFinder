@@ -53,4 +53,9 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     {
         return $this->hasMany(FeedImport::class);
     }
+
+    public function scrapeRuns(): HasMany
+    {
+        return $this->hasMany(ScrapeRun::class);
+    }
 }

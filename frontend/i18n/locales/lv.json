@@ -178,6 +178,7 @@
     "selectSizeHint": "Izvēlies izmēru, lai redzētu precīzu cenu un pieejamību.",
     "noOffers": "Šai krāsai veikalu piedāvājumi nav pieejami.",
     "staleOffer": "Cena nav nesen pārbaudīta",
+    "lastUpdated": "Pēdējoreiz atjaunināts:",
     "sizeUnavailable": "{size}. izmērs nav pieejams",
     "inStock": "Pieejams",
     "withDelivery": "Ar piegādi {price}",

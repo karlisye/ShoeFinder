@@ -1,0 +1,34 @@
+{
+  "data": {
+    "products": {
+      "items": [
+        {
+          "sku": "CW2288_111",
+          "url_key": "nike_air_force_1_07_mens_shoes_cw2288_111",
+          "stock_status": "IN_STOCK",
+          "price_range": {
+            "minimum_price": {
+              "regular_price": {"value": 134.99, "currency": "EUR"},
+              "final_price": {"value": 134.99, "currency": "EUR"}
+            }
+          },
+          "configurable_options": [
+            {
+              "attribute_code": "footwear_size",
+              "values": [
+                {"value_index": 6373, "label": "42.5"},
+                {"value_index": 6372, "label": "42"},
+                {"value_index": 6375, "label": "44"}
+              ]
+            }
+          ],
+          "variants": [
+            {"product": {"stock_status": "IN_STOCK", "footwear_size": "6375"}},
+            {"product": {"stock_status": "OUT_OF_STOCK", "footwear_size": "6373"}},
+            {"product": {"stock_status": "IN_STOCK", "footwear_size": "6372"}}
+          ]
+        }
+      ]
+    }
+  }
+}
