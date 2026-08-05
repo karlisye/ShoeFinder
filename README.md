@@ -61,14 +61,14 @@ flowchart LR
     F --> S
 ```
 
-| Area | Technology |
-| --- | --- |
-| Storefront | Nuxt 4, Vue 3, Tailwind CSS 4, Nuxt i18n |
-| API and domain | Laravel 13, PHP 8.3+, Filament 5 |
-| Data and queues | PostgreSQL 18, Redis 7.4 |
-| Ingestion | PHP feed adapters, Python retailer scrapers |
-| Infrastructure | Docker Compose, NGINX, GitLab CI/CD, systemd backup timers |
-| Quality | PHPUnit, Node test runner, Python unittest, Pint, ESLint, Stylelint, Prettier |
+| Area            | Technology                                                                    |
+| --------------- | ----------------------------------------------------------------------------- |
+| Storefront      | Nuxt 4, Vue 3, Tailwind CSS 4, Nuxt i18n                                      |
+| API and domain  | Laravel 13, PHP 8.3+, Filament 5                                              |
+| Data and queues | PostgreSQL 18, Redis 7.4                                                      |
+| Ingestion       | PHP feed adapters, Python retailer scrapers                                   |
+| Infrastructure  | Docker Compose, NGINX, GitLab CI/CD, systemd backup timers                    |
+| Quality         | PHPUnit, Node test runner, Python unittest, Pint, ESLint, Stylelint, Prettier |
 
 ## Run locally
 
@@ -123,12 +123,12 @@ docker compose down
 
 ## Public API
 
-| Endpoint | Purpose |
-| --- | --- |
-| `GET /api/v1/shoes` | Paginated, filterable catalogue cards |
-| `GET /api/v1/shoes/{slug}` | Product, variants, sizes, and retailer offers |
+| Endpoint                      | Purpose                                            |
+| ----------------------------- | -------------------------------------------------- |
+| `GET /api/v1/shoes`           | Paginated, filterable catalogue cards              |
+| `GET /api/v1/shoes/{slug}`    | Product, variants, sizes, and retailer offers      |
 | `GET /api/v1/catalog-filters` | Available catalogue filter values and price bounds |
-| `GET /go/{listing}` | Privacy-conscious tracked redirect to a retailer |
+| `GET /go/{listing}`           | Privacy-conscious tracked redirect to a retailer   |
 
 Latvian is the default API locale. Add `locale=en` for English fields. Catalogue endpoints are rate-limited and return consistent JSON success and error envelopes.
 
@@ -156,9 +156,3 @@ The GitLab pipeline:
 4. Provides protected, manual deployment followed by separate migration and health-verification stages.
 
 Production containers do not migrate during startup. Backup tooling creates PostgreSQL dumps, media archives, metadata, and checksums, with an isolated verification command and optional remote storage. See [docker/systemd/README.md](docker/systemd/README.md) for the backup schedule and recovery workflow.
-
-## Project notes
-
-- ShoeFinder is an independent portfolio project and is not affiliated with the retailers or brands shown in demo data.
-- Product images, retailer marks, and trademarks belong to their respective owners.
-- Affiliate redirects are supported, and the public application includes an affiliate disclosure page.
