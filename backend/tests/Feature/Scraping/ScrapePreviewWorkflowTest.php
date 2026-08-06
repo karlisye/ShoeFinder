@@ -132,6 +132,28 @@ class ScrapePreviewWorkflowTest extends TestCase
         $this->assertSame('99.99', $listing->refresh()->current_price);
     }
 
+    public function test_available_zero_price_fails_safely(): void
+    {
+        Queue::fake();
+        $payload = $this->successPayload();
+        $payload['current_price'] = '0.00';
+        $context = $this->ballzyContext('scrape-zero-price');
+        $listing = $this->createListing($context['variant'], $context['retailer'], [
+            'product_url' => $payload['requested_url'],
+        ]);
+        $run = app(ScrapeRunQueue::class)->start($context['retailer']);
+        $payload['request_id'] = (string) $run->items()->value('id');
+        Process::fake(['*' => Process::result(output: json_encode($payload))]);
+
+        app(ScrapeRunWorkflow::class)->preview($run);
+
+        $item = $run->items()->firstOrFail();
+        $this->assertSame(ScrapeRun::STATUS_FAILED, $run->refresh()->status);
+        $this->assertSame(ScrapeRunItem::STATUS_FAILED, $item->status);
+        $this->assertSame('result_invalid', $item->error['code']);
+        $this->assertSame('99.99', $listing->refresh()->current_price);
+    }
+
     public function test_only_manual_listings_for_supported_retailers_are_eligible(): void
     {
         Queue::fake();

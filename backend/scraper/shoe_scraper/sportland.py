@@ -29,6 +29,10 @@ query ScrapeProduct($urlKey: String!) {
           regular_price { value currency }
           final_price { value currency }
         }
+        maximum_price {
+          regular_price { value currency }
+          final_price { value currency }
+        }
       }
       ... on ConfigurableProduct {
         configurable_options {
@@ -238,23 +242,30 @@ def _extract_sizes(product: dict[str, Any]) -> list[dict[str, Any]]:
 
 def _extract_prices(product: dict[str, Any]) -> tuple[str | None, str | None, str | None]:
     price_range = product.get("price_range")
-    minimum = price_range.get("minimum_price") if isinstance(price_range, dict) else None
-    if not isinstance(minimum, dict):
+    if not isinstance(price_range, dict):
         return None, None, None
 
-    regular = minimum.get("regular_price")
-    final = minimum.get("final_price")
-    regular = regular if isinstance(regular, dict) else {}
-    final = final if isinstance(final, dict) else {}
-    current_price = _money(final.get("value"))
-    regular_price = _money(regular.get("value"))
-    currency = _optional_string(final.get("currency"))
+    for price_key in ("minimum_price", "maximum_price"):
+        price = price_range.get(price_key)
+        if not isinstance(price, dict):
+            continue
 
-    original_price = None
-    if regular_price is not None and current_price is not None:
-        if Decimal(regular_price) > Decimal(current_price):
+        regular = price.get("regular_price")
+        final = price.get("final_price")
+        regular = regular if isinstance(regular, dict) else {}
+        final = final if isinstance(final, dict) else {}
+        current_price = _money(final.get("value"))
+        if current_price is None or Decimal(current_price) <= 0:
+            continue
+
+        regular_price = _money(regular.get("value"))
+        currency = _optional_string(final.get("currency"))
+        original_price = None
+        if regular_price is not None and Decimal(regular_price) > Decimal(current_price):
             original_price = regular_price
-    return current_price, original_price, currency
+        return current_price, original_price, currency
+
+    return None, None, None
 
 
 def _size_label(value: Any) -> str | None:
