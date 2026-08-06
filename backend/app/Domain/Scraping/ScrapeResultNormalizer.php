@@ -36,7 +36,7 @@ class ScrapeResultNormalizer
             'final_url' => ['required', 'url:https'],
             'observed_at' => ['required', 'date'],
             'availability' => ['required', Rule::in(['available', 'unavailable'])],
-            'current_price' => ['nullable', 'numeric', 'min:0', 'required_if:availability,available'],
+            'current_price' => ['nullable', 'numeric', 'gt:0', 'required_if:availability,available'],
             'original_price' => ['nullable', 'numeric', 'min:0', 'gte:current_price'],
             'currency' => ['nullable', 'required_if:availability,available', Rule::in(['EUR'])],
             'sku' => ['nullable', 'string', 'max:191'],

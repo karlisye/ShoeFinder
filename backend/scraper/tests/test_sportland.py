@@ -50,6 +50,47 @@ class SportlandParserTest(unittest.TestCase):
         self.assertEqual("104.99", result.current_price)
         self.assertEqual("174.99", result.original_price)
 
+    def test_falls_back_to_positive_maximum_when_minimum_is_zero(self) -> None:
+        payload = json.loads((FIXTURES / "sportland-regular.json").read_text())
+        price_range = payload["data"]["products"]["items"][0]["price_range"]
+        price_range["minimum_price"] = {
+            "regular_price": {"value": 0, "currency": "EUR"},
+            "final_price": {"value": 0, "currency": "EUR"},
+        }
+        price_range["maximum_price"] = {
+            "regular_price": {"value": 134.99, "currency": "EUR"},
+            "final_price": {"value": 134.99, "currency": "EUR"},
+        }
+
+        result = parse_product_payload(
+            payload,
+            requested_url="https://sportland.lv/product/nike_air_force_1_07_mens_shoes_cw2288_111",
+            final_url="https://sportland.lv/product/nike_air_force_1_07_mens_shoes_cw2288_111",
+            expected_url_key="nike_air_force_1_07_mens_shoes_cw2288_111",
+            observed_at="2026-08-06T12:00:00Z",
+        )
+
+        self.assertEqual("134.99", result.current_price)
+        self.assertIsNone(result.original_price)
+
+    def test_available_product_with_only_zero_prices_fails_closed(self) -> None:
+        payload = json.loads((FIXTURES / "sportland-regular.json").read_text())
+        price_range = payload["data"]["products"]["items"][0]["price_range"]
+        price_range["minimum_price"] = {
+            "regular_price": {"value": 0, "currency": "EUR"},
+            "final_price": {"value": 0, "currency": "EUR"},
+        }
+        price_range["maximum_price"] = price_range["minimum_price"]
+
+        with self.assertRaisesRegex(ScrapeError, "no usable price"):
+            parse_product_payload(
+                payload,
+                requested_url="https://sportland.lv/product/nike_air_force_1_07_mens_shoes_cw2288_111",
+                final_url="https://sportland.lv/product/nike_air_force_1_07_mens_shoes_cw2288_111",
+                expected_url_key="nike_air_force_1_07_mens_shoes_cw2288_111",
+                observed_at="2026-08-06T12:00:00Z",
+            )
+
     def test_empty_product_result_is_authoritatively_unavailable(self) -> None:
         result = parse_product_payload(
             {"data": {"products": {"items": []}}},
