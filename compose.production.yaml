@@ -68,6 +68,11 @@ services:
       REDIS_QUEUE_RETRY_AFTER: 360
       REDIS_QUEUE_BLOCK_FOR: 5
       FEED_IMPORT_QUEUE: imports
+      SCRAPER_ENABLED: "true"
+      SCRAPE_QUEUE: scrapes
+      SCRAPER_TIMEOUT_SECONDS: 30
+      SCRAPER_CRAWL_DELAY_MS: 2000
+      SCRAPER_USER_AGENT: "${SCRAPER_USER_AGENT:?Set SCRAPER_USER_AGENT}"
       SESSION_DRIVER: database
       FILESYSTEM_DISK: public
     volumes:
@@ -114,6 +119,11 @@ services:
       REDIS_QUEUE_RETRY_AFTER: 360
       REDIS_QUEUE_BLOCK_FOR: 5
       FEED_IMPORT_QUEUE: imports
+      SCRAPER_ENABLED: "true"
+      SCRAPE_QUEUE: scrapes
+      SCRAPER_TIMEOUT_SECONDS: 30
+      SCRAPER_CRAWL_DELAY_MS: 2000
+      SCRAPER_USER_AGENT: "${SCRAPER_USER_AGENT:?Set SCRAPER_USER_AGENT}"
       SESSION_DRIVER: database
       FILESYSTEM_DISK: public
     volumes:
@@ -137,6 +147,66 @@ services:
       ]
     healthcheck:
       test: ["CMD", "php", "artisan", "queue:monitor", "redis:imports", "--max=1000"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    init: true
+    logging: *default-logging
+    restart: unless-stopped
+
+  backend-scraper-worker:
+    image: ${BACKEND_PHP_IMAGE:-shoe-finder-backend-php:latest}
+    environment:
+      APP_NAME: ShoeFinder
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: ${APP_URL:?Set APP_URL}
+      APP_KEY: ${APP_KEY:?Set APP_KEY}
+      FILAMENT_ADMIN_EMAIL: ${FILAMENT_ADMIN_EMAIL:?Set FILAMENT_ADMIN_EMAIL}
+      APP_LOCALE: lv
+      APP_FALLBACK_LOCALE: lv
+      OFFER_STALE_AFTER_HOURS: ${OFFER_STALE_AFTER_HOURS:-168}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-shoe_finder}
+      DB_USERNAME: ${POSTGRES_USER:-shoe_finder}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_QUEUE: scrapes
+      REDIS_QUEUE_RETRY_AFTER: 360
+      REDIS_QUEUE_BLOCK_FOR: 5
+      FEED_IMPORT_QUEUE: imports
+      SCRAPER_ENABLED: "true"
+      SCRAPE_QUEUE: scrapes
+      SCRAPER_TIMEOUT_SECONDS: 30
+      SCRAPER_CRAWL_DELAY_MS: 2000
+      SCRAPER_USER_AGENT: "${SCRAPER_USER_AGENT:?Set SCRAPER_USER_AGENT}"
+      SESSION_DRIVER: database
+      FILESYSTEM_DISK: public
+    depends_on:
+      backend-php:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command:
+      [
+        "php",
+        "artisan",
+        "queue:work",
+        "redis",
+        "--queue=scrapes",
+        "--sleep=1",
+        "--tries=2",
+        "--timeout=300",
+        "--max-time=3600",
+      ]
+    healthcheck:
+      test: ["CMD", "php", "artisan", "queue:monitor", "redis:scrapes", "--max=1000"]
       interval: 15s
       timeout: 10s
       retries: 5

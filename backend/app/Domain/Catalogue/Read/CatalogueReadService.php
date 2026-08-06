@@ -905,6 +905,13 @@ final readonly class CatalogueReadService
     private function sortCards(array &$cards, string $sort): void
     {
         usort($cards, function (array $left, array $right) use ($sort): int {
+            $availabilityOrder = $right['price_available']
+                <=> $left['price_available'];
+
+            if ($availabilityOrder !== 0) {
+                return $availabilityOrder;
+            }
+
             $comparison = match ($sort) {
                 'name' => strnatcasecmp($left['name'], $right['name']),
                 'price_asc' => $this->compareNullableAmounts(

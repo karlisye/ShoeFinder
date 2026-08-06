@@ -60,25 +60,26 @@ class StageFourCatalogueApiTest extends TestCase
             ->assertJsonPath('data.0.on_sale', true)
             ->assertJsonPath('data.0.available_sizes.0.label', '42')
             ->assertJsonPath('data.0.available_sizes.1.label', '43')
-            ->assertJsonPath('data.1.slug', 'alpha-runner')
-            ->assertJsonPath('data.1.colour.code', 'blue')
-            ->assertJsonPath('data.1.primary_image.alt', 'Alpha zilā krāsā')
-            ->assertJsonPath('data.1.lowest_price', null)
-            ->assertJsonPath('data.1.price_available', false)
-            ->assertJsonPath('data.2.slug', 'beta-walker')
+            ->assertJsonPath('data.1.slug', 'beta-walker')
+            ->assertJsonPath('data.1.price_available', true)
+            ->assertJsonPath('data.2.slug', 'alpha-runner')
+            ->assertJsonPath('data.2.colour.code', 'blue')
+            ->assertJsonPath('data.2.primary_image.alt', 'Alpha zilā krāsā')
+            ->assertJsonPath('data.2.lowest_price', null)
+            ->assertJsonPath('data.2.price_available', false)
             ->assertJsonPath('meta.currency', 'EUR');
 
         $this->assertSame(
             $response->json('data.0.id'),
-            $response->json('data.1.id'),
+            $response->json('data.2.id'),
         );
         $this->assertNotSame(
             $response->json('data.0.variant_id'),
-            $response->json('data.1.variant_id'),
+            $response->json('data.2.variant_id'),
         );
         $this->assertNotSame(
             $response->json('data.0.card_key'),
-            $response->json('data.1.card_key'),
+            $response->json('data.2.card_key'),
         );
 
         $this->getJson('/api/v1/shoes?locale=en&sort=name')
@@ -87,7 +88,20 @@ class StageFourCatalogueApiTest extends TestCase
             ->assertJsonPath('data.0.category.name', 'Running shoes')
             ->assertJsonPath('data.0.description', 'Alpha description')
             ->assertJsonPath('data.0.primary_image.alt', 'Alpha in red')
-            ->assertJsonPath('data.1.primary_image.alt', 'Alpha in blue');
+            ->assertJsonPath('data.2.primary_image.alt', 'Alpha in blue');
+    }
+
+    public function test_newest_sort_keeps_cards_without_available_offers_last(): void
+    {
+        $this->createCatalogue();
+
+        $this->getJson('/api/v1/shoes?sort=newest')
+            ->assertOk()
+            ->assertJsonPath('data.0.price_available', true)
+            ->assertJsonPath('data.1.price_available', true)
+            ->assertJsonPath('data.2.slug', 'alpha-runner')
+            ->assertJsonPath('data.2.colour.code', 'blue')
+            ->assertJsonPath('data.2.price_available', false);
     }
 
     public function test_catalogue_filters_match_stable_identifiers_and_one_qualifying_row(): void

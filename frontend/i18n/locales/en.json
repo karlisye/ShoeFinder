@@ -178,6 +178,7 @@
     "selectSizeHint": "Select a size to see its exact price and availability.",
     "noOffers": "No retailer offers are available for this colour.",
     "staleOffer": "Price not checked recently",
+    "lastUpdated": "Last updated:",
     "sizeUnavailable": "Size {size} unavailable",
     "inStock": "In stock",
     "withDelivery": "{price} with delivery",

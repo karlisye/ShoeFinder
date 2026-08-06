@@ -5,7 +5,7 @@ repository_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 project_name=shoe_finder_production_verify
 environment_file=$(mktemp "${TMPDIR:-/tmp}/shoe-finder-production.XXXXXX")
 backup_root=$(mktemp -d "${TMPDIR:-/tmp}/shoe-finder-backups.XXXXXX")
-services="postgres redis backend-php backend-worker backend-web frontend proxy"
+services="postgres redis backend-php backend-worker backend-scraper-worker backend-web frontend proxy"
 
 compose() {
     docker compose \
@@ -73,6 +73,9 @@ umask 077
     printf '%s\n' "POSTGRES_USER=shoe_finder_production_verify"
     printf '%s\n' "POSTGRES_PASSWORD=stage8-production-verification-only"
     printf '%s\n' "OFFER_STALE_AFTER_HOURS=168"
+    printf '%s\n' "SCRAPE_QUEUE=scrapes"
+    printf '%s\n' "SCRAPER_CRAWL_DELAY_MS=0"
+    printf '%s\n' "SCRAPER_USER_AGENT=ShoeFinderProductionVerifier/1.0 (+http://localhost:18080)"
 } >"$environment_file"
 
 compose config --quiet
@@ -88,6 +91,9 @@ compose exec --no-TTY backend-php php artisan tinker --execute='
 
 compose exec --no-TTY backend-php php artisan migrate --force --no-interaction
 compose exec --no-TTY backend-php php artisan db:seed --force --no-interaction
+
+compose exec --no-TTY backend-scraper-worker sh -lc \
+    'cd /var/www/html/scraper && python3 -m unittest discover -s tests'
 
 compose exec --no-TTY backend-php php artisan tinker --execute='
     if (! Illuminate\Support\Facades\Schema::hasTable("migrations")) {
@@ -167,6 +173,49 @@ done
 
 if [ "$queue_status" != "ready" ]; then
     printf '%s\n' "The production imports worker did not process its queue." >&2
+    exit 1
+fi
+
+scrape_queue_probe_id=$(
+    compose exec --no-TTY backend-php php artisan tinker --execute='
+        $run = App\Models\ScrapeRun::create([
+            "status" => App\Models\ScrapeRun::STATUS_QUEUED,
+        ]);
+        App\Jobs\PreviewScrapeRun::dispatch($run->id)->onQueue("scrapes");
+        echo $run->id;
+    '
+)
+
+scrape_queue_attempt=0
+scrape_queue_status=queued
+while [ "$scrape_queue_attempt" -lt 30 ]; do
+    scrape_queue_status=$(
+        compose exec --no-TTY backend-php php artisan tinker --execute="
+            echo App\\Models\\ScrapeRun::findOrFail($scrape_queue_probe_id)->status;
+        "
+    )
+
+    if [ "$scrape_queue_status" = "failed" ]; then
+        break
+    fi
+
+    scrape_queue_attempt=$((scrape_queue_attempt + 1))
+    sleep 1
+done
+
+if [ "$scrape_queue_status" != "failed" ]; then
+    printf '%s\n' "The production scraper worker did not process its queue." >&2
+    exit 1
+fi
+
+scrape_queue_error=$(
+    compose exec --no-TTY backend-php php artisan tinker --execute="
+        echo App\\Models\\ScrapeRun::findOrFail($scrape_queue_probe_id)->errors[0]['code'];
+    "
+)
+
+if [ "$scrape_queue_error" != "no_successful_items" ]; then
+    printf '%s\n' "The production scraper worker failed its workflow probe." >&2
     exit 1
 fi
 

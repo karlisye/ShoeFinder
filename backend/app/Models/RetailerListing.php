@@ -62,6 +62,11 @@ class RetailerListing extends Model
         return $this->hasMany(OutboundClick::class);
     }
 
+    public function scrapeRunItems(): HasMany
+    {
+        return $this->hasMany(ScrapeRunItem::class);
+    }
+
     protected function casts(): array
     {
         return [

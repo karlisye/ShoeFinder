@@ -71,6 +71,11 @@ services:
       REDIS_QUEUE_RETRY_AFTER: 360
       REDIS_QUEUE_BLOCK_FOR: 5
       FEED_IMPORT_QUEUE: imports
+      SCRAPER_ENABLED: "true"
+      SCRAPE_QUEUE: scrapes
+      SCRAPER_TIMEOUT_SECONDS: 30
+      SCRAPER_CRAWL_DELAY_MS: 2000
+      SCRAPER_USER_AGENT: "${SCRAPER_USER_AGENT:-ShoeFinderScraper/1.0 (+http://localhost:8080)}"
       SESSION_DRIVER: database
       FILESYSTEM_DISK: public
     volumes:
@@ -116,6 +121,11 @@ services:
       REDIS_QUEUE_RETRY_AFTER: 360
       REDIS_QUEUE_BLOCK_FOR: 5
       FEED_IMPORT_QUEUE: imports
+      SCRAPER_ENABLED: "true"
+      SCRAPE_QUEUE: scrapes
+      SCRAPER_TIMEOUT_SECONDS: 30
+      SCRAPER_CRAWL_DELAY_MS: 2000
+      SCRAPER_USER_AGENT: "${SCRAPER_USER_AGENT:-ShoeFinderScraper/1.0 (+http://localhost:8080)}"
       SESSION_DRIVER: database
       FILESYSTEM_DISK: public
     volumes:
@@ -140,6 +150,68 @@ services:
       ]
     healthcheck:
       test: ["CMD", "php", "artisan", "queue:monitor", "redis:imports", "--max=1000"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  backend-scraper-worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: development
+    environment:
+      APP_NAME: ShoeFinder
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:${APP_PORT:-8080}
+      APP_LOCALE: lv
+      APP_FALLBACK_LOCALE: lv
+      OFFER_STALE_AFTER_HOURS: ${OFFER_STALE_AFTER_HOURS:-168}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-shoe_finder}
+      DB_USERNAME: ${POSTGRES_USER:-shoe_finder}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-shoe_finder}
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_QUEUE: scrapes
+      REDIS_QUEUE_RETRY_AFTER: 360
+      REDIS_QUEUE_BLOCK_FOR: 5
+      FEED_IMPORT_QUEUE: imports
+      SCRAPER_ENABLED: "true"
+      SCRAPE_QUEUE: scrapes
+      SCRAPER_TIMEOUT_SECONDS: 30
+      SCRAPER_CRAWL_DELAY_MS: 2000
+      SCRAPER_USER_AGENT: "${SCRAPER_USER_AGENT:-ShoeFinderScraper/1.0 (+http://localhost:8080)}"
+      SESSION_DRIVER: database
+      FILESYSTEM_DISK: public
+    volumes:
+      - ./backend:/var/www/html
+      - backend_vendor:/var/www/html/vendor
+    depends_on:
+      backend-php:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command:
+      [
+        "php",
+        "artisan",
+        "queue:work",
+        "redis",
+        "--queue=scrapes",
+        "--sleep=1",
+        "--tries=2",
+        "--timeout=300",
+        "--max-time=3600",
+      ]
+    healthcheck:
+      test: ["CMD", "php", "artisan", "queue:monitor", "redis:scrapes", "--max=1000"]
       interval: 15s
       timeout: 10s
       retries: 5
