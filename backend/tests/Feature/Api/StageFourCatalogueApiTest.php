@@ -172,6 +172,47 @@ class StageFourCatalogueApiTest extends TestCase
             ->assertJsonPath('data.0.colour.code', 'blue');
     }
 
+    public function test_search_matches_each_word_across_brand_and_shoe_name(): void
+    {
+        $catalogue = $this->createCatalogue();
+        $catalogue['alpha']->update(['name' => 'Air Force 1']);
+
+        $combinedSearch = http_build_query([
+            'search' => 'NIKE air force 1',
+            'sort' => 'name',
+        ]);
+
+        $this->getJson("/api/v1/shoes?{$combinedSearch}")
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.slug', 'alpha-runner')
+            ->assertJsonPath('data.1.slug', 'alpha-runner');
+
+        $reorderedSearch = http_build_query([
+            'search' => 'force nike air',
+        ]);
+
+        $this->getJson("/api/v1/shoes?{$reorderedSearch}")
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+
+        $conflictingSearch = http_build_query([
+            'search' => 'nike beta',
+        ]);
+
+        $this->getJson("/api/v1/shoes?{$conflictingSearch}")
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+
+        $literalWildcardSearch = http_build_query([
+            'search' => '%',
+        ]);
+
+        $this->getJson("/api/v1/shoes?{$literalWildcardSearch}")
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+    }
+
     public function test_price_sorting_keeps_unavailable_products_last_and_paginates(): void
     {
         $this->createCatalogue();

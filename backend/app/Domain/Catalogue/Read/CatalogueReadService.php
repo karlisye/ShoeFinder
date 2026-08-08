@@ -402,17 +402,24 @@ final readonly class CatalogueReadService
         array $filters,
     ): void {
         if (filled($filters['search'] ?? null)) {
-            $search = mb_strtolower(trim($filters['search']));
+            foreach ($this->searchTerms($filters['search']) as $term) {
+                $pattern = $this->literalLikePattern($term);
 
-            $query->where(
-                fn ($query) => $query
-                    ->whereRaw('LOWER(shoes.name) LIKE ?', ["%{$search}%"])
-                    ->orWhereHas(
-                        'brand',
-                        fn ($query) => $query
-                            ->whereRaw('LOWER(brands.name) LIKE ?', ["%{$search}%"]),
-                    ),
-            );
+                $query->where(
+                    fn ($query) => $query
+                        ->whereRaw(
+                            "LOWER(shoes.name) LIKE ? ESCAPE '!'",
+                            [$pattern],
+                        )
+                        ->orWhereHas(
+                            'brand',
+                            fn ($query) => $query->whereRaw(
+                                "LOWER(brands.name) LIKE ? ESCAPE '!'",
+                                [$pattern],
+                            ),
+                        ),
+                );
+            }
         }
 
         if (filled($filters['brand'] ?? [])) {
@@ -435,6 +442,29 @@ final readonly class CatalogueReadService
             $query->whereIn('audience', $filters['audience']);
         }
 
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function searchTerms(string $search): array
+    {
+        $terms = preg_split(
+            '/\s+/u',
+            mb_strtolower(trim($search)),
+            flags: PREG_SPLIT_NO_EMPTY,
+        );
+
+        return array_values(array_unique($terms ?: []));
+    }
+
+    private function literalLikePattern(string $term): string
+    {
+        return '%'.str_replace(
+            ['!', '%', '_'],
+            ['!!', '!%', '!_'],
+            $term,
+        ).'%';
     }
 
     private function variantMatchesFilters(
