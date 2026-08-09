@@ -101,21 +101,47 @@ usePublicSeo({
 
     <section class="home-about home-panel" aria-labelledby="home-about-title">
       <div class="home-about-content container">
-        <p class="home-about-eyebrow">
-          {{ t('home.aboutEyebrow') }}
-        </p>
+        <div class="home-about-copy">
+          <p class="home-about-eyebrow">
+            {{ t('home.aboutEyebrow') }}
+          </p>
 
-        <h2 id="home-about-title" class="home-about-title">
-          {{ t('home.aboutTitle') }}
-        </h2>
+          <h2 id="home-about-title" class="home-about-title">
+            {{ t('home.aboutTitle') }}
+          </h2>
 
-        <p class="home-about-description">
-          {{ t('home.aboutDescription') }}
-        </p>
+          <figure class="home-about-media home-about-media-mobile" aria-hidden="true">
+            <img
+              src="/images/home-comparison-shoes.webp"
+              alt=""
+              width="1536"
+              height="1024"
+              loading="lazy"
+              decoding="async"
+              class="home-about-image"
+            />
+          </figure>
 
-        <NuxtLink :to="localePath('/catalogue')" class="button-primary home-about-action">
-          {{ t('home.visitCatalogue') }}
-        </NuxtLink>
+          <p class="home-about-description">
+            {{ t('home.aboutDescription') }}
+          </p>
+
+          <NuxtLink :to="localePath('/catalogue')" class="button-primary home-about-action">
+            {{ t('home.visitCatalogue') }}
+          </NuxtLink>
+        </div>
+
+        <figure class="home-about-media home-about-media-desktop" aria-hidden="true">
+          <img
+            src="/images/home-comparison-shoes.webp"
+            alt=""
+            width="1536"
+            height="1024"
+            loading="lazy"
+            decoding="async"
+            class="home-about-image"
+          />
+        </figure>
       </div>
     </section>
   </main>
