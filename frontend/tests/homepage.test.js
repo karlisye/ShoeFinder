@@ -13,6 +13,9 @@ const english = JSON.parse(
 const comparisonImage = await stat(
   new URL('../public/images/home-comparison-shoes.webp', import.meta.url)
 )
+const comparisonImageContents = await readFile(
+  new URL('../public/images/home-comparison-shoes.webp', import.meta.url)
+)
 
 test('homepage offers a localized snap-scroll route to the catalogue', () => {
   assert.match(homepage, /class: 'home-scroll-snap'/)
@@ -28,6 +31,18 @@ test('homepage uses an optimized responsive comparison image', () => {
   assert.match(homepage, /home-about-media-desktop/)
   assert.ok(comparisonImage.size > 10_000)
   assert.ok(comparisonImage.size < 100_000)
+  assert.ok(comparisonImageContents.includes(Buffer.from('ALPH')))
+})
+
+test('homepage slows wheel navigation between snap panels', () => {
+  assert.match(homepage, /HOME_SCROLL_DURATION_MS = 500/)
+  assert.match(homepage, /addEventListener\('wheel', handleHomeWheel, \{ passive: false \}\)/)
+  assert.match(homepage, /event\.preventDefault\(\)/)
+  assert.match(
+    stylesheet,
+    /html\.home-scroll-snap\.home-scroll-animating\s*{[^}]*scroll-snap-type:\s*none;/s
+  )
+  assert.match(stylesheet, /scroll-snap-stop:\s*normal;/)
 })
 
 test('homepage scroll snapping respects reduced-motion preferences', () => {

@@ -428,6 +428,10 @@
     scroll-snap-type: y mandatory;
   }
 
+  html.home-scroll-snap.home-scroll-animating {
+    scroll-snap-type: none;
+  }
+
   .home-scroll-snap .site-footer {
     margin-top: 0;
     scroll-snap-align: end;
@@ -440,7 +444,7 @@
   .home-panel {
     min-height: calc(100svh - 4.25rem);
     scroll-snap-align: start;
-    scroll-snap-stop: always;
+    scroll-snap-stop: normal;
   }
 
   .home-hero {
@@ -556,8 +560,9 @@
   }
 
   .home-about-image {
-    @apply block h-full w-full object-cover;
+    @apply block h-full w-full object-contain;
 
+    filter: drop-shadow(0 0.75rem 0.9rem rgb(31 41 55 / 12%));
     object-position: center;
   }
 
