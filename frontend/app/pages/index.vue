@@ -7,6 +7,11 @@ const localePath = useLocalePath()
 const router = useRouter()
 const search = ref('')
 const popularSearches = ['New Balance 530', 'Adidas Samba', 'Nike Air Force 1']
+const HOME_SCROLL_DURATION_MS = 500
+
+let scrollAnimationFrame = null
+let wheelScrollActive = false
+let reducedMotionQuery = null
 
 useHead({
   htmlAttrs: {
@@ -32,6 +37,91 @@ function searchCatalogue() {
         }
   )
 }
+
+function stopWheelScroll() {
+  if (scrollAnimationFrame !== null) {
+    cancelAnimationFrame(scrollAnimationFrame)
+    scrollAnimationFrame = null
+  }
+
+  wheelScrollActive = false
+  document.documentElement.classList.remove('home-scroll-animating')
+}
+
+function animateToPanel(destination) {
+  const start = window.scrollY
+  const distance = destination - start
+
+  if (Math.abs(distance) < 1) return
+
+  const startedAt = performance.now()
+  wheelScrollActive = true
+  document.documentElement.classList.add('home-scroll-animating')
+
+  function moveFrame(now) {
+    const progress = Math.min((now - startedAt) / HOME_SCROLL_DURATION_MS, 1)
+    const easedProgress = (1 - Math.cos(Math.PI * progress)) / 2
+
+    window.scrollTo(0, start + distance * easedProgress)
+
+    if (progress < 1) {
+      scrollAnimationFrame = requestAnimationFrame(moveFrame)
+      return
+    }
+
+    scrollAnimationFrame = null
+    wheelScrollActive = false
+    document.documentElement.classList.remove('home-scroll-animating')
+  }
+
+  scrollAnimationFrame = requestAnimationFrame(moveFrame)
+}
+
+function handleHomeWheel(event) {
+  if (
+    event.ctrlKey ||
+    event.deltaY === 0 ||
+    Math.abs(event.deltaX) > Math.abs(event.deltaY) ||
+    reducedMotionQuery?.matches
+  ) {
+    return
+  }
+
+  if (wheelScrollActive) {
+    event.preventDefault()
+    return
+  }
+
+  const headerHeight = document.querySelector('.site-header')?.offsetHeight ?? 0
+  const currentPosition = window.scrollY
+  const direction = Math.sign(event.deltaY)
+  const tolerance = 16
+  const panelPositions = Array.from(document.querySelectorAll('.home-panel')).map(
+    (panel) => panel.getBoundingClientRect().top + currentPosition - headerHeight
+  )
+  const destination =
+    direction > 0
+      ? panelPositions.find((position) => position > currentPosition + tolerance)
+      : panelPositions
+          .slice()
+          .reverse()
+          .find((position) => position < currentPosition - tolerance)
+
+  if (destination === undefined) return
+
+  event.preventDefault()
+  animateToPanel(Math.max(0, destination))
+}
+
+onMounted(() => {
+  reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  window.addEventListener('wheel', handleHomeWheel, { passive: false })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('wheel', handleHomeWheel)
+  stopWheelScroll()
+})
 
 usePublicSeo({
   title: computed(() => t('meta.homeTitle')),
