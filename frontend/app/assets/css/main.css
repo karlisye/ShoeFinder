@@ -518,11 +518,15 @@
   }
 
   .home-about {
-    @apply flex items-center border-t border-secondary-light/15 bg-surface;
+    @apply flex items-center border-t border-secondary-light/15;
   }
 
   .home-about-content {
-    @apply py-16 text-center;
+    @apply grid items-center py-10;
+  }
+
+  .home-about-copy {
+    @apply min-w-0 text-left;
   }
 
   .home-about-eyebrow {
@@ -530,21 +534,43 @@
   }
 
   .home-about-title {
-    @apply mx-auto mt-4 max-w-3xl text-3xl font-bold tracking-tight text-primary-dark;
+    @apply mt-4 max-w-3xl text-3xl font-bold tracking-tight text-primary-dark;
 
     text-wrap: balance;
   }
 
+  .home-about-media {
+    @apply overflow-hidden;
+
+    margin: 0;
+  }
+
+  .home-about-media-mobile {
+    @apply mt-6;
+
+    aspect-ratio: 16 / 9;
+  }
+
+  .home-about-media-desktop {
+    @apply hidden;
+  }
+
+  .home-about-image {
+    @apply block h-full w-full object-cover;
+
+    object-position: center;
+  }
+
   .home-about-description {
-    @apply mx-auto mt-5 max-w-2xl text-base leading-7 text-secondary;
+    @apply mt-6 max-w-2xl text-base leading-7 text-secondary;
 
     text-wrap: balance;
   }
 
   .home-about-action {
-    @apply mt-8;
+    @apply mt-6;
 
-    width: min(100%, 18rem);
+    width: 100%;
   }
 }
 
@@ -573,6 +599,20 @@
   }
 
   .popular-searches {
+    margin-top: 1rem;
+  }
+
+  .home-about-content {
+    padding-block: 1.25rem;
+  }
+
+  .home-about-title {
+    margin-top: 0.5rem;
+  }
+
+  .home-about-media-mobile,
+  .home-about-description,
+  .home-about-action {
     margin-top: 1rem;
   }
 }
@@ -609,9 +649,23 @@
   .home-search-button {
     min-width: 10rem;
   }
+}
 
+@media (width >= 48rem) {
   .home-about-content {
-    padding-block: 7rem;
+    column-gap: clamp(3rem, 6vw, 7rem);
+    grid-template-columns: minmax(18rem, 0.82fr) minmax(0, 1.18fr);
+    padding-block: 4rem;
+  }
+
+  .home-about-media-mobile {
+    display: none;
+  }
+
+  .home-about-media-desktop {
+    @apply block;
+
+    aspect-ratio: 3 / 2;
   }
 
   .home-about-title {
@@ -622,6 +676,11 @@
   .home-about-description {
     font-size: 1.125rem;
     line-height: 2rem;
+  }
+
+  .home-about-action {
+    margin-top: 2rem;
+    width: min(100%, 13rem);
   }
 }
 
