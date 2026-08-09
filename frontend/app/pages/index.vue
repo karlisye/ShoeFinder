@@ -8,6 +8,12 @@ const router = useRouter()
 const search = ref('')
 const popularSearches = ['New Balance 530', 'Adidas Samba', 'Nike Air Force 1']
 
+useHead({
+  htmlAttrs: {
+    class: 'home-scroll-snap'
+  }
+})
+
 function catalogueLocation(searchValue) {
   return {
     path: localePath('/catalogue'),
@@ -40,7 +46,7 @@ usePublicSeo({
 
 <template>
   <main class="home-page">
-    <section class="home-hero container">
+    <section class="home-hero home-panel container">
       <div class="home-content">
         <p class="home-eyebrow">
           {{ t('home.eyebrow') }}
@@ -90,6 +96,26 @@ usePublicSeo({
             <span v-if="index < popularSearches.length - 1" aria-hidden="true">·</span>
           </template>
         </div>
+      </div>
+    </section>
+
+    <section class="home-about home-panel" aria-labelledby="home-about-title">
+      <div class="home-about-content container">
+        <p class="home-about-eyebrow">
+          {{ t('home.aboutEyebrow') }}
+        </p>
+
+        <h2 id="home-about-title" class="home-about-title">
+          {{ t('home.aboutTitle') }}
+        </h2>
+
+        <p class="home-about-description">
+          {{ t('home.aboutDescription') }}
+        </p>
+
+        <NuxtLink :to="localePath('/catalogue')" class="button-primary home-about-action">
+          {{ t('home.visitCatalogue') }}
+        </NuxtLink>
       </div>
     </section>
   </main>

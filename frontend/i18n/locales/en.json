@@ -108,7 +108,11 @@
     "searchLabel": "Search by model, brand, or product code",
     "searchPlaceholder": "For example, Nike Air Max 1",
     "searchAction": "Search",
-    "popular": "Popular:"
+    "popular": "Popular:",
+    "aboutEyebrow": "ShoeFinder",
+    "aboutTitle": "Compare before you buy",
+    "aboutDescription": "ShoeFinder brings together prices, available sizes, and delivery details for the same shoe from Latvian online retailers. Open a product, choose your size, and compare offers.",
+    "visitCatalogue": "Visit catalogue"
   },
   "catalogue": {
     "eyebrow": "Shoe catalogue",
