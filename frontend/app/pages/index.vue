@@ -1,4 +1,6 @@
 <script setup>
+import { onBeforeRouteLeave } from 'vue-router'
+
 import { organizationJsonLd, websiteJsonLd } from '~/utils/seo'
 
 const config = useRuntimeConfig()
@@ -46,6 +48,11 @@ function stopWheelScroll() {
 
   wheelScrollActive = false
   document.documentElement.classList.remove('home-scroll-animating')
+}
+
+function disableHomeScrollSnap() {
+  stopWheelScroll()
+  document.documentElement.classList.remove('home-scroll-snap')
 }
 
 function animateToPanel(destination) {
@@ -118,9 +125,13 @@ onMounted(() => {
   window.addEventListener('wheel', handleHomeWheel, { passive: false })
 })
 
+onBeforeRouteLeave(() => {
+  disableHomeScrollSnap()
+})
+
 onBeforeUnmount(() => {
   window.removeEventListener('wheel', handleHomeWheel)
-  stopWheelScroll()
+  disableHomeScrollSnap()
 })
 
 usePublicSeo({

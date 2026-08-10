@@ -45,6 +45,11 @@ test('homepage slows wheel navigation between snap panels', () => {
   assert.match(stylesheet, /scroll-snap-stop:\s*normal;/)
 })
 
+test('homepage disables snapping before another route replaces its panels', () => {
+  assert.match(homepage, /onBeforeRouteLeave\(\(\) => \{\s*disableHomeScrollSnap\(\)/s)
+  assert.match(homepage, /document\.documentElement\.classList\.remove\('home-scroll-snap'\)/)
+})
+
 test('homepage scroll snapping respects reduced-motion preferences', () => {
   assert.match(stylesheet, /html\.home-scroll-snap\s*{[^}]*scroll-snap-type:\s*y mandatory;/s)
   assert.match(
