@@ -23,7 +23,9 @@
     "primary": "Galvenā navigācija",
     "home": "Sākums",
     "homeLabel": "ShoeFinder sākumlapa",
-    "catalogue": "Katalogs"
+    "catalogue": "Katalogs",
+    "openMenu": "Atvērt izvēlni",
+    "closeMenu": "Aizvērt izvēlni"
   },
   "footer": {
     "description": "Apavu cenu salīdzinājums Latvijas veikalos.",

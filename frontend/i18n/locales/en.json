@@ -23,7 +23,9 @@
     "primary": "Main navigation",
     "home": "Home",
     "homeLabel": "ShoeFinder home",
-    "catalogue": "Catalogue"
+    "catalogue": "Catalogue",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "footer": {
     "description": "Compare shoe prices from Latvian retailers.",
